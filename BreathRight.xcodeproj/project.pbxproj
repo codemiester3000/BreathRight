@@ -16,6 +16,9 @@
 		C5B417FC2AC8766E005C7E45 /* BreathRightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417FB2AC8766E005C7E45 /* BreathRightTests.swift */; };
 		C5B418062AC8766E005C7E45 /* BreathRightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418052AC8766E005C7E45 /* BreathRightUITests.swift */; };
 		C5B418082AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418072AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift */; };
+		C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
+		C5B418162AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
+		C5B418172AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,8 @@
 		C5B418012AC8766E005C7E45 /* BreathRightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BreathRightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5B418052AC8766E005C7E45 /* BreathRightUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightUITests.swift; sourceTree = "<group>"; };
 		C5B418072AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-VariableFont_slnt,wght.ttf"; path = "../../../Downloads/Inter/Inter-VariableFont_slnt,wght.ttf"; sourceTree = "<group>"; };
+		C5B418182AC88414005C7E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,9 +104,11 @@
 		C5B417E32AC8766B005C7E45 /* BreathRight */ = {
 			isa = PBXGroup;
 			children = (
+				C5B418182AC88414005C7E45 /* Info.plist */,
 				C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */,
 				C5B417E62AC8766B005C7E45 /* Persistence.swift */,
 				C5B417EB2AC8766B005C7E45 /* ContentView.swift */,
+				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
 				C5B417EF2AC8766E005C7E45 /* BreathRight.entitlements */,
 				C5B417E82AC8766B005C7E45 /* BreathRight.xcdatamodeld */,
@@ -240,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5B417F22AC8766E005C7E45 /* Preview Assets.xcassets in Resources */,
+				C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 				C5B417EE2AC8766E005C7E45 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,6 +256,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5B418162AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +264,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5B418172AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +437,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BreathRight/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -465,6 +476,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BreathRight/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
