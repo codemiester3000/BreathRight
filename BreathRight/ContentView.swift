@@ -8,13 +8,13 @@ extension Color {
 struct ContentView: View {
     
     @State private var isDragging: Bool = false
+    @State private var isAnimating: Bool = false
+    @State private var completedSides: Int = 0
+    @State private var progress: CGFloat = 0
+    @State private var sliderValue: CGFloat
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
-    
-    
-    @State private var sliderValue: CGFloat
-    
     let minSquareSize: CGFloat = 50
     let maxSquareSize: CGFloat = 250
     
@@ -35,79 +35,124 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Box Breathing")
-                        .font(.custom("Inter-Variable", size: 30))
-                    Text("Configure your settings and press start to begin")
-                        .font(.custom("Inter-Variable", size: 15))
-                        .multilineTextAlignment(.leading)
-                        .padding(.top, 4)
-                }
-                Spacer()
-            }
-            .padding(.top, 50)
-            .padding(.horizontal, 20)
-            
-            Spacer()
-            
-            VStack {
-                ZStack {
-                    Rectangle()
-                        .stroke(Color.robinhoodGreen, lineWidth: 4)
-                        .frame(width: sizeForSquare, height: sizeForSquare)
-                        .animation(isDragging ? .none : .easeInOut(duration: 0.5))
-                    
-                    Text("\(durationInSeconds) sec")
-                        .offset(y: -(sizeForSquare / 2 + 20))
-                    
-                    Text("\(durationInSeconds)")
-                        .offset(y: sizeForSquare / 2 + 20)
-                    
-                    Text("\(durationInSeconds)")
-                        .offset(x: -(sizeForSquare / 2 + 20))
-                    
-                    Text("\(durationInSeconds)")
-                        .offset(x: sizeForSquare / 2 + 20)
-                }
-            }
-            .frame(height: sizeForSquare)
-            .padding(.top, 20)
+        NavigationView {
             
             
-            Spacer()
-            
-            VStack(alignment: .leading) {
+            VStack(spacing: 0) {
                 HStack {
-                    CustomSlider(value: $sliderValue, isDragging: $isDragging)
-                }
-                .padding(.horizontal, 20)
-                .frame(height: 40)
-                
-                HStack {
-                    Button(action: {}) {
-                        Text("Begin Now")
+                    VStack(alignment: .leading) {
+                        Text("Box Breathing")
+                            .font(.custom("Inter-Variable", size: 30))
+                        Text("Configure your settings and press start to begin")
                             .font(.custom("Inter-Variable", size: 15))
-                            .padding()
-                            .background(Color.robinhoodGreen)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .multilineTextAlignment(.leading)
+                            .padding(.top, 4)
                     }
+                    Spacer()
                 }
+                .padding(.top, 50)
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
+                
+                Spacer()
+                
+                // If animation is active, we'll draw the animated square here
+                if isAnimating {
+                    Path { path in
+                        path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
+                        if completedSides >= 1 {
+                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100))
+                        }
+                        if completedSides >= 2 {
+                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare))
+                        }
+                        if completedSides >= 3 {
+                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare))
+                        }
+                        if completedSides == 4 {
+                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
+                        }
+                    }
+                    .trim(from: 0, to: progress)
+                    .stroke(Color.robinhoodGreen, lineWidth: 5)
+                    .onAppear {
+                        animateSquareDrawing()
+                    }
+                } else {
+                    VStack {
+                        ZStack {
+                            Rectangle()
+                                .stroke(Color.robinhoodGreen, lineWidth: 4)
+                                .frame(width: sizeForSquare, height: sizeForSquare)
+                                .animation(isDragging ? .none : .easeInOut(duration: 0.5))
+                            
+                            Text("\(durationInSeconds) sec")
+                                .offset(y: -(sizeForSquare / 2 + 20))
+                            
+                            Text("\(durationInSeconds)")
+                                .offset(y: sizeForSquare / 2 + 20)
+                            
+                            Text("\(durationInSeconds)")
+                                .offset(x: -(sizeForSquare / 2 + 20))
+                            
+                            Text("\(durationInSeconds)")
+                                .offset(x: sizeForSquare / 2 + 20)
+                        }
+                    }
+                    .frame(height: sizeForSquare)
+                    .padding(.top, 20)
+                }
+                
+                
+                Spacer()
+                
+                VStack(alignment: .leading) {
+                    HStack {
+                        CustomSlider(value: $sliderValue, isDragging: $isDragging)
+                    }
+                    .padding(.horizontal, 20)
+                    .frame(height: 40)
+                    
+                    HStack {
+                        Button("Begin Now") {
+                            // When user clicks "Begin Now", we'll start the square drawing animation
+                            isAnimating = true
+                        }
+                        .font(.custom("Inter-Variable", size: 20))
+                        .padding()
+                        .background(Color.robinhoodGreen)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+                }
+                .padding(.bottom, 125)
             }
-            .padding(.bottom, 125)
+            .background(
+                LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
-        .background(
-            LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-        )
     }
     
+    func animateSquareDrawing() {
+        for i in 1...4 {
+            withAnimation(Animation.linear(duration: Double(durationInSeconds)).delay(Double(i - 1) * Double(durationInSeconds))) {
+                progress += 0.25
+                completedSides = i
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(durationInSeconds)) {
+            resetDrawing()
+        }
+    }
     
+    func resetDrawing() {
+        progress = 0
+        completedSides = 0
+        animateSquareDrawing()
+    }
     
     var sizeForSquare: CGFloat {
         minSquareSize + (maxSquareSize - minSquareSize) * sliderValue
