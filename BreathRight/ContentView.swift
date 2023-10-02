@@ -7,16 +7,21 @@ extension Color {
 
 struct ContentView: View {
     
+    @State private var squareAnimationWorkItem: DispatchWorkItem?
     @State private var isDragging: Bool = false
     @State private var isAnimating: Bool = false
     @State private var completedSides: Int = 0
     @State private var progress: CGFloat = 0
     @State private var sliderValue: CGFloat
+    @State private var currentSideElapsedTime: Int = 0
+    @State private var isSliderVisible: Bool = true
+    @State private var isStopButtonVisible: Bool = false
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
     let minSquareSize: CGFloat = 50
     let maxSquareSize: CGFloat = 250
+    let topPadding: CGFloat = 100
     
     var durationInSeconds: Int {
         Int(minDuration + (maxDuration - minDuration) * sliderValue)
@@ -75,8 +80,9 @@ struct ContentView: View {
                     .trim(from: 0, to: progress)
                     .stroke(Color.robinhoodGreen, lineWidth: 5)
                     .onAppear {
-                        animateSquareDrawing()
+                        animateSquareDrawing(sideDuration: durationInSeconds)
                     }
+                    .padding(.top, 60)
                 } else {
                     VStack {
                         ZStack {
@@ -102,29 +108,51 @@ struct ContentView: View {
                     .padding(.top, 20)
                 }
                 
-                
                 Spacer()
                 
                 VStack(alignment: .leading) {
-                    HStack {
-                        CustomSlider(value: $sliderValue, isDragging: $isDragging)
-                    }
-                    .padding(.horizontal, 20)
-                    .frame(height: 40)
-                    
-                    HStack {
-                        Button("Begin Now") {
-                            // When user clicks "Begin Now", we'll start the square drawing animation
-                            isAnimating = true
+                    if isAnimating {
+                        HStack {
+                            Button("Stop") {
+                                squareAnimationWorkItem?.cancel()
+                                isAnimating = false // stop the animation
+                                progress = 0
+                                completedSides = 0
+                                isStopButtonVisible = false
+                                isSliderVisible = true
+                            }
+                            .font(.custom("Inter-Variable", size: 20))
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            
+                            Spacer()
                         }
-                        .font(.custom("Inter-Variable", size: 20))
-                        .padding()
-                        .background(Color.robinhoodGreen)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                    } else {
+                        HStack {
+                            CustomSlider(value: $sliderValue, isDragging: $isDragging)
+                        }
+                        .padding(.horizontal, 20)
+                        .frame(height: 40)
+                        
+                        HStack {
+                            Button("Begin Now") {
+                                // When user clicks "Begin Now", we'll start the square drawing animation
+                                isAnimating = true
+                            }
+                            .font(.custom("Inter-Variable", size: 20))
+                            .padding()
+                            .background(Color.robinhoodGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
+                    
                 }
                 .padding(.bottom, 125)
             }
@@ -135,24 +163,29 @@ struct ContentView: View {
         }
     }
     
-    func animateSquareDrawing() {
+    func animateSquareDrawing(sideDuration: Int) {
+        print("animateSquareDrawing ", progress, completedSides, sideDuration)
+        
         for i in 1...4 {
-            withAnimation(Animation.linear(duration: Double(durationInSeconds)).delay(Double(i - 1) * Double(durationInSeconds))) {
+            withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
                 completedSides = i
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(durationInSeconds)) {
-            resetDrawing()
+        squareAnimationWorkItem = DispatchWorkItem {
+            if self.isAnimating {
+                self.progress = 0
+                self.completedSides = 0
+                self.animateSquareDrawing(sideDuration: sideDuration)
+            }
         }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration), execute: squareAnimationWorkItem!)
+        
+        //squareAnimationWorkItem = workItem
     }
     
-    func resetDrawing() {
-        progress = 0
-        completedSides = 0
-        animateSquareDrawing()
-    }
     
     var sizeForSquare: CGFloat {
         minSquareSize + (maxSquareSize - minSquareSize) * sliderValue
