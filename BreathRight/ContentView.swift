@@ -85,22 +85,26 @@ struct ContentView: View {
                         }
                         .padding(.top, 60)
                         
-                        switch completedSides {
-                        case 1:
-                            Text("\(4)")
-                                .position(x: UIScreen.main.bounds.width/2 , y: 100 + 60)
-                        case 2:
-                            Text("\(4)")
-                                .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare / 2 + 60)
-                        case 3:
-                            Text("\(4)")
-                                .position(x: UIScreen.main.bounds.width/2, y: 100 + sizeForSquare + 60)
-                        case 4:
-                            Text("\(4)")
-                                .position(x: UIScreen.main.bounds.width/2, y: 100 + 60)
-                        default:
-                            EmptyView()
+                        Group {
+                            switch completedSides {
+                            case 1:
+                                Text("\(4)")
+                                    .position(x: UIScreen.main.bounds.width/2 , y: 100 + 60)
+                            case 2:
+                                Text("\(4)")
+                                    .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare / 2 + 60)
+                            case 3:
+                                Text("\(4)")
+                                    .position(x: UIScreen.main.bounds.width/2, y: 100 + sizeForSquare + 60)
+                            case 4:
+                                Text("\(4)")
+                                    .position(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare/2 + 60)
+                            default:
+                                EmptyView()
+                            }
                         }
+                        .animation(nil)
+                        
                     }
                     
                 }
