@@ -7,6 +7,7 @@ extension Color {
 
 struct ContentView: View {
     
+    @State private var isRectangleVisible: Bool = false
     @State private var squareAnimationWorkItem: DispatchWorkItem?
     @State private var isDragging: Bool = false
     @State private var isAnimating: Bool = false
@@ -41,8 +42,6 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            
-            
             VStack(spacing: 0) {
                 HStack {
                     VStack(alignment: .leading) {
@@ -62,28 +61,51 @@ struct ContentView: View {
                 
                 // If animation is active, we'll draw the animated square here
                 if isAnimating {
-                    Path { path in
-                        path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
-                        if completedSides >= 1 {
-                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100))
+                    
+                    ZStack {
+                        Path { path in
+                            path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
+                            if completedSides >= 1 {
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100))
+                            }
+                            if completedSides >= 2 {
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare))
+                            }
+                            if completedSides >= 3 {
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare))
+                            }
+                            if completedSides == 4 {
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
+                            }
                         }
-                        if completedSides >= 2 {
-                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare))
+                        .trim(from: 0, to: progress)
+                        .stroke(Color.robinhoodGreen, lineWidth: 5)
+                        .onAppear {
+                            animateSquareDrawing(sideDuration: durationInSeconds)
                         }
-                        if completedSides >= 3 {
-                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare))
-                        }
-                        if completedSides == 4 {
-                            path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
+                        .padding(.top, 60)
+                        
+                        switch completedSides {
+                        case 1:
+                            Text("\(4)")
+                                .position(x: UIScreen.main.bounds.width/2 , y: 100 + 60)
+                        case 2:
+                            Text("\(4)")
+                                .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare / 2 + 60)
+                        case 3:
+                            Text("\(4)")
+                                .position(x: UIScreen.main.bounds.width/2, y: 100 + sizeForSquare + 60)
+                        case 4:
+                            Text("\(4)")
+                                .position(x: UIScreen.main.bounds.width/2, y: 100 + 60)
+                        default:
+                            EmptyView()
                         }
                     }
-                    .trim(from: 0, to: progress)
-                    .stroke(Color.robinhoodGreen, lineWidth: 5)
-                    .onAppear {
-                        animateSquareDrawing(sideDuration: durationInSeconds)
-                    }
-                    .padding(.top, 60)
-                } else {
+                    
+                }
+                
+                if isRectangleVisible && !isAnimating {
                     VStack {
                         ZStack {
                             Rectangle()
@@ -161,11 +183,16 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.all)
             )
         }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                withAnimation {
+                    isRectangleVisible = true
+                }
+            }
+        }
     }
     
     func animateSquareDrawing(sideDuration: Int) {
-        print("animateSquareDrawing ", progress, completedSides, sideDuration)
-        
         for i in 1...4 {
             withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
@@ -182,8 +209,6 @@ struct ContentView: View {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration), execute: squareAnimationWorkItem!)
-        
-        //squareAnimationWorkItem = workItem
     }
     
     
@@ -227,12 +252,5 @@ struct CustomSlider: View {
             }
         }
         .frame(width: sliderWidth)
-    }
-}
-
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
