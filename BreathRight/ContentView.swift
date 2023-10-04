@@ -22,6 +22,7 @@ struct ContentView: View {
     @State var viewID = 0
     @State private var elapsedTime: Int = 0
     @State private var elapsedTimeTimer: Timer?
+    @State private var sideToShow: Int = 0
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
@@ -107,25 +108,25 @@ struct ContentView: View {
                                 .font(.custom("Inter-Variable", size: 18))
                                 .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 20)
                                 .id(viewID)
-                                .opacity(completedSides == 1 ? 1 : 0)
+                                .opacity(sideToShow == 1 ? 1 : 0)
                             
                             Text("\(currentCountDown)")
                                 .font(.custom("Inter-Variable", size: 18))
                                 .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 20, y: -animationTopPadding + sizeForSquare / 2)
                                 .id(viewID + 1)
-                                .opacity(completedSides == 2 ? 1 : 0)  // Show if completedSides is 2, else hide
+                                .opacity(sideToShow == 2 ? 1 : 0)  // Show if completedSides is 2, else hide
                             
                             Text("\(currentCountDown)")
                                 .font(.custom("Inter-Variable", size: 18))
                                 .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 20)
                                 .id(viewID + 2)
-                                .opacity(completedSides == 3 ? 1 : 0)  // Show if completedSides is 3, else hide
+                                .opacity(sideToShow == 3 ? 1 : 0)  // Show if completedSides is 3, else hide
                             
                             Text("\(currentCountDown)")
                                 .font(.custom("Inter-Variable", size: 18))
                                 .position(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 20, y: -animationTopPadding + sizeForSquare/2)
                                 .id(viewID + 3)
-                                .opacity(completedSides == 4 ? 1 : 0)
+                                .opacity(sideToShow == 4 ? 1 : 0)
                         }
                     }
                     .frame(height: sizeForSquare)
@@ -180,7 +181,7 @@ struct ContentView: View {
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
-                            .background(Color.red)
+                            .background(Color.gray)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                             
@@ -241,7 +242,7 @@ struct ContentView: View {
             withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
                 self.completedSides = i
-                print("completed side")
+                print("completed side: ", i)
             }
         }
         
@@ -249,23 +250,31 @@ struct ContentView: View {
             if self.isAnimating {
                 self.progress = 0
                 self.completedSides = 0
+                self.sideToShow = 0
                 self.animateSquareDrawing(sideDuration: sideDuration)
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration), execute: squareAnimationWorkItem!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration) - 0.25, execute: squareAnimationWorkItem!)
     }
     
     func startCountdownTimer() {
         currentCountDown = durationInSeconds
         timer?.invalidate()
         
+        self.sideToShow = 1
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             print(currentCountDown)
+   
             if self.currentCountDown > 1 {
                 self.currentCountDown -= 1
             } else {
                 currentCountDown = durationInSeconds
+                
+                self.sideToShow += 1
+                
+                print("owen here: ", sideToShow)
             }
         }
     }
