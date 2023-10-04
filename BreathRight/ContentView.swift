@@ -7,6 +7,8 @@ extension Color {
 
 struct ContentView: View {
     
+    @State private var timer: Timer?
+    @State private var currentCountDown: Int = 4
     @State private var isRectangleVisible: Bool = false
     @State private var squareAnimationWorkItem: DispatchWorkItem?
     @State private var isDragging: Bool = false
@@ -17,12 +19,16 @@ struct ContentView: View {
     @State private var currentSideElapsedTime: Int = 0
     @State private var isSliderVisible: Bool = true
     @State private var isStopButtonVisible: Bool = false
+    @State var viewID = 0
+    @State private var elapsedTime: Int = 0
+    @State private var elapsedTimeTimer: Timer?
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
-    let minSquareSize: CGFloat = 50
-    let maxSquareSize: CGFloat = 250
+    let minSquareSize: CGFloat = 200
+    let maxSquareSize: CGFloat = 280
     let topPadding: CGFloat = 100
+    let animationTopPadding: CGFloat = 20
     
     var durationInSeconds: Int {
         Int(minDuration + (maxDuration - minDuration) * sliderValue)
@@ -44,14 +50,27 @@ struct ContentView: View {
         NavigationView {
             VStack(spacing: 0) {
                 HStack {
-                    VStack(alignment: .leading) {
-                        Text("Box Breathing")
-                            .font(.custom("Inter-Variable", size: 30))
-                        Text("Configure your settings and press start to begin")
-                            .font(.custom("Inter-Variable", size: 15))
-                            .multilineTextAlignment(.leading)
-                            .padding(.top, 4)
+                    
+                    if isAnimating {
+                        VStack(alignment: .leading)  {
+                            Text("Elapsed Time")
+                                .font(.custom("Inter-Variable", size: 30))
+                            Text(formattedTime(for: elapsedTime))
+                                .font(.custom("Inter-Variable", size: 15))
+                                .padding(.top, 4)
+                        }
+                    } else {
+                        VStack(alignment: .leading) {
+                            Text("Box Breathing")
+                                .font(.custom("Inter-Variable", size: 30))
+                            Text("Configure your settings and press start to begin")
+                                .font(.custom("Inter-Variable", size: 15))
+                                .multilineTextAlignment(.leading)
+                                .padding(.top, 4)
+                        }
                     }
+                    
+                    
                     Spacer()
                 }
                 .padding(.top, 50)
@@ -61,51 +80,56 @@ struct ContentView: View {
                 
                 // If animation is active, we'll draw the animated square here
                 if isAnimating {
-                    
-                    ZStack {
-                        Path { path in
-                            path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
-                            if completedSides >= 1 {
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100))
+                    VStack {
+                        ZStack {
+                            Path { path in
+                                path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding))
+                                if completedSides >= 1 {
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding))
+                                }
+                                if completedSides >= 2 {
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare))
+                                }
+                                if completedSides >= 3 {
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + sizeForSquare))
+                                }
+                                if completedSides == 4 {
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding))
+                                }
                             }
-                            if completedSides >= 2 {
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare))
+                            .trim(from: 0, to: progress)
+                            .stroke(Color.robinhoodGreen, lineWidth: 5)
+                            .onAppear {
+                                animateSquareDrawing(sideDuration: durationInSeconds)
                             }
-                            if completedSides >= 3 {
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare))
-                            }
-                            if completedSides == 4 {
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100))
-                            }
+                            
+                            Text("\(currentCountDown)")
+                                .font(.custom("Inter-Variable", size: 18))
+                                .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 20)
+                                .id(viewID)
+                                .opacity(completedSides == 1 ? 1 : 0)
+                            
+                            Text("\(currentCountDown)")
+                                .font(.custom("Inter-Variable", size: 18))
+                                .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 20, y: -animationTopPadding + sizeForSquare / 2)
+                                .id(viewID + 1)
+                                .opacity(completedSides == 2 ? 1 : 0)  // Show if completedSides is 2, else hide
+                            
+                            Text("\(currentCountDown)")
+                                .font(.custom("Inter-Variable", size: 18))
+                                .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 20)
+                                .id(viewID + 2)
+                                .opacity(completedSides == 3 ? 1 : 0)  // Show if completedSides is 3, else hide
+                            
+                            Text("\(currentCountDown)")
+                                .font(.custom("Inter-Variable", size: 18))
+                                .position(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 20, y: -animationTopPadding + sizeForSquare/2)
+                                .id(viewID + 3)
+                                .opacity(completedSides == 4 ? 1 : 0)
                         }
-                        .trim(from: 0, to: progress)
-                        .stroke(Color.robinhoodGreen, lineWidth: 5)
-                        .onAppear {
-                            animateSquareDrawing(sideDuration: durationInSeconds)
-                        }
-                        .padding(.top, 60)
-                        
-                        Group {
-                            switch completedSides {
-                            case 1:
-                                Text("\(4)")
-                                    .position(x: UIScreen.main.bounds.width/2 , y: 100 + 60)
-                            case 2:
-                                Text("\(4)")
-                                    .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: 100 + sizeForSquare / 2 + 60)
-                            case 3:
-                                Text("\(4)")
-                                    .position(x: UIScreen.main.bounds.width/2, y: 100 + sizeForSquare + 60)
-                            case 4:
-                                Text("\(4)")
-                                    .position(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: 100 + sizeForSquare/2 + 60)
-                            default:
-                                EmptyView()
-                            }
-                        }
-                        .animation(nil)
-                        
                     }
+                    .frame(height: sizeForSquare)
+                    .padding(.top, animationTopPadding)
                     
                 }
                 
@@ -118,15 +142,19 @@ struct ContentView: View {
                                 .animation(isDragging ? .none : .easeInOut(duration: 0.5))
                             
                             Text("\(durationInSeconds) sec")
+                                .font(.custom("Inter-Variable", size: 18))
                                 .offset(y: -(sizeForSquare / 2 + 20))
                             
                             Text("\(durationInSeconds)")
+                                .font(.custom("Inter-Variable", size: 18))
                                 .offset(y: sizeForSquare / 2 + 20)
                             
                             Text("\(durationInSeconds)")
+                                .font(.custom("Inter-Variable", size: 18))
                                 .offset(x: -(sizeForSquare / 2 + 20))
                             
                             Text("\(durationInSeconds)")
+                                .font(.custom("Inter-Variable", size: 18))
                                 .offset(x: sizeForSquare / 2 + 20)
                         }
                     }
@@ -146,6 +174,9 @@ struct ContentView: View {
                                 completedSides = 0
                                 isStopButtonVisible = false
                                 isSliderVisible = true
+                                
+                                self.elapsedTimeTimer?.invalidate()
+                                timer?.invalidate()
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
@@ -166,7 +197,14 @@ struct ContentView: View {
                         
                         HStack {
                             Button("Begin Now") {
-                                // When user clicks "Begin Now", we'll start the square drawing animation
+                                self.elapsedTime = 0
+                                
+                                // Start the elapsed time timer
+                                self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
+                                self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                                    self.elapsedTime += 1
+                                }
+                                
                                 isAnimating = true
                             }
                             .font(.custom("Inter-Variable", size: 20))
@@ -197,10 +235,13 @@ struct ContentView: View {
     }
     
     func animateSquareDrawing(sideDuration: Int) {
+        startCountdownTimer()
+        
         for i in 1...4 {
             withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
-                completedSides = i
+                self.completedSides = i
+                print("completed side")
             }
         }
         
@@ -215,11 +256,30 @@ struct ContentView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration), execute: squareAnimationWorkItem!)
     }
     
+    func startCountdownTimer() {
+        currentCountDown = durationInSeconds
+        timer?.invalidate()
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            print(currentCountDown)
+            if self.currentCountDown > 1 {
+                self.currentCountDown -= 1
+            } else {
+                currentCountDown = durationInSeconds
+            }
+        }
+    }
+    
+    func formattedTime(for seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%02d min %02d sec", minutes, remainingSeconds)
+    }
+    
     
     var sizeForSquare: CGFloat {
         minSquareSize + (maxSquareSize - minSquareSize) * sliderValue
     }
-    
 }
 
 struct CustomSlider: View {
