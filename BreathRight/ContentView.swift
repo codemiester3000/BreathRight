@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 extension Color {
     static let robinhoodGreen = Color(#colorLiteral(red: 0.1803921569, green: 0.8, blue: 0.4431372549, alpha: 1))
@@ -19,10 +20,12 @@ struct ContentView: View {
     @State private var currentSideElapsedTime: Int = 0
     @State private var isSliderVisible: Bool = true
     @State private var isStopButtonVisible: Bool = false
-    @State var viewID = 0
     @State private var elapsedTime: Int = 0
     @State private var elapsedTimeTimer: Timer?
     @State private var sideToShow: Int = 0
+    @State private var audioPlayer: AVAudioPlayer?
+    @State private var breathInstruction: String = "Inhale"
+    @State private var showBreathInstruction = false
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
@@ -38,13 +41,12 @@ struct ContentView: View {
     init() {
         let initialValue = (4 - minDuration) / (maxDuration - minDuration)
         _sliderValue = State(initialValue: initialValue)
-        
-//        for family: String in UIFont.familyNames {
-//            print("\(family)")
-//            for names: String in UIFont.fontNames(forFamilyName: family) {
-//                print("== \(names)")
-//            }
-//        }
+        //        for family: String in UIFont.familyNames {
+        //            print("\(family)")
+        //            for names: String in UIFont.fontNames(forFamilyName: family) {
+        //                print("== \(names)")
+        //            }
+        //        }
     }
     
     var body: some View {
@@ -53,11 +55,15 @@ struct ContentView: View {
                 HStack {
                     if isAnimating {
                         VStack(alignment: .leading)  {
-                            Text("Elapsed Time")
-                                .font(.custom("Inter-Variable", size: 30))
+//                            Text("Elapsed Time")
+//                                .font(.custom("Inter-Variable", size: 30))
+                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
+                                .padding(.top, 4)
                             Text(formattedTime(for: elapsedTime))
                                 .font(.custom("Inter-Variable", size: 15))
                                 .padding(.top, 4)
+//                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction)
+//                                .padding(.top, 4)
                         }
                     } else {
                         VStack(alignment: .leading) {
@@ -85,22 +91,22 @@ struct ContentView: View {
                                 let rounding: CGFloat = 6
                                 let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
                                 path.move(to: startingPoint)
-
+                                
                                 if completedSides >= 1 {
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
                                 }
-
+                                
                                 if completedSides >= 2 {
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
                                 }
-
+                                
                                 if completedSides >= 3 {
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
                                 }
-
+                                
                                 if completedSides == 4 {
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
@@ -112,7 +118,7 @@ struct ContentView: View {
                             .onAppear {
                                 animateSquareDrawing(sideDuration: durationInSeconds)
                             }
-
+                            
                             
                             animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
                             
@@ -121,11 +127,13 @@ struct ContentView: View {
                             animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
                             
                             animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
+                            
+                            
+                            // TODO: MOVE THIS INTO SEPARATE VIEW AND HAVE IT ONLY SHOW FOR 1 SECOND.
                         }
                     }
                     .frame(height: sizeForSquare)
                     .padding(.top, animationTopPadding)
-                    
                 }
                 
                 if isRectangleVisible && !isAnimating {
@@ -230,22 +238,20 @@ struct ContentView: View {
         }
     }
     
+    func playAudio(named fileName: String) {
+        if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
+                audioPlayer?.play()
+            } catch {
+                print("Error playing the audio")
+            }
+        }
+    }
+    
+    
     @ViewBuilder
     private func animatedText(side: Int, x: CGFloat, y: CGFloat) -> some View {
-//        if currentCountDown == durationInSeconds {
-//            Text("\(currentCountDown)")
-//                .font(.custom("Inter-Variable", size: 24))
-//                .position(x: x, y: y)
-//                .opacity(sideToShow == side ? 1 : 0)
-//                .transition(.opacity)
-//                .animation(.easeInOut(duration: 0.5))
-//        } else {
-//            Text("\(currentCountDown)")
-//                .font(.custom("Inter-Variable", size: 24))
-//                .position(x: x, y: y)
-//                .opacity(sideToShow == side ? 1 : 0)
-//        }
-        
         Text("\(currentCountDown)")
             .font(.custom("Inter-Variable", size: 24))
             .position(x: x, y: y)
@@ -253,7 +259,7 @@ struct ContentView: View {
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.2))
     }
-
+    
     
     func animateSquareDrawing(sideDuration: Int) {
         startCountdownTimer()
@@ -262,7 +268,6 @@ struct ContentView: View {
             withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
                 self.completedSides = i
-                
             }
         }
         
@@ -271,6 +276,7 @@ struct ContentView: View {
                 self.progress = 0
                 self.completedSides = 0
                 self.sideToShow = 0
+                self.breathInstruction = "Inhale"
                 self.animateSquareDrawing(sideDuration: sideDuration)
             }
         }
@@ -282,19 +288,41 @@ struct ContentView: View {
         currentCountDown = durationInSeconds
         timer?.invalidate()
         
+        self.showBreathInstruction = true
+        
+        withAnimation(Animation.linear) {
+            breathInstruction = "Inhale"
+        }
+        
+        playAudio(named: "Inhale")
         self.sideToShow = 1
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            
-            print("animatedText: ", currentCountDown, durationInSeconds)
-            
             if self.currentCountDown > 1 {
                 self.currentCountDown -= 1
             } else {
+                // Display text to the user indicating the current instruction (inhale, hold, exhale)
+                self.showBreathInstruction = true
                 currentCountDown = durationInSeconds
-                
                 self.sideToShow += 1
                 
+                if sideToShow % 4 == 2 || sideToShow % 4 == 0 {
+                    playAudio(named: "Hold")
+                    
+                    withAnimation(Animation.linear) {
+                        breathInstruction = "Hold"
+                    }
+                    
+                }
+                
+                if sideToShow % 4 == 3 {
+                    playAudio(named: "Exhale")
+                    
+                    withAnimation(Animation.linear) {
+                        breathInstruction = "Exhale"
+                    }
+                    //breathInstruction = "Exhale"
+                }
             }
         }
     }
@@ -311,12 +339,27 @@ struct ContentView: View {
     }
 }
 
+struct BreathView: View {
+    @Binding var showText: Bool
+    @Binding var instruction: String
+    let duration: Double
+    // let breathInstruction: String = "Inhale" // or whatever instruction you want
+    
+    var body: some View {
+        if showText {
+            Text("\(instruction)")
+                .font(.custom("Inter-Variable", size: 30))
+                .transition(.opacity)
+        }
+    }
+}
+
 struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
     let trackColor = Color.gray.opacity(0.2)
     let thumbColor = Color.robinhoodGreen
-    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 40
+    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 60
     let thumbSize: CGFloat = 30
     
     var body: some View {

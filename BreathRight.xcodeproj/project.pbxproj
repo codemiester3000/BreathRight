@@ -22,6 +22,9 @@
 		C5B4181A2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
 		C5B4181B2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
 		C5B4181C2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
+		C5B418242ACEF163005C7E45 /* Hold.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418232ACEF163005C7E45 /* Hold.mp3 */; };
+		C5B418262ACEF1BE005C7E45 /* Inhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */; };
+		C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +61,9 @@
 		C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-VariableFont_slnt,wght.ttf"; path = "../../../Downloads/Inter/Inter-VariableFont_slnt,wght.ttf"; sourceTree = "<group>"; };
 		C5B418182AC88414005C7E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C5B418192AC8FF49005C7E45 /* BreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingView.swift; sourceTree = "<group>"; };
+		C5B418232ACEF163005C7E45 /* Hold.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Hold.mp3; sourceTree = "<group>"; };
+		C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Inhale.mp3; sourceTree = "<group>"; };
+		C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Exhale.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +120,10 @@
 				C5B417EB2AC8766B005C7E45 /* ContentView.swift */,
 				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
+				C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */,
+				C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */,
 				C5B417EF2AC8766E005C7E45 /* BreathRight.entitlements */,
+				C5B418232ACEF163005C7E45 /* Hold.mp3 */,
 				C5B417E82AC8766B005C7E45 /* BreathRight.xcdatamodeld */,
 				C5B417F02AC8766E005C7E45 /* Preview Content */,
 				C5B418192AC8FF49005C7E45 /* BreathingView.swift */,
@@ -251,7 +260,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5B418262ACEF1BE005C7E45 /* Inhale.mp3 in Resources */,
 				C5B417F22AC8766E005C7E45 /* Preview Assets.xcassets in Resources */,
+				C5B418242ACEF163005C7E45 /* Hold.mp3 in Resources */,
+				C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */,
 				C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 				C5B417EE2AC8766E005C7E45 /* Assets.xcassets in Resources */,
 			);
