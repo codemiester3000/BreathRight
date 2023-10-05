@@ -55,15 +55,11 @@ struct ContentView: View {
                 HStack {
                     if isAnimating {
                         VStack(alignment: .leading)  {
-//                            Text("Elapsed Time")
-//                                .font(.custom("Inter-Variable", size: 30))
                             BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
                                 .padding(.top, 4)
                             Text(formattedTime(for: elapsedTime))
                                 .font(.custom("Inter-Variable", size: 15))
                                 .padding(.top, 4)
-//                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction)
-//                                .padding(.top, 4)
                         }
                     } else {
                         VStack(alignment: .leading) {
@@ -128,8 +124,7 @@ struct ContentView: View {
                             
                             animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
                             
-                            
-                            // TODO: MOVE THIS INTO SEPARATE VIEW AND HAVE IT ONLY SHOW FOR 1 SECOND.
+
                         }
                     }
                     .frame(height: sizeForSquare)
@@ -199,6 +194,9 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
+                        CustomToggle()
+                            .padding(20)
+                        
                         HStack {
                             Button("Begin Now") {
                                 self.elapsedTime = 0
@@ -208,7 +206,6 @@ struct ContentView: View {
                                 self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
                                     self.elapsedTime += 1
                                 }
-                                
                                 isAnimating = true
                             }
                             .font(.custom("Inter-Variable", size: 20))
@@ -222,7 +219,7 @@ struct ContentView: View {
                     }
                     
                 }
-                .padding(.bottom, 125)
+                .padding(.bottom, 75)
             }
             .background(
                 LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
@@ -301,7 +298,8 @@ struct ContentView: View {
             if self.currentCountDown > 1 {
                 self.currentCountDown -= 1
             } else {
-                // Display text to the user indicating the current instruction (inhale, hold, exhale)
+                // Display text to the user indicating the current
+                // instruction (inhale, hold, exhale)
                 self.showBreathInstruction = true
                 currentCountDown = durationInSeconds
                 self.sideToShow += 1
@@ -321,7 +319,6 @@ struct ContentView: View {
                     withAnimation(Animation.linear) {
                         breathInstruction = "Exhale"
                     }
-                    //breathInstruction = "Exhale"
                 }
             }
         }
@@ -343,13 +340,46 @@ struct BreathView: View {
     @Binding var showText: Bool
     @Binding var instruction: String
     let duration: Double
-    // let breathInstruction: String = "Inhale" // or whatever instruction you want
     
     var body: some View {
         if showText {
             Text("\(instruction)")
                 .font(.custom("Inter-Variable", size: 30))
                 .transition(.opacity)
+        }
+    }
+}
+
+struct CustomToggle: View {
+    @State private var isOn: Bool = true
+    
+    var body: some View {
+        VStack {
+            HStack(spacing: 10) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 70, height: 27)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 0)
+                        )
+                    
+                    Circle()
+                        .fill(isOn ? Color.robinhoodGreen :  Color.gray.opacity(0.2))
+                        .frame(width: 35, height: 35)
+                        .offset(x: isOn ? 20 : -20)
+                        .onTapGesture {
+                            withAnimation {
+                                isOn.toggle()
+                            }
+                        }
+                }
+                
+                Text(isOn ? "Voice A" : "Voice B")
+                    .font(.custom("Inter-Variable", size: 15))
+                    .multilineTextAlignment(.leading)
+            }
         }
     }
 }
