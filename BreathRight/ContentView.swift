@@ -114,13 +114,13 @@ struct ContentView: View {
                             }
 
                             
-                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 24)
+                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
                             
-                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 24, y: -animationTopPadding + sizeForSquare / 2)
+                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
                             
-                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 24)
+                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
                             
-                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 24, y: -animationTopPadding + sizeForSquare/2)
+                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
                         }
                     }
                     .frame(height: sizeForSquare)
