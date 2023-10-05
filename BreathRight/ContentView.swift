@@ -39,19 +39,18 @@ struct ContentView: View {
         let initialValue = (4 - minDuration) / (maxDuration - minDuration)
         _sliderValue = State(initialValue: initialValue)
         
-        for family: String in UIFont.familyNames {
-            print("\(family)")
-            for names: String in UIFont.fontNames(forFamilyName: family) {
-                print("== \(names)")
-            }
-        }
+//        for family: String in UIFont.familyNames {
+//            print("\(family)")
+//            for names: String in UIFont.fontNames(forFamilyName: family) {
+//                print("== \(names)")
+//            }
+//        }
     }
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 HStack {
-                    
                     if isAnimating {
                         VStack(alignment: .leading)  {
                             Text("Elapsed Time")
@@ -69,9 +68,8 @@ struct ContentView: View {
                                 .multilineTextAlignment(.leading)
                                 .padding(.top, 4)
                         }
+                        
                     }
-                    
-                    
                     Spacer()
                 }
                 .padding(.top, 50)
@@ -84,18 +82,29 @@ struct ContentView: View {
                     VStack {
                         ZStack {
                             Path { path in
-                                path.move(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding))
+                                let rounding: CGFloat = 6
+                                let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
+                                path.move(to: startingPoint)
+
                                 if completedSides >= 1 {
-                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding))
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
+                                    path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
                                 }
+
                                 if completedSides >= 2 {
-                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare))
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
+                                    path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
                                 }
+
                                 if completedSides >= 3 {
-                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + sizeForSquare))
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
+                                    path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
                                 }
+
                                 if completedSides == 4 {
-                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding))
+                                    path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
+                                    path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+                                    path.addLine(to: startingPoint)
                                 }
                             }
                             .trim(from: 0, to: progress)
@@ -103,30 +112,15 @@ struct ContentView: View {
                             .onAppear {
                                 animateSquareDrawing(sideDuration: durationInSeconds)
                             }
+
                             
-                            Text("\(currentCountDown)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 20)
-                                .id(viewID)
-                                .opacity(sideToShow == 1 ? 1 : 0)
+                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 24)
                             
-                            Text("\(currentCountDown)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .position(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 20, y: -animationTopPadding + sizeForSquare / 2)
-                                .id(viewID + 1)
-                                .opacity(sideToShow == 2 ? 1 : 0)  // Show if completedSides is 2, else hide
+                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 24, y: -animationTopPadding + sizeForSquare / 2)
                             
-                            Text("\(currentCountDown)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .position(x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 20)
-                                .id(viewID + 2)
-                                .opacity(sideToShow == 3 ? 1 : 0)  // Show if completedSides is 3, else hide
+                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 24)
                             
-                            Text("\(currentCountDown)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .position(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 20, y: -animationTopPadding + sizeForSquare/2)
-                                .id(viewID + 3)
-                                .opacity(sideToShow == 4 ? 1 : 0)
+                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 24, y: -animationTopPadding + sizeForSquare/2)
                         }
                     }
                     .frame(height: sizeForSquare)
@@ -138,8 +132,9 @@ struct ContentView: View {
                     VStack {
                         ZStack {
                             Rectangle()
-                                .stroke(Color.robinhoodGreen, lineWidth: 4)
+                                .stroke(Color.robinhoodGreen, lineWidth: 7)
                                 .frame(width: sizeForSquare, height: sizeForSquare)
+                                .cornerRadius(6)
                                 .animation(isDragging ? .none : .easeInOut(duration: 0.5))
                             
                             Text("\(durationInSeconds) sec")
@@ -235,6 +230,31 @@ struct ContentView: View {
         }
     }
     
+    @ViewBuilder
+    private func animatedText(side: Int, x: CGFloat, y: CGFloat) -> some View {
+//        if currentCountDown == durationInSeconds {
+//            Text("\(currentCountDown)")
+//                .font(.custom("Inter-Variable", size: 24))
+//                .position(x: x, y: y)
+//                .opacity(sideToShow == side ? 1 : 0)
+//                .transition(.opacity)
+//                .animation(.easeInOut(duration: 0.5))
+//        } else {
+//            Text("\(currentCountDown)")
+//                .font(.custom("Inter-Variable", size: 24))
+//                .position(x: x, y: y)
+//                .opacity(sideToShow == side ? 1 : 0)
+//        }
+        
+        Text("\(currentCountDown)")
+            .font(.custom("Inter-Variable", size: 24))
+            .position(x: x, y: y)
+            .opacity(sideToShow == side ? 1 : 0)
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.2))
+    }
+
+    
     func animateSquareDrawing(sideDuration: Int) {
         startCountdownTimer()
         
@@ -242,7 +262,7 @@ struct ContentView: View {
             withAnimation(Animation.linear(duration: Double(sideDuration)).delay(Double(i - 1) * Double(sideDuration))) {
                 progress += 0.25
                 self.completedSides = i
-                print("completed side: ", i)
+                
             }
         }
         
@@ -255,7 +275,7 @@ struct ContentView: View {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration) - 0.25, execute: squareAnimationWorkItem!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4 * Double(sideDuration) - 0.26, execute: squareAnimationWorkItem!)
     }
     
     func startCountdownTimer() {
@@ -265,8 +285,9 @@ struct ContentView: View {
         self.sideToShow = 1
         
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            print(currentCountDown)
-   
+            
+            print("animatedText: ", currentCountDown, durationInSeconds)
+            
             if self.currentCountDown > 1 {
                 self.currentCountDown -= 1
             } else {
@@ -274,7 +295,6 @@ struct ContentView: View {
                 
                 self.sideToShow += 1
                 
-                print("owen here: ", sideToShow)
             }
         }
     }
