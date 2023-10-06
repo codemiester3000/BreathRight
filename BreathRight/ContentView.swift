@@ -194,8 +194,8 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
-                        CustomToggle()
-                            .padding(20)
+//                        CustomToggle()
+//                            .padding(20)
                         
                         HStack {
                             Button("Begin Now") {
