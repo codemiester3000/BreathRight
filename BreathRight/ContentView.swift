@@ -59,7 +59,12 @@ struct ContentView: View {
                                 .padding(.top, 4)
                             Text(formattedTime(for: elapsedTime))
                                 .font(.custom("Inter-Variable", size: 15))
-                                .padding(.top, 4)
+                                .padding(8)  // Small padding around the text
+                                .background(
+                                    Color.gray.opacity(0.2)
+                                        .cornerRadius(8)
+                                )
+
                         }
                     } else {
                         VStack(alignment: .leading) {
@@ -179,23 +184,21 @@ struct ContentView: View {
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
-                            .background(Color.gray)
+                            .background(Color.gray.opacity(0.8))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                             
                             Spacer()
                         }
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 30)
                         .padding(.top, 10)
                     } else {
                         HStack {
                             CustomSlider(value: $sliderValue, isDragging: $isDragging)
                         }
+                        .padding(.bottom, 50)
                         .padding(.horizontal, 20)
                         .frame(height: 40)
-                        
-//                        CustomToggle()
-//                            .padding(20)
                         
                         HStack {
                             Button("Begin Now") {
@@ -210,7 +213,7 @@ struct ContentView: View {
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
-                            .background(Color.robinhoodGreen)
+                            .background(Color.gray.opacity(0.8))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                         }
@@ -227,7 +230,7 @@ struct ContentView: View {
             )
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
                 withAnimation {
                     isRectangleVisible = true
                 }
