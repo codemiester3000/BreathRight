@@ -70,7 +70,7 @@ struct ContentView: View {
                         VStack(alignment: .leading) {
                             Text("Box Breathing")
                                 .font(.custom("Inter-Variable", size: 30))
-                            Text("Configure your settings and press start to begin")
+                            Text("Configure your settings")
                                 .font(.custom("Inter-Variable", size: 15))
                                 .multilineTextAlignment(.leading)
                                 .padding(.top, 4)
@@ -201,7 +201,7 @@ struct ContentView: View {
                         .frame(height: 40)
                         
                         HStack {
-                            Button("Begin Now") {
+                            Button("Begin now") {
                                 self.elapsedTime = 0
                                 
                                 // Start the elapsed time timer
