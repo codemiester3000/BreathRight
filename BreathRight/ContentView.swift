@@ -98,27 +98,27 @@ struct ContentView: View {
                                             .fontWeight(.bold)
                                         
                                         VStack(alignment: .leading, spacing: 10) {
-                                            HStack(spacing: 5) {
+                                            HStack(spacing: 15) {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(Color.green)
                                                 Text("Reduces stress and anxiety.")
                                             }
-                                            HStack(spacing: 5) {
+                                            HStack(spacing: 15) {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(Color.green)
                                                 Text("Improves focus and concentration.")
                                             }
-                                            HStack(spacing: 5) {
+                                            HStack(spacing: 15) {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(Color.green)
                                                 Text("Helps in emotional regulation.")
                                             }
-                                            HStack(spacing: 5) {
+                                            HStack(spacing: 15) {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(Color.green)
                                                 Text("Lowers blood pressure.")
                                             }
-                                            HStack(spacing: 5) {
+                                            HStack(spacing: 15) {
                                                 Image(systemName: "checkmark.circle.fill")
                                                     .foregroundColor(Color.green)
                                                 Text("Enhances overall well-being.")
@@ -131,6 +131,8 @@ struct ContentView: View {
                                     .background(Color.white)
                                     .cornerRadius(10)
                                     .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 0, y: 2)
+                                    
+                                    Spacer()
                                 }
 
 
