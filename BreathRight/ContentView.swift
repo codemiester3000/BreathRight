@@ -27,6 +27,7 @@ struct ContentView: View {
     @State private var audioPlayer: AVAudioPlayer?
     @State private var breathInstruction: String = "Inhale"
     @State private var showBreathInstruction = false
+    @State private var showTooltip: Bool = false
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
@@ -65,12 +66,56 @@ struct ContentView: View {
                                     Color.gray.opacity(0.2)
                                         .cornerRadius(8)
                                 )
-
+                            
                         }
                     } else {
                         VStack(alignment: .leading) {
-                            Text("Box Breathing")
-                                .font(.custom("Inter-Variable", size: 30))
+                            HStack {
+                                Text("Box Breathing")
+                                    .font(.custom("Inter-Variable", size: 30))
+                                
+                                Spacer()
+                                
+                                Button(action: {
+                                    showTooltip.toggle()
+                                }) {
+                                    Image(systemName: "questionmark.circle.fill")
+                                        .foregroundColor(Color.gray)
+                                }
+                                .popover(isPresented: $showTooltip, arrowEdge: .top) {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        
+                                        Text("What is Box Breathing?")
+                                            .font(.custom("Inter-Variable", size: 24))
+                                            .fontWeight(.bold)
+                                            .padding(.top, 20)
+
+                                        Text("Box breathing is a powerful stress-relieving technique. It involves inhaling, holding, exhaling, and holding the breath again, each for an equal count.")
+                                            .font(.custom("Inter-Variable", size: 15))
+                                            .padding(.bottom, 40)
+
+                                        Text("Benefits:")
+                                            .font(.custom("Inter-Variable", size: 20))
+                                            .fontWeight(.bold)
+                                            
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("• Reduces stress and anxiety.")
+                                            Text("• Improves focus and concentration.")
+                                            Text("• Helps in emotional regulation.")
+                                            Text("• Lowers blood pressure.")
+                                            Text("• Enhances overall well-being.")
+                                        }
+                                        .font(.custom("Inter-Variable", size: 18))
+                                        
+                                        Spacer()
+
+                                    }
+                                    .padding()
+
+                                }
+
+                                
+                            }
                             Text("Configure your settings")
                                 .font(.custom("Inter-Variable", size: 15))
                                 .multilineTextAlignment(.leading)
@@ -130,7 +175,7 @@ struct ContentView: View {
                             
                             animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
                             
-
+                            
                         }
                     }
                     .frame(height: sizeForSquare)
