@@ -83,36 +83,56 @@ struct ContentView: View {
                                         .foregroundColor(Color.gray)
                                 }
                                 .popover(isPresented: $showTooltip, arrowEdge: .top) {
-                                    VStack(alignment: .leading, spacing: 10) {
+                                    VStack(alignment: .leading, spacing: 15) {
                                         
                                         Text("What is Box Breathing?")
-                                            .font(.custom("Inter-Variable", size: 24))
+                                            .font(.custom("Inter-Variable", size: 22))
                                             .fontWeight(.bold)
-                                            .padding(.top, 20)
-
-                                        Text("Box breathing is a powerful stress-relieving technique. It involves inhaling, holding, exhaling, and holding the breath again, each for an equal count.")
-                                            .font(.custom("Inter-Variable", size: 15))
-                                            .padding(.bottom, 40)
-
-                                        Text("Benefits:")
-                                            .font(.custom("Inter-Variable", size: 20))
-                                            .fontWeight(.bold)
-                                            
-                                        VStack(alignment: .leading, spacing: 6) {
-                                            Text("• Reduces stress and anxiety.")
-                                            Text("• Improves focus and concentration.")
-                                            Text("• Helps in emotional regulation.")
-                                            Text("• Lowers blood pressure.")
-                                            Text("• Enhances overall well-being.")
-                                        }
-                                        .font(.custom("Inter-Variable", size: 18))
                                         
-                                        Spacer()
-
+                                        Text("Box breathing is a powerful stress-relieving technique. It involves inhaling, holding, exhaling, and holding the breath again, each for an equal count.")
+                                            .font(.custom("Inter-Variable", size: 16))
+                                            .padding(.bottom, 20)
+                                        
+                                        Text("Benefits:")
+                                            .font(.custom("Inter-Variable", size: 18))
+                                            .fontWeight(.bold)
+                                        
+                                        VStack(alignment: .leading, spacing: 10) {
+                                            HStack(spacing: 5) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(Color.green)
+                                                Text("Reduces stress and anxiety.")
+                                            }
+                                            HStack(spacing: 5) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(Color.green)
+                                                Text("Improves focus and concentration.")
+                                            }
+                                            HStack(spacing: 5) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(Color.green)
+                                                Text("Helps in emotional regulation.")
+                                            }
+                                            HStack(spacing: 5) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(Color.green)
+                                                Text("Lowers blood pressure.")
+                                            }
+                                            HStack(spacing: 5) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(Color.green)
+                                                Text("Enhances overall well-being.")
+                                            }
+                                        }
+                                        .font(.custom("Inter-Variable", size: 16))
+                                        
                                     }
                                     .padding()
-
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                    .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 0, y: 2)
                                 }
+
 
                                 
                             }
