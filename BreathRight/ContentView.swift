@@ -476,7 +476,7 @@ struct CustomToggle: View {
 struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
-    let trackColor = Color.gray.opacity(0.2)
+    let trackColor = Color.deepGreen.opacity(0.2)
     let thumbColor = Color.deepGreen
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
     let thumbSize: CGFloat = 30
