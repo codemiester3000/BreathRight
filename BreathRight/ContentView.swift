@@ -134,14 +134,20 @@ struct ContentView: View {
                                     
                                     Spacer()
                                 }
-
-
+                                
+                                
                                 
                             }
                             Text("Configure your settings")
                                 .font(.custom("Inter-Variable", size: 15))
                                 .multilineTextAlignment(.leading)
                                 .padding(.top, 4)
+                            
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, 5)
+                                .padding(.top, 30)
                         }
                         
                     }
@@ -228,10 +234,11 @@ struct ContentView: View {
                             Text("\(durationInSeconds)")
                                 .font(.custom("Inter-Variable", size: 18))
                                 .offset(x: sizeForSquare / 2 + 20)
+                            
                         }
                     }
                     .frame(height: sizeForSquare)
-                    .padding(.top, 20)
+                    //.padding(.top, 20)
                 }
                 
                 Spacer()
@@ -254,21 +261,24 @@ struct ContentView: View {
                             .padding()
                             .background(Color.deepGreen)
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .cornerRadius(50)
+                            .padding(.horizontal, 30)
+                            .padding(.top, 10)
                             
                             Spacer()
                         }
-                        .padding(.horizontal, 30)
-                        .padding(.top, 10)
+                       
                     } else {
                         HStack {
+                            Spacer()
                             CustomSlider(value: $sliderValue, isDragging: $isDragging)
+                            Spacer()
                         }
                         .padding(.bottom, 50)
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
-                        HStack {
+                        
                             Button("Begin now") {
                                 self.elapsedTime = 0
                                 
@@ -283,10 +293,14 @@ struct ContentView: View {
                             .padding()
                             .background(Color(hex: "2E8B57"))
                             .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
+                            .cornerRadius(50)
+                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                            .padding(.leading, 30)
+                            .padding(.top, 10)
+                            
+                        
+                        
+                       
                     }
                     
                 }
@@ -307,16 +321,25 @@ struct ContentView: View {
     }
     
     func playAudio(named fileName: String) {
-        if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
-                audioPlayer?.play()
-            } catch {
-                print("Error playing the audio")
+        do {
+            // Step 1: Set the audio session category
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            // Step 2: Activate the audio session
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
+                    audioPlayer?.play()
+                } catch {
+                    print("Error playing the audio")
+                }
             }
+            
+        } catch {
+            print("Error setting audio session category or activating it.")
         }
     }
-    
     
     @ViewBuilder
     private func animatedText(side: Int, x: CGFloat, y: CGFloat) -> some View {
@@ -460,35 +483,37 @@ struct CustomSlider: View {
     @Binding var isDragging: Bool
     let trackColor = Color.gray.opacity(0.2)
     let thumbColor = Color.robinhoodGreen
-    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 60
+    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
     let thumbSize: CGFloat = 30
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 15)
-                    .frame(width: geometry.size.width, height: 5)
-                    .foregroundColor(trackColor)
-                
-                RoundedRectangle(cornerRadius: 15)
-                    .frame(width: geometry.size.width * value, height: 5)
-                    .foregroundColor(thumbColor)
-                
-                Circle()
-                    .frame(width: thumbSize, height: thumbSize)
-                    .foregroundColor(thumbColor)
-                    .position(x: geometry.size.width * value, y: geometry.size.height / 2)
-                    .gesture(
-                        DragGesture().onChanged { gesture in
-                            self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
-                            self.isDragging = true  // user has started dragging
-                        }.onEnded { _ in
-                            self.isDragging = false  // user has ended dragging
-                        }
-                    )
+        HStack {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 15)
+                        .frame(width: geometry.size.width, height: 5)
+                        .foregroundColor(trackColor)
+                    
+                    RoundedRectangle(cornerRadius: 15)
+                        .frame(width: geometry.size.width * value, height: 5)
+                        .foregroundColor(thumbColor)
+                    
+                    Circle()
+                        .frame(width: thumbSize, height: thumbSize)
+                        .foregroundColor(thumbColor)
+                        .position(x: geometry.size.width * value, y: geometry.size.height / 2)
+                        .gesture(
+                            DragGesture().onChanged { gesture in
+                                self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
+                                self.isDragging = true  // user has started dragging
+                            }.onEnded { _ in
+                                self.isDragging = false  // user has ended dragging
+                            }
+                        )
+                }
             }
+            .frame(width: sliderWidth)
         }
-        .frame(width: sliderWidth)
     }
 }
 
