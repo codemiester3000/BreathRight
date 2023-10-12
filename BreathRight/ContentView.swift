@@ -57,15 +57,18 @@ struct ContentView: View {
                 HStack {
                     if isAnimating {
                         VStack(alignment: .leading)  {
-                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
-                                .padding(.top, 4)
+                            
                             Text(formattedTime(for: elapsedTime))
-                                .font(.custom("Inter-Variable", size: 15))
+                                .font(.custom("Inter-Variable", size: 16))
                                 .padding(8)  // Small padding around the text
                                 .background(
                                     Color.gray.opacity(0.2)
                                         .cornerRadius(8)
                                 )
+                            
+                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
+                                .padding(.top, 40)
+                                .padding(.leading, 4)
                             
                         }
                     } else {
@@ -194,7 +197,6 @@ struct ContentView: View {
                                 animateSquareDrawing(sideDuration: durationInSeconds)
                             }
                             
-                            
                             animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
                             
                             animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
@@ -202,8 +204,6 @@ struct ContentView: View {
                             animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
                             
                             animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
-                            
-                            
                         }
                     }
                     .frame(height: sizeForSquare)
@@ -238,7 +238,6 @@ struct ContentView: View {
                         }
                     }
                     .frame(height: sizeForSquare)
-                    //.padding(.top, 20)
                 }
                 
                 Spacer()
