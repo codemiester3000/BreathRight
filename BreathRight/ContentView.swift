@@ -189,7 +189,7 @@ struct ContentView: View {
                                 }
                             }
                             .trim(from: 0, to: progress)
-                            .stroke(Color.robinhoodGreen, lineWidth: 5)
+                            .stroke(Color.deepGreen, lineWidth: 5)
                             .onAppear {
                                 animateSquareDrawing(sideDuration: durationInSeconds)
                             }
@@ -214,7 +214,7 @@ struct ContentView: View {
                     VStack {
                         ZStack {
                             Rectangle()
-                                .stroke(Color.robinhoodGreen, lineWidth: 7)
+                                .stroke(Color.deepGreen, lineWidth: 7)
                                 .frame(width: sizeForSquare, height: sizeForSquare)
                                 .cornerRadius(6)
                                 .animation(isDragging ? .none : .easeInOut(duration: 0.5))
@@ -267,7 +267,7 @@ struct ContentView: View {
                             
                             Spacer()
                         }
-                       
+                        
                     } else {
                         HStack {
                             Spacer()
@@ -278,29 +278,25 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
-                        
-                            Button("Begin now") {
-                                self.elapsedTime = 0
-                                
-                                // Start the elapsed time timer
-                                self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
-                                self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                                    self.elapsedTime += 1
-                                }
-                                isAnimating = true
-                            }
-                            .font(.custom("Inter-Variable", size: 20))
-                            .padding()
-                            .background(Color(hex: "2E8B57"))
-                            .foregroundColor(.white)
-                            .cornerRadius(50)
-                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                            .padding(.leading, 30)
-                            .padding(.top, 10)
+                        Button("Begin now") {
+                            self.elapsedTime = 0
                             
+                            // Start the elapsed time timer
+                            self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
+                            self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                                self.elapsedTime += 1
+                            }
+                            isAnimating = true
+                        }
+                        .font(.custom("Inter-Variable", size: 20))
+                        .padding()
+                        .background(Color(hex: "2E8B57"))
+                        .foregroundColor(.white)
+                        .cornerRadius(50)
+                        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                        .padding(.leading, 30)
+                        .padding(.top, 10)
                         
-                        
-                       
                     }
                     
                 }
@@ -460,7 +456,7 @@ struct CustomToggle: View {
                         )
                     
                     Circle()
-                        .fill(isOn ? Color.robinhoodGreen :  Color.gray.opacity(0.2))
+                        .fill(isOn ? Color.deepGreen :  Color.gray.opacity(0.2))
                         .frame(width: 35, height: 35)
                         .offset(x: isOn ? 20 : -20)
                         .onTapGesture {
@@ -482,7 +478,7 @@ struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
     let trackColor = Color.gray.opacity(0.2)
-    let thumbColor = Color.robinhoodGreen
+    let thumbColor = Color.deepGreen
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
     let thumbSize: CGFloat = 30
     
