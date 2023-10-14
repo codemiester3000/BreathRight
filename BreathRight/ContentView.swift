@@ -137,11 +137,8 @@ struct ContentView: View {
                                     
                                     Spacer()
                                 }
-                                
-                                
-                                
                             }
-                            Text("Configure your settings")
+                            Text("Use slider to configure time")
                                 .font(.custom("Inter-Variable", size: 15))
                                 .multilineTextAlignment(.leading)
                                 .padding(.top, 4)
