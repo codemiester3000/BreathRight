@@ -29,6 +29,8 @@ struct ContentView: View {
     @State private var showBreathInstruction = false
     @State private var showTooltip: Bool = false
     
+    @State private var isSheetPresented = false
+    
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
     let minSquareSize: CGFloat = 200
@@ -252,6 +254,8 @@ struct ContentView: View {
                                 
                                 self.elapsedTimeTimer?.invalidate()
                                 timer?.invalidate()
+                                
+                                isSheetPresented.toggle()
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
@@ -309,6 +313,9 @@ struct ContentView: View {
                     isRectangleVisible = true
                 }
             }
+        }
+        .sheet(isPresented: $isSheetPresented) {
+            Summary(elapsedTime: self.elapsedTime)
         }
     }
     

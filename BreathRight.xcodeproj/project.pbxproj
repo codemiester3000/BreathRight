@@ -25,6 +25,8 @@
 		C5B418242ACEF163005C7E45 /* Hold.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418232ACEF163005C7E45 /* Hold.mp3 */; };
 		C5B418262ACEF1BE005C7E45 /* Inhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */; };
 		C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */; };
+		C5B4182C2ADB188E005C7E45 /* Summary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B4182B2ADB188E005C7E45 /* Summary.swift */; };
+		C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,8 @@
 		C5B418232ACEF163005C7E45 /* Hold.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Hold.mp3; sourceTree = "<group>"; };
 		C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Inhale.mp3; sourceTree = "<group>"; };
 		C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Exhale.mp3; sourceTree = "<group>"; };
+		C5B4182B2ADB188E005C7E45 /* Summary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Summary.swift; sourceTree = "<group>"; };
+		C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +131,8 @@
 				C5B417E82AC8766B005C7E45 /* BreathRight.xcdatamodeld */,
 				C5B417F02AC8766E005C7E45 /* Preview Content */,
 				C5B418192AC8FF49005C7E45 /* BreathingView.swift */,
+				C5B4182B2ADB188E005C7E45 /* Summary.swift */,
+				C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -296,6 +302,8 @@
 				C5B4181A2AC8FF49005C7E45 /* BreathingView.swift in Sources */,
 				C5B417E52AC8766B005C7E45 /* BreathRightApp.swift in Sources */,
 				C5B417EC2AC8766B005C7E45 /* ContentView.swift in Sources */,
+				C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */,
+				C5B4182C2ADB188E005C7E45 /* Summary.swift in Sources */,
 				C5B417E72AC8766B005C7E45 /* Persistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
