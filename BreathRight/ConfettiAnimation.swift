@@ -19,7 +19,7 @@ struct ConfettiAnimation: View {
             }
         }
         .onAppear() {
-            withAnimation(Animation.easeOut(duration: 2.0).repeatForever(autoreverses: false)) {
+            withAnimation(Animation.easeOut(duration: 3.0).repeatForever(autoreverses: false)) {
                 animationEnd.toggle()
             }
         }

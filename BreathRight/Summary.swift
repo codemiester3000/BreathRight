@@ -12,44 +12,52 @@ struct Summary: View {
             
             ConfettiAnimation()
             
-            // Background Gradient
             LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
-            HStack { // Added this HStack
+            HStack { 
                 VStack(alignment: .leading) {
-                    Text("Great Work!")
-                        .font(.custom("Inter-Variable", size: 30))
-                        .padding(.top)
+                    
+                    HStack {
+                        Text("Great Work!")
+                            .font(.custom("Inter-Variable", size: 30))
+                            .padding(.top)
+                        Spacer()
+                        Image("TinyIcon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                    }
                     
                     Spacer()
                     
                     HStack {
                         Spacer()
-                        Text("Duration: \(elapsedTime) seconds")
-                            .font(.custom("Inter-Variable", size: 20))
-                            .padding(16)
-                            .background(
-                                Color.gray.opacity(0.2)
-                                    .cornerRadius(8)
-                            )
-                        Spacer()
-                    }
-                    .padding(.bottom, 16)
-                    
-                    HStack {
-                        Spacer()
-                        // Animated Circle
-                        CircleSegment(progress: animationProgress)
-                            .stroke(Color.deepGreen, lineWidth: 10)
-                            .frame(width: 200, height: 200)
-                            .onAppear {
-                                withAnimation(.easeInOut(duration: 3.0)) {
-                                    animationProgress = 1.0
+                        
+                        ZStack {
+                            // Animated Circle
+                            CircleSegment(progress: animationProgress)
+                                .stroke(Color.deepGreen, lineWidth: 10)
+                                .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
+                                .onAppear {
+                                    withAnimation(.easeInOut(duration: 3.0)) {
+                                        animationProgress = 1.0
+                                    }
                                 }
-                            }
+                            
+                            // Elapsed time text in the center of the circle
+                            Text("Time: \(elapsedTime) seconds")
+                                .font(.custom("Inter-Variable", size: 20))
+                                .padding(16)
+                                .background(
+                                    Color.gray.opacity(0.2)
+                                        .cornerRadius(8)
+                                )
+                        }
+                        
                         Spacer()
                     }
+                    
                     
                     Spacer()
                     
@@ -68,7 +76,7 @@ struct Summary: View {
                 .padding()
                 .padding(.bottom, 16)
                 
-                Spacer() // This Spacer will push the VStack to the left
+                Spacer()
             }
         }
         
