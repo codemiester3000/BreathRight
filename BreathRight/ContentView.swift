@@ -76,7 +76,11 @@ struct ContentView: View {
                                                .frame(width: 40, height: 40)
                             }
                             
-                        
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, 5)
+                                .padding(.top, 30)
                             
                             BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
                                 .padding(.top, 40)
@@ -248,26 +252,26 @@ struct ContentView: View {
                     VStack {
                         ZStack {
                             Rectangle()
-                                .stroke(Color.deepGreen, lineWidth: 7)
+                                .stroke(Color.deepGreen, lineWidth: 9)
                                 .frame(width: sizeForSquare, height: sizeForSquare)
                                 .cornerRadius(6)
                                 .animation(isDragging ? .none : .easeInOut(duration: 0.5))
                             
                             Text("\(durationInSeconds) sec")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .offset(y: -(sizeForSquare / 2 + 20))
+                                .font(.custom("Inter-Variable", size: 24))
+                                .offset(y: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .offset(y: sizeForSquare / 2 + 20)
+                                .font(.custom("Inter-Variable", size: 20))
+                                .offset(y: sizeForSquare / 2 + 25)
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .offset(x: -(sizeForSquare / 2 + 20))
+                                .font(.custom("Inter-Variable", size: 20))
+                                .offset(x: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 18))
-                                .offset(x: sizeForSquare / 2 + 20)
+                                .font(.custom("Inter-Variable", size: 20))
+                                .offset(x: sizeForSquare / 2 + 25)
                             
                         }
                     }
