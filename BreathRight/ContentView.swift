@@ -90,14 +90,14 @@ struct ContentView: View {
                         VStack(alignment: .leading) {
                             
                             ZStack {
-                                ForEach(0..<1, id: \.self) { index in
+                                ForEach(0..<4, id: \.self) { index in
                                     CosineAnimation()
                                         .frame(height: 10) // Setting a fixed height for each animation
                                         .offset(x: 0, y: CGFloat(index * 10))
                                     // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
                                 }
                             }
-                            .padding(.bottom, 50)
+                            .padding(.bottom, 60)
                             
                             HStack {
                                 Text("Box Breathing")
