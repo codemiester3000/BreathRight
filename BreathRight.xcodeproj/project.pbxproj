@@ -26,6 +26,9 @@
 		C5B418262ACEF1BE005C7E45 /* Inhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */; };
 		C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */; };
 		C5B4182C2ADB188E005C7E45 /* Summary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B4182B2ADB188E005C7E45 /* Summary.swift */; };
+		C5B4182E2ADB818F005C7E45 /* TinyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B4182D2ADB818F005C7E45 /* TinyIcon.png */; };
+		C5B4182F2ADB818F005C7E45 /* TinyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B4182D2ADB818F005C7E45 /* TinyIcon.png */; };
+		C5B418302ADB818F005C7E45 /* TinyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B4182D2ADB818F005C7E45 /* TinyIcon.png */; };
 		C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +70,7 @@
 		C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Inhale.mp3; sourceTree = "<group>"; };
 		C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Exhale.mp3; sourceTree = "<group>"; };
 		C5B4182B2ADB188E005C7E45 /* Summary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Summary.swift; sourceTree = "<group>"; };
+		C5B4182D2ADB818F005C7E45 /* TinyIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TinyIcon.png; sourceTree = "<group>"; };
 		C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +128,7 @@
 				C5B417EB2AC8766B005C7E45 /* ContentView.swift */,
 				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
+				C5B4182D2ADB818F005C7E45 /* TinyIcon.png */,
 				C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */,
 				C5B418252ACEF1BE005C7E45 /* Inhale.mp3 */,
 				C5B417EF2AC8766E005C7E45 /* BreathRight.entitlements */,
@@ -271,6 +276,7 @@
 				C5B418242ACEF163005C7E45 /* Hold.mp3 in Resources */,
 				C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */,
 				C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
+				C5B4182E2ADB818F005C7E45 /* TinyIcon.png in Resources */,
 				C5B417EE2AC8766E005C7E45 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -279,6 +285,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5B4182F2ADB818F005C7E45 /* TinyIcon.png in Resources */,
 				C5B418162AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -287,6 +294,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5B418302ADB818F005C7E45 /* TinyIcon.png in Resources */,
 				C5B418172AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -481,7 +489,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -522,7 +530,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -41,7 +41,7 @@ struct Summary: View {
                         Spacer()
                         // Animated Circle
                         CircleSegment(progress: animationProgress)
-                            .stroke(Color.deepGreen, lineWidth: 15)
+                            .stroke(Color.deepGreen, lineWidth: 10)
                             .frame(width: 200, height: 200)
                             .onAppear {
                                 withAnimation(.easeInOut(duration: 3.0)) {

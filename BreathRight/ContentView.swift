@@ -60,13 +60,23 @@ struct ContentView: View {
                     if isAnimating {
                         VStack(alignment: .leading)  {
                             
-                            Text(formattedTime(for: elapsedTime))
-                                .font(.custom("Inter-Variable", size: 16))
-                                .padding(8)  // Small padding around the text
-                                .background(
-                                    Color.gray.opacity(0.2)
-                                        .cornerRadius(8)
-                                )
+                            HStack {
+                                Text(formattedTime(for: elapsedTime))
+                                    .font(.custom("Inter-Variable", size: 16))
+                                    .padding(8)  // Small padding around the text
+                                    .background(
+                                        Color.gray.opacity(0.2)
+                                            .cornerRadius(8)
+                                    )
+                                
+                                Spacer()
+                                Image("TinyIcon")
+                                               .resizable()
+                                               .aspectRatio(contentMode: .fit)
+                                               .frame(width: 40, height: 40)
+                            }
+                            
+                        
                             
                             BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
                                 .padding(.top, 40)
@@ -76,6 +86,10 @@ struct ContentView: View {
                     } else {
                         VStack(alignment: .leading) {
                             HStack {
+                                Image("TinyIcon")
+                                               .resizable()
+                                               .aspectRatio(contentMode: .fit)
+                                               .frame(width: 40, height: 40)
                                 Text("Box Breathing")
                                     .font(.custom("Inter-Variable", size: 30))
                                 
@@ -140,10 +154,10 @@ struct ContentView: View {
                                     Spacer()
                                 }
                             }
-                            Text("Use slider to configure time")
-                                .font(.custom("Inter-Variable", size: 15))
-                                .multilineTextAlignment(.leading)
-                                .padding(.top, 4)
+//                            Text("Use slider to configure time")
+//                                .font(.custom("Inter-Variable", size: 15))
+//                                .multilineTextAlignment(.leading)
+//                                .padding(.top, 4)
                             
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
