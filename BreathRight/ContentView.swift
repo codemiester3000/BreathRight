@@ -90,14 +90,9 @@ struct ContentView: View {
                     } else {
                         VStack(alignment: .leading) {
                             HStack {
-                                Image("TinyIcon")
-                                               .resizable()
-                                               .aspectRatio(contentMode: .fit)
-                                               .frame(width: 40, height: 40)
+                                
                                 Text("Box Breathing")
                                     .font(.custom("Inter-Variable", size: 30))
-                                
-                                Spacer()
                                 
                                 Button(action: {
                                     showTooltip.toggle()
@@ -157,6 +152,15 @@ struct ContentView: View {
                                     
                                     Spacer()
                                 }
+                                
+                                Spacer()
+                                
+                                Image("TinyIcon")
+                                               .resizable()
+                                               .aspectRatio(contentMode: .fit)
+                                               .frame(width: 40, height: 40)
+                                
+                               
                             }
 //                            Text("Use slider to configure time")
 //                                .font(.custom("Inter-Variable", size: 15))
