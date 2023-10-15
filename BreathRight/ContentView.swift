@@ -93,11 +93,11 @@ struct ContentView: View {
                                 ForEach(0..<4, id: \.self) { index in
                                     CosineAnimation()
                                         .frame(height: 10) // Setting a fixed height for each animation
-                                        .offset(x: 0, y: CGFloat(index * 10))
+                                        .offset(x: CGFloat.random(in: 0...20), y: CGFloat(index * 10))
                                     // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
                                 }
                             }
-                            .padding(.bottom, 60)
+                            .padding(.bottom, 80)
                             
                             HStack {
                                 Text("Box Breathing")
@@ -354,7 +354,7 @@ struct ContentView: View {
                     }
                     
                 }
-                .padding(.bottom, 75)
+                .padding(.bottom, 25)
             }
             .background(
                 LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)

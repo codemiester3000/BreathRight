@@ -20,7 +20,7 @@ struct CosineAnimation: View {
         .onAppear() {
             // Randomized delay
             DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.1...2.3)) {
-                withAnimation(Animation.linear(duration: 3).repeatForever(autoreverses: false)) {
+                withAnimation(Animation.linear(duration: 5).repeatForever(autoreverses: false)) {
                     phaseShift = 2 * .pi  // One full cycle to the right
                 }
             }
