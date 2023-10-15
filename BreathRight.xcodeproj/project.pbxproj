@@ -30,6 +30,7 @@
 		C5B4182F2ADB818F005C7E45 /* TinyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B4182D2ADB818F005C7E45 /* TinyIcon.png */; };
 		C5B418302ADB818F005C7E45 /* TinyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B4182D2ADB818F005C7E45 /* TinyIcon.png */; };
 		C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */; };
+		C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		C5B4182B2ADB188E005C7E45 /* Summary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Summary.swift; sourceTree = "<group>"; };
 		C5B4182D2ADB818F005C7E45 /* TinyIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TinyIcon.png; sourceTree = "<group>"; };
 		C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiAnimation.swift; sourceTree = "<group>"; };
+		C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosineAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 				C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */,
 				C5B417E62AC8766B005C7E45 /* Persistence.swift */,
 				C5B417EB2AC8766B005C7E45 /* ContentView.swift */,
+				C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */,
 				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
 				C5B4182D2ADB818F005C7E45 /* TinyIcon.png */,
@@ -307,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */,
+				C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */,
 				C5B4181A2AC8FF49005C7E45 /* BreathingView.swift in Sources */,
 				C5B417E52AC8766B005C7E45 /* BreathRightApp.swift in Sources */,
 				C5B417EC2AC8766B005C7E45 /* ContentView.swift in Sources */,

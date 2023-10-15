@@ -59,7 +59,6 @@ struct ContentView: View {
                 HStack {
                     if isAnimating {
                         VStack(alignment: .leading)  {
-                            
                             HStack {
                                 Text(formattedTime(for: elapsedTime))
                                     .font(.custom("Inter-Variable", size: 16))
@@ -71,9 +70,9 @@ struct ContentView: View {
                                 
                                 Spacer()
                                 Image("TinyIcon")
-                                               .resizable()
-                                               .aspectRatio(contentMode: .fit)
-                                               .frame(width: 40, height: 40)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40, height: 40)
                             }
                             
                             Rectangle()
@@ -89,8 +88,18 @@ struct ContentView: View {
                         }
                     } else {
                         VStack(alignment: .leading) {
+                            
+                            ZStack {
+                                ForEach(0..<1, id: \.self) { index in
+                                    CosineAnimation()
+                                        .frame(height: 10) // Setting a fixed height for each animation
+                                        .offset(x: 0, y: CGFloat(index * 10))
+                                    // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
+                                }
+                            }
+                            .padding(.bottom, 50)
+                            
                             HStack {
-                                
                                 Text("Box Breathing")
                                     .font(.custom("Inter-Variable", size: 30))
                                 
@@ -156,22 +165,24 @@ struct ContentView: View {
                                 Spacer()
                                 
                                 Image("TinyIcon")
-                                               .resizable()
-                                               .aspectRatio(contentMode: .fit)
-                                               .frame(width: 40, height: 40)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40, height: 40)
                                 
-                               
+                                
                             }
-//                            Text("Use slider to configure time")
-//                                .font(.custom("Inter-Variable", size: 15))
-//                                .multilineTextAlignment(.leading)
-//                                .padding(.top, 4)
+                            //                            Text("Use slider to configure time")
+                            //                                .font(.custom("Inter-Variable", size: 15))
+                            //                                .multilineTextAlignment(.leading)
+                            //                                .padding(.top, 4)
                             
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(height: 1)
                                 .padding(.horizontal, 5)
                                 .padding(.top, 30)
+                            
+                            //                            CosineAnimation()
                         }
                         
                     }
@@ -187,25 +198,25 @@ struct ContentView: View {
                     VStack {
                         ZStack {
                             // Faded square
-                                       Path { path in
-                                           let rounding: CGFloat = 6
-                                           let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
-                                           path.move(to: startingPoint)
-                                           
-                                           path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
-                                           path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
-                                           
-                                           path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
-                                           path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
-                                           
-                                           path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
-                                           path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
-                                           
-                                           path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
-                                           path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
-                                           path.addLine(to: startingPoint)
-                                       }
-                                       .stroke(Color.deepGreen.opacity(0.2), lineWidth: 5)
+                            Path { path in
+                                let rounding: CGFloat = 6
+                                let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
+                                path.move(to: startingPoint)
+                                
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
+                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
+                                
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
+                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+                                
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
+                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+                                
+                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
+                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+                                path.addLine(to: startingPoint)
+                            }
+                            .stroke(Color.deepGreen.opacity(0.2), lineWidth: 5)
                             
                             Path { path in
                                 let rounding: CGFloat = 6
