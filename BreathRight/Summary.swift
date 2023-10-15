@@ -18,7 +18,7 @@ struct Summary: View {
             
             HStack { // Added this HStack
                 VStack(alignment: .leading) {
-                    Text("Summary")
+                    Text("Great Work!")
                         .font(.custom("Inter-Variable", size: 30))
                         .padding(.top)
                     
@@ -44,7 +44,7 @@ struct Summary: View {
                             .stroke(Color.deepGreen, lineWidth: 15)
                             .frame(width: 200, height: 200)
                             .onAppear {
-                                withAnimation(.easeInOut(duration: 2.0)) {
+                                withAnimation(.easeInOut(duration: 3.0)) {
                                     animationProgress = 1.0
                                 }
                             }
