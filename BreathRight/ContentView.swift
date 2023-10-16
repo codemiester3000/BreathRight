@@ -23,10 +23,10 @@ struct ContentView: View {
 struct AnimatedHeaderView: View {
     var body: some View {
         ZStack {
-            ForEach(0..<4, id: \.self) { index in
+            ForEach(0..<5, id: \.self) { index in
                 CosineAnimation()
                     .frame(height: 10) // Setting a fixed height for each animation
-                    .offset(x: CGFloat.random(in: 0...20), y: CGFloat(index * 10))
+                    .offset(x: CGFloat.random(in: -100...50), y: CGFloat(index * 10))
                 // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
             }
         }
