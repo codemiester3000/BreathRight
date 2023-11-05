@@ -390,6 +390,8 @@ struct BodyView: View {
 //            )
         }
         .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+            
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 withAnimation {
                     isRectangleVisible = true

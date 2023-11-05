@@ -1,11 +1,16 @@
 import SwiftUI
 
-
 struct Summary: View {
     let elapsedTime: Int
     @State private var animationProgress: CGFloat = 0.0
     
     @Environment(\.presentationMode) var presentationMode
+    
+    var formattedTime: String {
+        let minutes = elapsedTime / 60
+        let seconds = elapsedTime % 60
+        return "\(minutes) min \(seconds) sec"
+    }
     
     var body: some View {
         ZStack {
@@ -15,7 +20,7 @@ struct Summary: View {
             LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
-            HStack { 
+            HStack {
                 VStack(alignment: .leading) {
                     
                     HStack {
@@ -46,7 +51,7 @@ struct Summary: View {
                                 }
                             
                             // Elapsed time text in the center of the circle
-                            Text("Time: \(elapsedTime) seconds")
+                            Text("\(formattedTime)")
                                 .font(.custom("Inter-Variable", size: 20))
                                 .padding(16)
                                 .background(
@@ -79,7 +84,6 @@ struct Summary: View {
                 Spacer()
             }
         }
-        
     }
 }
 
@@ -101,4 +105,3 @@ struct CircleSegment: Shape, Animatable {
         return path
     }
 }
-
