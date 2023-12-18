@@ -24,11 +24,15 @@ struct FourSevenEightBreathingView: View {
                 if isBreathingExerciseActive {
                     timerView
                     
+                    Spacer()
+                    
                     Diagram(currentPhase: $currentPhase,
                             progress: $progress,
                             isPhaseTransition: $isPhaseTransition,
                             currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
                     .frame(width: 300, height: 300)
+                    
+                    Spacer()
                     
                     HStack {
                         stopButton
@@ -38,7 +42,7 @@ struct FourSevenEightBreathingView: View {
                     headerView
                     Spacer()
                     
-                    CircleWithStartButton()
+                    CircleView()
                     
                     Spacer()
                     
@@ -78,6 +82,8 @@ struct FourSevenEightBreathingView: View {
                 .padding(.horizontal, 5)
                 .padding(.top, 30)
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 50)
     }
     
     
@@ -206,15 +212,13 @@ struct FourSevenEightBreathingView: View {
     
 }
 
-struct CircleWithStartButton: View {
+struct CircleView: View {
     var body: some View {
-        ZStack  {
-            Circle()
-                .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color(hex: "2E8B57").opacity(0.4))
-                .rotationEffect(Angle(degrees: 270))
-                .frame(width: 300, height: 300)
-        }
+        Circle()
+            .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
+            .foregroundColor(Color(hex: "2E8B57").opacity(0.4))
+            .rotationEffect(Angle(degrees: 270))
+            .frame(width: 300, height: 300)
     }
 }
 
@@ -230,6 +234,7 @@ struct Diagram: View {
                 .stroke(lineWidth: 20)
                 .opacity(0.3)
                 .foregroundColor(phaseColor)
+                .frame(width: 300, height: 300)
             
             Circle()
                 .trim(from: 0.0, to: progress)
@@ -252,11 +257,11 @@ struct Diagram: View {
     private var phaseColor: Color {
         switch currentPhase {
         case .inhale:
-            return Color.green
+            return Color(hex: "2E8B57")
         case .hold:
-            return Color.yellow
+            return Color(hex: "862e8b")
         case .exhale:
-            return Color.red
+            return Color(hex: "2e8b86")
         }
     }
 }
