@@ -1,10 +1,3 @@
-//
-//  BreathRightApp.swift
-//  BreathRight
-//
-//  Created by Owen Khoury on 9/30/23.
-//
-
 import SwiftUI
 
 @main
@@ -13,8 +6,25 @@ struct BreathRightApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            TabView {
+                // Home Tab with BoxBreathingView
+                NavigationView {
+                    MainView()
+                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                }
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
+
+                // Settings Tab (you'll need to create a SettingsView)
+                NavigationView {
+                    SettingsView() // Replace with your actual settings view
+                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                }
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+            }
         }
     }
 }

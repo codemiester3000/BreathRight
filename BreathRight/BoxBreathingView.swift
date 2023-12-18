@@ -1,42 +1,14 @@
+//
+//  BoxBreathingView.swift
+//  BreathRight
+//
+//  Created by Owen Khoury on 12/17/23.
+//
+
 import SwiftUI
 import AVFoundation
 
-extension Color {
-    static let robinhoodGreen = Color(hex: "3CB371") // Color(#colorLiteral(red: 0.1803921569, green: 0.8, blue: 0.4431372549, alpha: 1))
-    static let deepGreen = Color(hex: "2E8B57")
-}
-
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            AnimatedHeaderView()
-            BodyView()
-        }
-        .background(
-            LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-        )
-    }
-    
-}
-
-struct AnimatedHeaderView: View {
-    var body: some View {
-        ZStack {
-            ForEach(0..<5, id: \.self) { index in
-                CosineAnimation()
-                    .frame(height: 10) // Setting a fixed height for each animation
-                    .offset(x: CGFloat.random(in: -100...50), y: CGFloat(index * 10))
-                // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
-            }
-        }
-        .padding(.vertical, 30)
-    }
-}
-
-
-struct BodyView: View {
-    
+struct BoxBreathingView: View {
     @State private var timer: Timer?
     @State private var currentCountDown: Int = 4
     @State private var isRectangleVisible: Bool = false
@@ -59,6 +31,8 @@ struct BodyView: View {
     
     @State private var isSheetPresented = false
     
+    @State private var showBreathingSelectionPage = false
+    
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
     let minSquareSize: CGFloat = 200
@@ -73,12 +47,6 @@ struct BodyView: View {
     init() {
         let initialValue = (4 - minDuration) / (maxDuration - minDuration)
         _sliderValue = State(initialValue: initialValue)
-        //        for family: String in UIFont.familyNames {
-        //            print("\(family)")
-        //            for names: String in UIFont.fontNames(forFamilyName: family) {
-        //                print("== \(names)")
-        //            }
-        //        }
     }
     
     var body: some View {
@@ -97,6 +65,7 @@ struct BodyView: View {
                                     )
                                 
                                 Spacer()
+                                
                                 Image("TinyIcon")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -116,17 +85,6 @@ struct BodyView: View {
                         }
                     } else {
                         VStack(alignment: .leading) {
-                            
-//                            ZStack {
-//                                ForEach(0..<4, id: \.self) { index in
-//                                    CosineAnimation()
-//                                        .frame(height: 10) // Setting a fixed height for each animation
-//                                        .offset(x: CGFloat.random(in: 0...20), y: CGFloat(index * 10))
-//                                    // .position(x: CGFloat.random(in: 50...250), y: CGFloat(index * 10))
-//                                }
-//                            }
-//                            .padding(.bottom, 80)
-                            
                             HStack {
                                 Text("Box Breathing")
                                     .font(.custom("Inter-Variable", size: 30))
@@ -138,55 +96,7 @@ struct BodyView: View {
                                         .foregroundColor(Color.gray)
                                 }
                                 .popover(isPresented: $showTooltip, arrowEdge: .top) {
-                                    VStack(alignment: .leading, spacing: 15) {
-                                        
-                                        Text("What is Box Breathing?")
-                                            .font(.custom("Inter-Variable", size: 22))
-                                            .fontWeight(.bold)
-                                        
-                                        Text("Box breathing is a powerful stress-relieving technique. It involves inhaling, holding, exhaling, and holding the breath again, each for an equal count.")
-                                            .font(.custom("Inter-Variable", size: 16))
-                                            .padding(.bottom, 20)
-                                        
-                                        Text("Benefits:")
-                                            .font(.custom("Inter-Variable", size: 18))
-                                            .fontWeight(.bold)
-                                        
-                                        VStack(alignment: .leading, spacing: 10) {
-                                            HStack(spacing: 15) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .foregroundColor(Color.green)
-                                                Text("Reduces stress and anxiety.")
-                                            }
-                                            HStack(spacing: 15) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .foregroundColor(Color.green)
-                                                Text("Improves focus and concentration.")
-                                            }
-                                            HStack(spacing: 15) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .foregroundColor(Color.green)
-                                                Text("Helps in emotional regulation.")
-                                            }
-                                            HStack(spacing: 15) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .foregroundColor(Color.green)
-                                                Text("Lowers blood pressure.")
-                                            }
-                                            HStack(spacing: 15) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .foregroundColor(Color.green)
-                                                Text("Enhances overall well-being.")
-                                            }
-                                        }
-                                        .font(.custom("Inter-Variable", size: 16))
-                                        
-                                    }
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                    .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 0, y: 2)
-                                    
+                                    BoxBreathInfo()
                                     Spacer()
                                 }
                                 
@@ -196,21 +106,12 @@ struct BodyView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 40, height: 40)
-                                
-                                
                             }
-                            //                            Text("Use slider to configure time")
-                            //                                .font(.custom("Inter-Variable", size: 15))
-                            //                                .multilineTextAlignment(.leading)
-                            //                                .padding(.top, 4)
-                            
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(height: 1)
                                 .padding(.horizontal, 5)
                                 .padding(.top, 30)
-                            
-                            //                            CosineAnimation()
                         }
                         
                     }
@@ -384,10 +285,6 @@ struct BodyView: View {
                 }
                 .padding(.bottom, 25)
             }
-//            .background(
-//                LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
-//                    .edgesIgnoringSafeArea(.all)
-//            )
         }
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
@@ -401,6 +298,7 @@ struct BodyView: View {
         .sheet(isPresented: $isSheetPresented) {
             Summary(elapsedTime: self.elapsedTime)
         }
+        
     }
     
     func playAudio(named fileName: String) {
@@ -627,3 +525,4 @@ extension Color {
         )
     }
 }
+

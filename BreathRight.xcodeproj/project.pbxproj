@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */; };
+		C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC02B2FB90D00F583C7 /* SettingsView.swift */; };
+		C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */; };
+		C549EAC52B2FBCE600F583C7 /* FourSevenEightBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */; };
 		C5B417E52AC8766B005C7E45 /* BreathRightApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */; };
 		C5B417E72AC8766B005C7E45 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E62AC8766B005C7E45 /* Persistence.swift */; };
 		C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E82AC8766B005C7E45 /* BreathRight.xcdatamodeld */; };
-		C5B417EC2AC8766B005C7E45 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417EB2AC8766B005C7E45 /* ContentView.swift */; };
+		C5B417EC2AC8766B005C7E45 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417EB2AC8766B005C7E45 /* MainView.swift */; };
 		C5B417EE2AC8766E005C7E45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5B417ED2AC8766E005C7E45 /* Assets.xcassets */; };
 		C5B417F22AC8766E005C7E45 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C5B417F12AC8766E005C7E45 /* Preview Assets.xcassets */; };
 		C5B417FC2AC8766E005C7E45 /* BreathRightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417FB2AC8766E005C7E45 /* BreathRightTests.swift */; };
@@ -51,11 +55,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathInfo.swift; sourceTree = "<group>"; };
+		C549EAC02B2FB90D00F583C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathingView.swift; sourceTree = "<group>"; };
+		C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourSevenEightBreathingView.swift; sourceTree = "<group>"; };
 		C5B417E12AC8766B005C7E45 /* BreathRight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreathRight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightApp.swift; sourceTree = "<group>"; };
 		C5B417E62AC8766B005C7E45 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		C5B417E92AC8766B005C7E45 /* BreathRight.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BreathRight.xcdatamodel; sourceTree = "<group>"; };
-		C5B417EB2AC8766B005C7E45 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C5B417EB2AC8766B005C7E45 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		C5B417ED2AC8766E005C7E45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C5B417EF2AC8766E005C7E45 /* BreathRight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BreathRight.entitlements; sourceTree = "<group>"; };
 		C5B417F12AC8766E005C7E45 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -127,7 +135,7 @@
 				C5B418182AC88414005C7E45 /* Info.plist */,
 				C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */,
 				C5B417E62AC8766B005C7E45 /* Persistence.swift */,
-				C5B417EB2AC8766B005C7E45 /* ContentView.swift */,
+				C5B417EB2AC8766B005C7E45 /* MainView.swift */,
 				C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */,
 				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
@@ -141,6 +149,10 @@
 				C5B418192AC8FF49005C7E45 /* BreathingView.swift */,
 				C5B4182B2ADB188E005C7E45 /* Summary.swift */,
 				C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */,
+				C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */,
+				C549EAC02B2FB90D00F583C7 /* SettingsView.swift */,
+				C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */,
+				C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -310,13 +322,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */,
+				C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */,
+				C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */,
 				C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */,
 				C5B4181A2AC8FF49005C7E45 /* BreathingView.swift in Sources */,
 				C5B417E52AC8766B005C7E45 /* BreathRightApp.swift in Sources */,
-				C5B417EC2AC8766B005C7E45 /* ContentView.swift in Sources */,
+				C5B417EC2AC8766B005C7E45 /* MainView.swift in Sources */,
 				C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */,
 				C5B4182C2ADB188E005C7E45 /* Summary.swift in Sources */,
 				C5B417E72AC8766B005C7E45 /* Persistence.swift in Sources */,
+				C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */,
+				C549EAC52B2FBCE600F583C7 /* FourSevenEightBreathingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,18 +503,19 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -528,18 +545,19 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
