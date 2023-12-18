@@ -4,7 +4,7 @@ struct FourSevenEightBreathingView: View {
     
     @State private var showTooltip: Bool = false
     @State private var isBreathingExerciseActive: Bool = false
-    @State private var exerciseTimeElapsed: Int = 0
+    @State private var exerciseTimeElapsed: Double = 0
     @State private var currentPhaseTimeRemaining: Int = 0
     @State private var exerciseTimer: Timer?
     
@@ -14,26 +14,72 @@ struct FourSevenEightBreathingView: View {
     @State private var isPhaseTransition: Bool = false
     
     var body: some View {
-        VStack {
-            if isBreathingExerciseActive {
-                breathingExerciseView
-            } else {
-                headerView
-                Spacer()
-                HStack {
-                    startButton
+        ZStack {
+            // LinearGradient as the bottom layer
+            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+            
+            // Your original VStack content on top of the LinearGradient
+            VStack {
+                if isBreathingExerciseActive {
+                    timerView
+                    
+                    Diagram(currentPhase: $currentPhase,
+                            progress: $progress,
+                            isPhaseTransition: $isPhaseTransition,
+                            currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
+                    .frame(width: 300, height: 300)
+                    
+                    HStack {
+                        stopButton
+                        Spacer()
+                    }
+                } else {
+                    headerView
                     Spacer()
+                    
+                    CircleWithStartButton()
+                    
+                    Spacer()
+                    
+                    HStack {
+                        startButton
+                        Spacer()
+                    }
                 }
             }
         }
-        .background(
-            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-        )
         .onDisappear {
             exerciseTimer?.invalidate()
         }
     }
+    
+    private var timerView: some View {
+        VStack() {
+            
+            HStack {
+                Text("\(formattedTime(for: Int(exerciseTimeElapsed)))")
+                    .font(.custom("Inter-Variable", size: 16))
+                    .padding(8)
+                    .background(Color.gray.opacity(0.2).cornerRadius(8))
+                
+                Spacer()
+                
+                Image("TinyIcon")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+            }
+            .padding(.horizontal)
+            
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 1)
+                .padding(.horizontal, 5)
+                .padding(.top, 30)
+        }
+    }
+    
     
     private var headerView: some View {
         VStack(alignment: .leading) {
@@ -85,24 +131,33 @@ struct FourSevenEightBreathingView: View {
         .padding(.bottom, 20)
     }
     
-    private var breathingExerciseView: some View {
-        VStack {
-            Text("Time Elapsed: \(formattedTime(for: exerciseTimeElapsed))")
-                .font(.custom("Inter-Variable", size: 16))
-                .padding(8)
-                .background(Color.gray.opacity(0.2).cornerRadius(8))
-            
-            Diagram(currentPhase: $currentPhase, 
-                    progress: $progress,
-                    isPhaseTransition: $isPhaseTransition,
-                    currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
-                .frame(width: 300, height: 300)
+    private var stopButton: some View {
+        Button("Stop") {
+            stopBreathingExercise()
         }
+        .font(.custom("Inter-Variable", size: 20))
+        .padding()
+        .background(Color(hex: "2E8B57"))
+        .foregroundColor(.white)
+        .cornerRadius(50)
+        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+        .padding(.leading, 30)
+        .padding(.top, 10)
+        .padding(.bottom, 20)
     }
     
-    private func startBreathingExercise() {
+    private func stopBreathingExercise() {
+        exerciseTimer?.invalidate()
+        exerciseTimer = nil
+        isBreathingExerciseActive = false
+        exerciseTimeElapsed = 0.0
+        currentPhaseTimeRemaining = 0
+        progress = 0.0
+    }
+    
+    public func startBreathingExercise() {
         isBreathingExerciseActive = true
-        exerciseTimeElapsed = 0
+        exerciseTimeElapsed = 0.0
         currentPhase = .inhale
         progress = 0.0
         isPhaseTransition = false
@@ -118,7 +173,7 @@ struct FourSevenEightBreathingView: View {
         currentPhaseTimeRemaining = Int(phase.duration) + 1
         
         exerciseTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-            exerciseTimeElapsed += 1
+            exerciseTimeElapsed += 0.01
             secondsElapsed += 0.01
             progress = CGFloat(secondsElapsed) / CGFloat(totalSeconds)
             
@@ -146,7 +201,20 @@ struct FourSevenEightBreathingView: View {
     private func formattedTime(for seconds: Int) -> String {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60
-        return String(format: "%02d:%02d", minutes, remainingSeconds)
+        return "\(minutes) min \(String(format: "%02d", remainingSeconds)) sec"
+    }
+    
+}
+
+struct CircleWithStartButton: View {
+    var body: some View {
+        ZStack  {
+            Circle()
+                .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
+                .foregroundColor(Color(hex: "2E8B57").opacity(0.4))
+                .rotationEffect(Angle(degrees: 270))
+                .frame(width: 300, height: 300)
+        }
     }
 }
 
