@@ -8,7 +8,7 @@ enum BreathingType: String, CaseIterable {
 
 struct SettingsView: View {
     @AppStorage("selectedBreathingType") private var selectedBreathingType: BreathingType = .boxBreathing
-
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
@@ -19,11 +19,11 @@ struct SettingsView: View {
                 ForEach(BreathingType.allCases, id: \.self) { breathingType in
                     BreathingOptionView(breathingType: breathingType,
                                         isSelected: selectedBreathingType == breathingType)
-                        .onTapGesture {
-                            withAnimation {
-                                self.selectedBreathingType = breathingType
-                            }
+                    .onTapGesture {
+                        withAnimation {
+                            self.selectedBreathingType = breathingType
                         }
+                    }
                 }
             }
             .padding()
@@ -35,7 +35,7 @@ struct SettingsView: View {
 struct BreathingOptionView: View {
     let breathingType: BreathingType
     var isSelected: Bool
-
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
@@ -43,7 +43,7 @@ struct BreathingOptionView: View {
                 .frame(height: 150)
                 .shadow(radius: 5)
                 .animation(.easeInOut(duration: 0.1), value: isSelected) 
-
+            
             HStack {
                 Image(systemName: breathingType == BreathingType.boxBreathing ? "square" : "waveform.path.badge.minus") // Example icon
                     .resizable()
@@ -51,7 +51,7 @@ struct BreathingOptionView: View {
                     .frame(width: 40, height: 40)
                     .foregroundColor(.white)
                     .padding(.trailing)
-
+                
                 Text(breathingType.rawValue)
                     .font(.title)
                     .fontWeight(.bold)

@@ -1,12 +1,15 @@
 import SwiftUI
+import AVFoundation
 
 struct FourSevenEightBreathingView: View {
     
+    @State private var audioPlayer: AVAudioPlayer?
     @State private var showTooltip: Bool = false
     @State private var isBreathingExerciseActive: Bool = false
     @State private var exerciseTimeElapsed: Double = 0
     @State private var currentPhaseTimeRemaining: Int = 0
     @State private var exerciseTimer: Timer?
+    @State private var isSheetPresented = false
     
     // State for diagram animation
     @State private var currentPhase: BreathingPhase = .inhale
@@ -55,6 +58,9 @@ struct FourSevenEightBreathingView: View {
         }
         .onDisappear {
             exerciseTimer?.invalidate()
+        }
+        .sheet(isPresented: $isSheetPresented) {
+            Summary(elapsedTime: Int(exerciseTimeElapsed))
         }
     }
     
@@ -124,6 +130,8 @@ struct FourSevenEightBreathingView: View {
     
     private var startButton: some View {
         Button("Begin now") {
+            print("hello")
+            playAudio(named: "Inhale")
             startBreathingExercise()
         }
         .font(.custom("Inter-Variable", size: 20))
@@ -139,6 +147,8 @@ struct FourSevenEightBreathingView: View {
     
     private var stopButton: some View {
         Button("Stop") {
+            print("time elapsed: ", exerciseTimeElapsed)
+            isSheetPresented.toggle()
             stopBreathingExercise()
         }
         .font(.custom("Inter-Variable", size: 20))
@@ -156,7 +166,7 @@ struct FourSevenEightBreathingView: View {
         exerciseTimer?.invalidate()
         exerciseTimer = nil
         isBreathingExerciseActive = false
-        exerciseTimeElapsed = 0.0
+//        exerciseTimeElapsed = 0.0
         currentPhaseTimeRemaining = 0
         progress = 0.0
     }
@@ -169,6 +179,34 @@ struct FourSevenEightBreathingView: View {
         isPhaseTransition = false
         startTimerForPhase(.inhale)
     }
+    
+    func playAudio(named fileName: String) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                // Step 1: Set the audio session category
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                // Step 2: Activate the audio session
+                try AVAudioSession.sharedInstance().setActive(true)
+                
+                if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
+                    do {
+                        let audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
+                        audioPlayer.prepareToPlay()
+                        DispatchQueue.main.async {
+                            self.audioPlayer = audioPlayer
+                            self.audioPlayer?.play()
+                        }
+                    } catch {
+                        print("Error playing the audio")
+                    }
+                }
+                
+            } catch {
+                print("Error setting audio session category or activating it.")
+            }
+        }
+    }
+    
     
     // Function to handle timer and update progress
     private func startTimerForPhase(_ phase: BreathingPhase) {
@@ -192,12 +230,15 @@ struct FourSevenEightBreathingView: View {
                 case .inhale:
                     currentPhase = .hold
                     startTimerForPhase(.hold)
+                    playAudio(named: "Hold")
                 case .hold:
                     currentPhase = .exhale
                     startTimerForPhase(.exhale)
+                    playAudio(named: "Exhale")
                 case .exhale:
                     currentPhase = .inhale
                     startTimerForPhase(.inhale)
+                    playAudio(named: "Inhale")
                 }
             }
         }
@@ -245,8 +286,9 @@ struct Diagram: View {
             
             VStack {
                 Text(currentPhase.rawValue)
-                    .font(.largeTitle)
+                    .font(.title)
                     .fontWeight(.bold)
+                    .animation(.easeIn, value: currentPhase)
                 Text("\(currentPhaseTimeRemaining) seconds")
                     .font(.title2)
             }

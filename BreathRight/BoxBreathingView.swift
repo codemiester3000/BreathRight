@@ -76,7 +76,7 @@ struct BoxBreathingView: View {
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(height: 1)
                                 .padding(.horizontal, 5)
-                                .padding(.top, 30)
+                                .padding(.top, 20)
                             
                             BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
                                 .padding(.top, 40)
@@ -111,7 +111,7 @@ struct BoxBreathingView: View {
                                 .fill(Color.gray.opacity(0.3))
                                 .frame(height: 1)
                                 .padding(.horizontal, 5)
-                                .padding(.top, 30)
+                                .padding(.top, 20)
                         }
                         
                     }
@@ -242,10 +242,11 @@ struct BoxBreathingView: View {
                             }
                             .font(.custom("Inter-Variable", size: 20))
                             .padding()
-                            .background(Color.deepGreen)
+                            .background(Color(hex: "2E8B57"))
                             .foregroundColor(.white)
                             .cornerRadius(50)
-                            .padding(.horizontal, 30)
+                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                            .padding(.leading, 30)
                             .padding(.top, 10)
                             
                             Spacer()
@@ -257,7 +258,6 @@ struct BoxBreathingView: View {
                             CustomSlider(value: $sliderValue, isDragging: $isDragging)
                             Spacer()
                         }
-                        .padding(.bottom, 50)
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
@@ -302,23 +302,29 @@ struct BoxBreathingView: View {
     }
     
     func playAudio(named fileName: String) {
-        do {
-            // Step 1: Set the audio session category
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-            // Step 2: Activate the audio session
-            try AVAudioSession.sharedInstance().setActive(true)
-            
-            if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
-                do {
-                    audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
-                    audioPlayer?.play()
-                } catch {
-                    print("Error playing the audio")
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                // Step 1: Set the audio session category
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                // Step 2: Activate the audio session
+                try AVAudioSession.sharedInstance().setActive(true)
+                
+                if let path = Bundle.main.path(forResource: fileName, ofType: "mp3") {
+                    do {
+                        let audioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
+                        audioPlayer.prepareToPlay()
+                        DispatchQueue.main.async {
+                            self.audioPlayer = audioPlayer
+                            self.audioPlayer?.play()
+                        }
+                    } catch {
+                        print("Error playing the audio")
+                    }
                 }
+                
+            } catch {
+                print("Error setting audio session category or activating it.")
             }
-            
-        } catch {
-            print("Error setting audio session category or activating it.")
         }
     }
     

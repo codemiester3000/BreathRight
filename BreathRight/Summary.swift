@@ -14,19 +14,20 @@ struct Summary: View {
     
     var body: some View {
         ZStack {
-            
+    
             ConfettiAnimation()
             
-            LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.2)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.purple.opacity(0.4)]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
             HStack {
                 VStack(alignment: .leading) {
                     
                     HStack {
-                        Text("Great Work!")
+                        Text("Session Complete")
                             .font(.custom("Inter-Variable", size: 30))
                             .padding(.top)
+                            .foregroundColor(.white)
                         Spacer()
                         Image("TinyIcon")
                             .resizable()
@@ -40,6 +41,8 @@ struct Summary: View {
                         Spacer()
                         
                         ZStack {
+                            
+                            
                             // Animated Circle
                             CircleSegment(progress: animationProgress)
                                 .stroke(Color.deepGreen, lineWidth: 10)
