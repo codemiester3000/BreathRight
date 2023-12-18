@@ -5,6 +5,7 @@ struct FourSevenEightBreathingView: View {
     @State private var showTooltip: Bool = false
     @State private var isBreathingExerciseActive: Bool = false
     @State private var exerciseTimeElapsed: Int = 0
+    @State private var currentPhaseTimeRemaining: Int = 0
     @State private var exerciseTimer: Timer?
     
     // State for diagram animation
@@ -14,11 +15,15 @@ struct FourSevenEightBreathingView: View {
     
     var body: some View {
         VStack {
-            headerView
             if isBreathingExerciseActive {
                 breathingExerciseView
             } else {
-                startButton
+                headerView
+                Spacer()
+                HStack {
+                    startButton
+                    Spacer()
+                }
             }
         }
         .background(
@@ -54,6 +59,9 @@ struct FourSevenEightBreathingView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 50)
+            
             Rectangle()
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 1)
@@ -63,20 +71,18 @@ struct FourSevenEightBreathingView: View {
     }
     
     private var startButton: some View {
-        Button(action: {
+        Button("Begin now") {
             startBreathingExercise()
-        }) {
-            Text("Begin Now")
-                .font(.custom("Inter-Variable", size: 20))
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.deepGreen)
-                .foregroundColor(.white)
-                .cornerRadius(50)
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         }
-        .padding(.horizontal, 30)
+        .font(.custom("Inter-Variable", size: 20))
+        .padding()
+        .background(Color(hex: "2E8B57"))
+        .foregroundColor(.white)
+        .cornerRadius(50)
+        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+        .padding(.leading, 30)
         .padding(.top, 10)
+        .padding(.bottom, 20)
     }
     
     private var breathingExerciseView: some View {
@@ -86,7 +92,10 @@ struct FourSevenEightBreathingView: View {
                 .padding(8)
                 .background(Color.gray.opacity(0.2).cornerRadius(8))
             
-            Diagram(currentPhase: $currentPhase, progress: $progress, isPhaseTransition: $isPhaseTransition)
+            Diagram(currentPhase: $currentPhase, 
+                    progress: $progress,
+                    isPhaseTransition: $isPhaseTransition,
+                    currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
                 .frame(width: 300, height: 300)
         }
     }
@@ -106,10 +115,14 @@ struct FourSevenEightBreathingView: View {
         var secondsElapsed = 0.0
         let totalSeconds = phase.duration
         
+        currentPhaseTimeRemaining = Int(phase.duration) + 1
+        
         exerciseTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             exerciseTimeElapsed += 1
             secondsElapsed += 0.01
             progress = CGFloat(secondsElapsed) / CGFloat(totalSeconds)
+            
+            currentPhaseTimeRemaining = Int(phase.duration - secondsElapsed) + 1
             
             if secondsElapsed >= totalSeconds {
                 exerciseTimer?.invalidate()
@@ -141,6 +154,7 @@ struct Diagram: View {
     @Binding var currentPhase: BreathingPhase
     @Binding var progress: CGFloat
     @Binding var isPhaseTransition: Bool
+    @Binding var currentPhaseTimeRemaining: Int
     
     var body: some View {
         ZStack {
@@ -160,7 +174,7 @@ struct Diagram: View {
                 Text(currentPhase.rawValue)
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                Text("\(currentPhase.duration) seconds")
+                Text("\(currentPhaseTimeRemaining) seconds")
                     .font(.title2)
             }
         }
