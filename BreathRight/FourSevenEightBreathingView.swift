@@ -17,11 +17,7 @@ struct FourSevenEightBreathingView: View {
     @State private var isPhaseTransition: Bool = false
     
     var body: some View {
-        ZStack {
-            // LinearGradient as the bottom layer
-//            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
-//                .edgesIgnoringSafeArea(.all)
-            
+        ZStack {            
             // Your original VStack content on top of the LinearGradient
             VStack {
                 if isBreathingExerciseActive {
@@ -106,7 +102,7 @@ struct FourSevenEightBreathingView: View {
                         .foregroundColor(Color.gray)
                 }
                 .popover(isPresented: $showTooltip, arrowEdge: .top) {
-                    BoxBreathInfo()
+                    FourSevenEightBreathInfo()
                     Spacer()
                 }
                 

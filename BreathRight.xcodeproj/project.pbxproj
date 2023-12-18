@@ -11,6 +11,7 @@
 		C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC02B2FB90D00F583C7 /* SettingsView.swift */; };
 		C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */; };
 		C549EAC52B2FBCE600F583C7 /* FourSevenEightBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */; };
+		C549EAC92B300B5400F583C7 /* FourSevenEightBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC82B300B5400F583C7 /* FourSevenEightBreathInfo.swift */; };
 		C5B417E52AC8766B005C7E45 /* BreathRightApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */; };
 		C5B417E72AC8766B005C7E45 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E62AC8766B005C7E45 /* Persistence.swift */; };
 		C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5B417E82AC8766B005C7E45 /* BreathRight.xcdatamodeld */; };
@@ -59,6 +60,7 @@
 		C549EAC02B2FB90D00F583C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathingView.swift; sourceTree = "<group>"; };
 		C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourSevenEightBreathingView.swift; sourceTree = "<group>"; };
+		C549EAC82B300B5400F583C7 /* FourSevenEightBreathInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourSevenEightBreathInfo.swift; sourceTree = "<group>"; };
 		C5B417E12AC8766B005C7E45 /* BreathRight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreathRight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5B417E42AC8766B005C7E45 /* BreathRightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightApp.swift; sourceTree = "<group>"; };
 		C5B417E62AC8766B005C7E45 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 		C5B417D82AC8766B005C7E45 = {
 			isa = PBXGroup;
 			children = (
+				C549EAC82B300B5400F583C7 /* FourSevenEightBreathInfo.swift */,
 				C5B417E32AC8766B005C7E45 /* BreathRight */,
 				C5B417FA2AC8766E005C7E45 /* BreathRightTests */,
 				C5B418042AC8766E005C7E45 /* BreathRightUITests */,
@@ -321,6 +324,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C549EAC92B300B5400F583C7 /* FourSevenEightBreathInfo.swift in Sources */,
 				C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */,
 				C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */,
 				C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */,
