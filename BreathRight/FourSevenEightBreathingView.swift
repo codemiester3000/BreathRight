@@ -19,8 +19,8 @@ struct FourSevenEightBreathingView: View {
     var body: some View {
         ZStack {
             // LinearGradient as the bottom layer
-            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+//            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
+//                .edgesIgnoringSafeArea(.all)
             
             // Your original VStack content on top of the LinearGradient
             VStack {
