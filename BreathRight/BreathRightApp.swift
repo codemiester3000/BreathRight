@@ -16,7 +16,7 @@ struct BreathRightApp: App {
                     Label("Home", systemImage: "house")
                 }
 
-                // Settings Tab (you'll need to create a SettingsView)
+                // Settings Tab
                 NavigationView {
                     SettingsView() // Replace with your actual settings view
                         .environment(\.managedObjectContext, persistenceController.container.viewContext)
@@ -25,6 +25,7 @@ struct BreathRightApp: App {
                     Label("Settings", systemImage: "gear")
                 }
             }
+            .accentColor(.white) // This sets the tab item color to white when selected
         }
     }
 }

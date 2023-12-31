@@ -22,8 +22,7 @@ struct MainView: View {
                         }
         }
         .background(
-            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+            .black
         )
     }
 }

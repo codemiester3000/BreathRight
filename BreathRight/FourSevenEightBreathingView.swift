@@ -65,7 +65,7 @@ struct FourSevenEightBreathingView: View {
             
             HStack {
                 Text("\(formattedTime(for: Int(exerciseTimeElapsed)))")
-                    .font(.custom("Inter-Variable", size: 16))
+                    .font(.footnote)
                     .padding(8)
                     .background(Color.gray.opacity(0.2).cornerRadius(8))
                 
@@ -93,7 +93,7 @@ struct FourSevenEightBreathingView: View {
         VStack(alignment: .leading) {
             HStack {
                 Text("4-7-8 Breathing")
-                    .font(.custom("Inter-Variable", size: 30))
+                    .font(.system(size: 20))
                 
                 Button(action: {
                     showTooltip.toggle()
@@ -125,15 +125,14 @@ struct FourSevenEightBreathingView: View {
     }
     
     private var startButton: some View {
-        Button("Begin now") {
-            print("hello")
+        Button("Begin") {
             playAudio(named: "Inhale")
             startBreathingExercise()
         }
-        .font(.custom("Inter-Variable", size: 20))
+        .font(.footnote)
         .padding()
-        .background(Color(hex: "2E8B57"))
-        .foregroundColor(.white)
+        .background(.white)
+        .foregroundColor(.black)
         .cornerRadius(50)
         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         .padding(.leading, 30)
@@ -143,14 +142,13 @@ struct FourSevenEightBreathingView: View {
     
     private var stopButton: some View {
         Button("Stop") {
-            print("time elapsed: ", exerciseTimeElapsed)
             isSheetPresented.toggle()
             stopBreathingExercise()
         }
-        .font(.custom("Inter-Variable", size: 20))
+        .font(.footnote)
         .padding()
-        .background(Color(hex: "2E8B57"))
-        .foregroundColor(.white)
+        .background(.white)
+        .foregroundColor(.black)
         .cornerRadius(50)
         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
         .padding(.leading, 30)
@@ -282,11 +280,11 @@ struct Diagram: View {
             
             VStack {
                 Text(currentPhase.rawValue)
-                    .font(.title)
+                    .font(.system(size: 20))
                     .fontWeight(.bold)
                     .animation(.easeIn, value: currentPhase)
-                Text("\(currentPhaseTimeRemaining) seconds")
-                    .font(.title2)
+//                Text("\(currentPhaseTimeRemaining) seconds")
+//                    .font(.title2)
             }
         }
         .padding(40)

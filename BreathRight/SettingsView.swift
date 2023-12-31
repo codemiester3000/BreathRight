@@ -11,7 +11,7 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.2), Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [.black, .black]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
             VStack {
@@ -39,7 +39,7 @@ struct BreathingOptionView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
-                .fill(isSelected ? Color(hex: "2E8B57") : Color.gray)
+                .fill(isSelected ? .white : Color.gray)
                 .frame(height: 150)
                 .shadow(radius: 5)
                 .animation(.easeInOut(duration: 0.1), value: isSelected) 
@@ -49,15 +49,15 @@ struct BreathingOptionView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
-                    .foregroundColor(.white)
+                    .foregroundColor(isSelected ? .black : .white)
                     .padding(.trailing)
                 
                 Text(breathingType.rawValue)
-                    .font(.title)
+                    .font(.system(size: 20))
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(isSelected ? .black : .white)
             }
         }
-        .padding(.vertical, 30)
+        .padding(.vertical, 20)
     }
 }

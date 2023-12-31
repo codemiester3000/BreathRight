@@ -7,7 +7,7 @@ struct CosineAnimation: View {
         ZStack {
             // The actual animated wave
             SineWave(phaseShift: phaseShift)
-                .stroke(Color.deepGreen, lineWidth: 2)
+                .stroke(Color.white, lineWidth: 2)
                 .mask(
                     // The gradient mask for the fading effect
                     LinearGradient(gradient: Gradient(colors: [Color.clear, Color.blue]),

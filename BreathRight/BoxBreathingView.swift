@@ -57,7 +57,7 @@ struct BoxBreathingView: View {
                         VStack(alignment: .leading)  {
                             HStack {
                                 Text(formattedTime(for: elapsedTime))
-                                    .font(.custom("Inter-Variable", size: 16))
+                                    .font(.footnote)
                                     .padding(8)  // Small padding around the text
                                     .background(
                                         Color.gray.opacity(0.2)
@@ -87,7 +87,8 @@ struct BoxBreathingView: View {
                         VStack(alignment: .leading) {
                             HStack {
                                 Text("Box Breathing")
-                                    .font(.custom("Inter-Variable", size: 30))
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
                                 
                                 Button(action: {
                                     showTooltip.toggle()
@@ -99,6 +100,7 @@ struct BoxBreathingView: View {
                                     BoxBreathInfo()
                                     Spacer()
                                 }
+                                .foregroundColor(.white)
                                 
                                 Spacer()
                                 
@@ -145,7 +147,7 @@ struct BoxBreathingView: View {
                                 path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
                                 path.addLine(to: startingPoint)
                             }
-                            .stroke(Color.deepGreen.opacity(0.2), lineWidth: 5)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 5)
                             
                             Path { path in
                                 let rounding: CGFloat = 6
@@ -174,18 +176,18 @@ struct BoxBreathingView: View {
                                 }
                             }
                             .trim(from: 0, to: progress)
-                            .stroke(Color.deepGreen, lineWidth: 5)
+                            .stroke(Color.white, lineWidth: 5)
                             .onAppear {
                                 animateSquareDrawing(sideDuration: durationInSeconds)
                             }
                             
-                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
-                            
-                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
-                            
-                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
-                            
-                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
+//                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
+//                            
+//                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
+//                            
+//                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
+//                            
+//                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
                         }
                     }
                     .frame(height: sizeForSquare)
@@ -196,25 +198,25 @@ struct BoxBreathingView: View {
                     VStack {
                         ZStack {
                             Rectangle()
-                                .stroke(Color.deepGreen, lineWidth: 9)
+                                .stroke(Color.white, lineWidth: 9)
                                 .frame(width: sizeForSquare, height: sizeForSquare)
                                 .cornerRadius(6)
                                 .animation(isDragging ? .none : .easeInOut(duration: 0.5))
                             
                             Text("\(durationInSeconds) sec")
-                                .font(.custom("Inter-Variable", size: 24))
+                                .font(.footnote)
                                 .offset(y: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 20))
+                                .font(.footnote)
                                 .offset(y: sizeForSquare / 2 + 25)
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 20))
+                                .font(.footnote)
                                 .offset(x: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
-                                .font(.custom("Inter-Variable", size: 20))
+                                .font(.footnote)
                                 .offset(x: sizeForSquare / 2 + 25)
                             
                         }
@@ -240,10 +242,10 @@ struct BoxBreathingView: View {
                                 
                                 isSheetPresented.toggle()
                             }
-                            .font(.custom("Inter-Variable", size: 20))
+                            .font(.footnote)
                             .padding()
-                            .background(Color(hex: "2E8B57"))
-                            .foregroundColor(.white)
+                            .background(.white)
+                            .foregroundColor(.black)
                             .cornerRadius(50)
                             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                             .padding(.leading, 30)
@@ -261,7 +263,7 @@ struct BoxBreathingView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
-                        Button("Begin now") {
+                        Button("Begin") {
                             self.elapsedTime = 0
                             
                             // Start the elapsed time timer
@@ -271,10 +273,10 @@ struct BoxBreathingView: View {
                             }
                             isAnimating = true
                         }
-                        .font(.custom("Inter-Variable", size: 20))
+                        .font(.footnote)
                         .padding()
-                        .background(Color(hex: "2E8B57"))
-                        .foregroundColor(.white)
+                        .background(.white)
+                        .foregroundColor(.black)
                         .cornerRadius(50)
                         .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                         .padding(.leading, 30)
@@ -331,7 +333,7 @@ struct BoxBreathingView: View {
     @ViewBuilder
     private func animatedText(side: Int, x: CGFloat, y: CGFloat) -> some View {
         Text("\(currentCountDown)")
-            .font(.custom("Inter-Variable", size: 24))
+            .font(.custom("Inter-Variable", size: 20))
             .position(x: x, y: y)
             .opacity(sideToShow == side ? 1 : 0)
             .transition(.opacity)
@@ -425,7 +427,7 @@ struct BreathView: View {
     var body: some View {
         if showText {
             Text("\(instruction)")
-                .font(.custom("Inter-Variable", size: 30))
+                .font(.custom("Inter-Variable", size: 20))
                 .transition(.opacity)
         }
     }
@@ -447,7 +449,7 @@ struct CustomToggle: View {
                         )
                     
                     Circle()
-                        .fill(isOn ? Color.deepGreen :  Color.gray.opacity(0.2))
+                        .fill(isOn ? Color.white :  Color.gray.opacity(0.2))
                         .frame(width: 35, height: 35)
                         .offset(x: isOn ? 20 : -20)
                         .onTapGesture {
@@ -468,8 +470,8 @@ struct CustomToggle: View {
 struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
-    let trackColor = Color.deepGreen.opacity(0.2)
-    let thumbColor = Color.deepGreen
+    let trackColor = Color.white.opacity(0.2)
+    let thumbColor = Color.white
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
     let thumbSize: CGFloat = 30
     

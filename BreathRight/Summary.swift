@@ -17,7 +17,7 @@ struct Summary: View {
     
             ConfettiAnimation()
             
-            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.purple.opacity(0.4)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [.black, .black]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
             HStack {
@@ -25,7 +25,7 @@ struct Summary: View {
                     
                     HStack {
                         Text("Session Complete")
-                            .font(.custom("Inter-Variable", size: 30))
+                            .font(.custom("Inter-Variable", size: 20))
                             .padding(.top)
                             .foregroundColor(.white)
                         Spacer()
@@ -45,7 +45,7 @@ struct Summary: View {
                             
                             // Animated Circle
                             CircleSegment(progress: animationProgress)
-                                .stroke(Color.deepGreen, lineWidth: 10)
+                                .stroke(Color.white, lineWidth: 10)
                                 .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
                                 .onAppear {
                                     withAnimation(.easeInOut(duration: 3.0)) {
@@ -55,12 +55,13 @@ struct Summary: View {
                             
                             // Elapsed time text in the center of the circle
                             Text("\(formattedTime)")
-                                .font(.custom("Inter-Variable", size: 20))
+                                .font(.footnote)
                                 .padding(16)
                                 .background(
                                     Color.gray.opacity(0.2)
                                         .cornerRadius(8)
                                 )
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
@@ -73,10 +74,10 @@ struct Summary: View {
                         self.presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("Dismiss")
-                            .font(.custom("Inter-Variable", size: 20))
+                            .font(.footnote)
                             .padding()
-                            .background(Color.deepGreen)
-                            .foregroundColor(.white)
+                            .background(Color.white)
+                            .foregroundColor(.black)
                             .cornerRadius(50)
                             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                     }
