@@ -205,18 +205,22 @@ struct BoxBreathingView: View {
                             
                             Text("\(durationInSeconds) sec")
                                 .font(.footnote)
+                                .foregroundColor(.white)
                                 .offset(y: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
                                 .font(.footnote)
+                                .foregroundColor(.white)
                                 .offset(y: sizeForSquare / 2 + 25)
                             
                             Text("\(durationInSeconds)")
                                 .font(.footnote)
+                                .foregroundColor(.white)
                                 .offset(x: -(sizeForSquare / 2 + 25))
                             
                             Text("\(durationInSeconds)")
                                 .font(.footnote)
+                                .foregroundColor(.white)
                                 .offset(x: sizeForSquare / 2 + 25)
                             
                         }
