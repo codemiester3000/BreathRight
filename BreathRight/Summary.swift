@@ -36,40 +36,27 @@ struct Summary: View {
                             .foregroundColor(.white)
                     }
                     
-                    Spacer()
+                    Text("Time completed: \(formattedTime)")
+                        .font(.footnote)
+                        .padding(16)
+                        .background(
+                            Color.gray.opacity(0.2)
+                                .cornerRadius(8)
+                        )
+                        .foregroundColor(.white)
+                        .padding(.top)
                     
-                    HStack {
-                        Spacer()
-                        
-                        ZStack {
-                            
-                            
-                            // Animated Circle
-                            CircleSegment(progress: animationProgress)
-                                .stroke(Color.white, lineWidth: 10)
-                                .frame(width: UIScreen.main.bounds.width * 0.8, height: UIScreen.main.bounds.width * 0.8)
-                                .onAppear {
-                                    withAnimation(.easeInOut(duration: 3.0)) {
-                                        animationProgress = 1.0
-                                    }
+                    //Spacer()
+                    
+                    ForEach(0..<48, id: \.self) { _ in
+                        AnimatedSquareView(size: 50)
+                                        .position(x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+                                                  y: CGFloat.random(in: 0...UIScreen.main.bounds.height - 100))
                                 }
-                            
-                            // Elapsed time text in the center of the circle
-                            Text("\(formattedTime)")
-                                .font(.footnote)
-                                .padding(16)
-                                .background(
-                                    Color.gray.opacity(0.2)
-                                        .cornerRadius(8)
-                                )
-                                .foregroundColor(.white)
-                        }
-                        
-                        Spacer()
-                    }
-                    
                     
                     Spacer()
+                    
+                    // Spacer()
                     
                     Button(action: {
                         self.presentationMode.wrappedValue.dismiss()
@@ -92,21 +79,70 @@ struct Summary: View {
     }
 }
 
-struct CircleSegment: Shape, Animatable {
+struct DrawingSquareModifier: AnimatableModifier {
     var progress: CGFloat
+    let size: CGFloat
+
     var animatableData: CGFloat {
         get { progress }
         set { progress = newValue }
     }
-    
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let radius = min(rect.width, rect.height) * 0.5
-        let startAngle = Angle(degrees: -90)
-        let endAngle = Angle(degrees: -90 + Double(360 * progress))
-        
-        path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
-        return path
+
+    func body(content: Content) -> some View {
+        content.overlay(
+            Path { path in
+                let start = CGPoint(x: 0, y: 0)
+                path.move(to: start)
+
+                // Define points for square sides
+                let points = [
+                    CGPoint(x: size, y: 0), // Top side
+                    CGPoint(x: size, y: size), // Right side
+                    CGPoint(x: 0, y: size), // Bottom side
+                    CGPoint(x: 0, y: 0) // Left side
+                ]
+
+                let fullLength = points.count + 1 // Complete cycle length
+                let currentSide = Int(progress)
+                let sideProgress = progress - CGFloat(currentSide)
+
+                for i in 0..<points.count {
+                    if i < currentSide {
+                        path.addLine(to: points[i])
+                    } else if i == currentSide {
+                        let interpolation = interpolate(from: path.currentPoint!, to: points[i], progress: sideProgress)
+                        path.addLine(to: interpolation)
+                        break
+                    }
+                }
+            }
+            .stroke(Color.blue, lineWidth: 2)
+        )
+    }
+
+    // Interpolate between two points
+    private func interpolate(from: CGPoint, to: CGPoint, progress: CGFloat) -> CGPoint {
+        CGPoint(
+            x: from.x + (to.x - from.x) * progress,
+            y: from.y + (to.y - from.y) * progress
+        )
+    }
+}
+
+struct AnimatedSquareView: View {
+    var size: CGFloat
+    @State private var drawProgress: CGFloat = 0
+
+    var body: some View {
+        Rectangle()
+            .background(.clear)
+            .foregroundColor(.clear)
+            .frame(width: size, height: size)
+            .modifier(DrawingSquareModifier(progress: drawProgress, size: size))
+            .onAppear {
+                withAnimation(Animation.linear(duration: 4).repeatCount(1)) {
+                    drawProgress = 4 // Each side + return to start
+                }
+            }
     }
 }
