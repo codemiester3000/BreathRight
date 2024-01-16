@@ -63,13 +63,15 @@ struct BoxBreathingView: View {
                                         Color.gray.opacity(0.2)
                                             .cornerRadius(8)
                                     )
+                                    .foregroundColor(.white)
                                 
                                 Spacer()
                                 
-                                Image("TinyIcon")
+                                Image(systemName: "leaf.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.white)
                             }
                             
                             Rectangle()
@@ -86,9 +88,11 @@ struct BoxBreathingView: View {
                     } else {
                         VStack(alignment: .leading) {
                             HStack {
-                                Text("Box Breathing")
-                                    .font(.system(size: 20))
-                                    .foregroundColor(.white)
+//                                Text("Box Breathing")
+//                                    .font(.system(size: 20))
+//                                    .foregroundColor(.white)
+                                
+                                SettingsView()
                                 
                                 Button(action: {
                                     showTooltip.toggle()
@@ -104,10 +108,11 @@ struct BoxBreathingView: View {
                                 
                                 Spacer()
                                 
-                                Image("TinyIcon")
+                                Image(systemName: "leaf.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(.white)
                             }
                             Rectangle()
                                 .fill(Color.gray.opacity(0.3))
@@ -267,7 +272,7 @@ struct BoxBreathingView: View {
                         .padding(.horizontal, 20)
                         .frame(height: 40)
                         
-                        Button("Begin") {
+                        Button("Breathe") {
                             self.elapsedTime = 0
                             
                             // Start the elapsed time timer
@@ -277,14 +282,17 @@ struct BoxBreathingView: View {
                             }
                             isAnimating = true
                         }
-                        .font(.footnote)
-                        .padding()
-                        .background(.white)
-                        .foregroundColor(.black)
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                        .padding(.vertical, 15)
+                        .background(
+                            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
+                        )
                         .cornerRadius(50)
-                        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                        .padding(.leading, 30)
-                        .padding(.top, 10)
+                        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 10)
                         
                     }
                     
@@ -304,7 +312,6 @@ struct BoxBreathingView: View {
         .sheet(isPresented: $isSheetPresented) {
             Summary(elapsedTime: self.elapsedTime)
         }
-        
     }
     
     func playAudio(named fileName: String) {
@@ -342,6 +349,7 @@ struct BoxBreathingView: View {
             .opacity(sideToShow == side ? 1 : 0)
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.2))
+            .foregroundColor(.white)
     }
     
     
@@ -433,6 +441,7 @@ struct BreathView: View {
             Text("\(instruction)")
                 .font(.custom("Inter-Variable", size: 20))
                 .transition(.opacity)
+                .foregroundColor(.white)
         }
     }
 }

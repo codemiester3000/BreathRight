@@ -14,10 +14,10 @@ struct Summary: View {
     
     var body: some View {
         ZStack {
-    
+            
             ConfettiAnimation()
             
-            LinearGradient(gradient: Gradient(colors: [.black, .black]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
             HStack {
@@ -29,10 +29,11 @@ struct Summary: View {
                             .padding(.top)
                             .foregroundColor(.white)
                         Spacer()
-                        Image("TinyIcon")
+                        Image(systemName: "leaf.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 40, height: 40)
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(.white)
                     }
                     
                     Spacer()

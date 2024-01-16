@@ -2,8 +2,10 @@ import SwiftUI
 import AVFoundation
 
 extension Color {
-    static let robinhoodGreen = Color(hex: "3CB371") // Color(#colorLiteral(red: 0.1803921569, green: 0.8, blue: 0.4431372549, alpha: 1))
+    static let robinhoodGreen = Color(hex: "3CB371")
     static let deepGreen = Color(hex: "2E8B57")
+    static let deepBlue = Color(hex: "003366")
+    static let lighterBlue = Color(hex: "0055b7")
 }
 
 struct MainView: View {
@@ -22,7 +24,7 @@ struct MainView: View {
                         }
         }
         .background(
-            .black
+            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
         )
     }
 }

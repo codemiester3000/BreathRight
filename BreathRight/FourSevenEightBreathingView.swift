@@ -17,7 +17,7 @@ struct FourSevenEightBreathingView: View {
     @State private var isPhaseTransition: Bool = false
     
     var body: some View {
-        ZStack {            
+        ZStack {
             // Your original VStack content on top of the LinearGradient
             VStack {
                 if isBreathingExerciseActive {
@@ -49,6 +49,7 @@ struct FourSevenEightBreathingView: View {
                         startButton
                         Spacer()
                     }
+                    .padding(.bottom, 25)
                 }
             }
         }
@@ -68,13 +69,15 @@ struct FourSevenEightBreathingView: View {
                     .font(.footnote)
                     .padding(8)
                     .background(Color.gray.opacity(0.2).cornerRadius(8))
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
-                Image("TinyIcon")
+                Image(systemName: "leaf.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
             }
             .padding(.horizontal)
             
@@ -92,8 +95,10 @@ struct FourSevenEightBreathingView: View {
     private var headerView: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("4-7-8 Breathing")
-                    .font(.system(size: 20))
+                //                Text("4-7-8 Breathing")
+                //                    .font(.system(size: 20))
+                
+                SettingsView()
                 
                 Button(action: {
                     showTooltip.toggle()
@@ -108,10 +113,11 @@ struct FourSevenEightBreathingView: View {
                 
                 Spacer()
                 
-                Image("TinyIcon")
+                Image(systemName: "leaf.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
             .padding(.top, 50)
@@ -125,21 +131,25 @@ struct FourSevenEightBreathingView: View {
     }
     
     private var startButton: some View {
-        Button("Begin") {
+        Button(action: {
             playAudio(named: "Inhale")
             startBreathingExercise()
+        }) {
+            Text("Breathe")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(.white)
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding(.vertical, 15)
+                .background(
+                    LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
+                )
+                .cornerRadius(50)
+                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
+                .padding(.horizontal, 30)
+                .padding(.vertical, 10)
         }
-        .font(.footnote)
-        .padding()
-        .background(.white)
-        .foregroundColor(.black)
-        .cornerRadius(50)
-        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-        .padding(.leading, 30)
-        .padding(.top, 10)
-        .padding(.bottom, 20)
     }
-    
+
     private var stopButton: some View {
         Button("Stop") {
             isSheetPresented.toggle()
@@ -160,7 +170,7 @@ struct FourSevenEightBreathingView: View {
         exerciseTimer?.invalidate()
         exerciseTimer = nil
         isBreathingExerciseActive = false
-//        exerciseTimeElapsed = 0.0
+        //        exerciseTimeElapsed = 0.0
         currentPhaseTimeRemaining = 0
         progress = 0.0
     }
@@ -251,7 +261,7 @@ struct CircleView: View {
     var body: some View {
         Circle()
             .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
-            .foregroundColor(Color(hex: "2E8B57").opacity(0.4))
+            .foregroundColor(Color.white.opacity(0.4))   //Color(hex: "2E8B57").opacity(0.4))
             .rotationEffect(Angle(degrees: 270))
             .frame(width: 300, height: 300)
     }
@@ -283,8 +293,9 @@ struct Diagram: View {
                     .font(.system(size: 20))
                     .fontWeight(.bold)
                     .animation(.easeIn, value: currentPhase)
-//                Text("\(currentPhaseTimeRemaining) seconds")
-//                    .font(.title2)
+                    .foregroundColor(.white)
+                //                Text("\(currentPhaseTimeRemaining) seconds")
+                //                    .font(.title2)
             }
         }
         .padding(40)
@@ -293,7 +304,7 @@ struct Diagram: View {
     private var phaseColor: Color {
         switch currentPhase {
         case .inhale:
-            return Color(hex: "2E8B57")
+            return Color.white // Color(hex: "2E8B57")
         case .hold:
             return Color(hex: "862e8b")
         case .exhale:

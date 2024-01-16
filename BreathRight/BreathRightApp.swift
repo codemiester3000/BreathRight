@@ -6,26 +6,11 @@ struct BreathRightApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TabView {
-                // Home Tab with BoxBreathingView
-                NavigationView {
-                    MainView()
-                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                }
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
-
-                // Settings Tab
-                NavigationView {
-                    SettingsView() // Replace with your actual settings view
-                        .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                }
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
+            NavigationView {
+                MainView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
             }
-            .accentColor(.white) // This sets the tab item color to white when selected
+            .accentColor(.white) // This sets the navigation bar item color to white
         }
     }
 }
