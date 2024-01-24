@@ -13,54 +13,69 @@ enum BreathingExercise: String, CaseIterable {
             return ["Reduces stress", "Improves concentration", "Enhances relaxation"]
         case .fourSevenEight:
             return ["Improves sleep", "Manages cravings", "Reduces stress"]
-            //        case .custom:
-            //            return ["Customizable to your needs", "Flexible duration", "Various techniques"]
         }
     }
 }
 
 struct HomeView: View {
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack(alignment: .leading) {
+        NavigationView {
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
                 
-                AnimatedHeaderView()
-                    .padding(.bottom, 52)
-                
-                // Dynamic greeting
-                HStack {
-                    Text(greetingMessage())
-                        .font(.largeTitle)
-                        .foregroundColor(.white)
-                    Spacer()
-                    Image(systemName: greetingIconName())
-                        .foregroundColor(.white)
-                        .imageScale(.large)
-                }
-                .padding(.top)
-                
-                Divider().background(.white)
-                
-                //Spacer()
-                
-                // Subheader
-                Text("Select Your Breathing Module:")
-                    .font(.title2)
-                    .foregroundColor(.white)
-                    .padding(.bottom)
+                VStack(alignment: .leading) {
+                    
+                    AnimatedHeaderView()
+                        .padding(.top, -45)
+                        .padding(.bottom, 42)
+                        //.padding(.bottom, 32)
+                    
+                    // Dynamic greeting
+                    HStack {
+                        Text(greetingMessage())
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                        Spacer()
+                        Image(systemName: greetingIconName())
+                            .foregroundColor(.white)
+                            .imageScale(.large)
+                    }
                     .padding(.top)
-                
-                ForEach(BreathingExercise.allCases, id: \.self) { exercise in
-                    BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits)
-                        .padding(.vertical)
+                    
+                    Divider().background(.white)
+                    
+                    //Spacer()
+                    
+                    // Subheader
+                    Text("Select Your Breathing Module:")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .padding(.bottom)
+                        .padding(.top)
+                    
+                    ForEach(BreathingExercise.allCases, id: \.self) { exercise in
+                        NavigationLink(destination: destinationView(for: exercise)) {
+                            BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits)
+                                .padding(.bottom, 12)
+                        }
+                    }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private func destinationView(for exercise: BreathingExercise) -> some View {
+        switch exercise {
+        case .boxBreathing:
+            BoxBreathingView()
+        case .fourSevenEight:
+            FourSevenEightBreathingView()
+            // Add cases for other exercises
         }
     }
     

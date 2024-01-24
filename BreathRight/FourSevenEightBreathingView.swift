@@ -18,6 +18,8 @@ struct FourSevenEightBreathingView: View {
     
     var body: some View {
         ZStack {
+            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                            .edgesIgnoringSafeArea(.all)
             // Your original VStack content on top of the LinearGradient
             VStack {
                 if isBreathingExerciseActive {
@@ -55,6 +57,11 @@ struct FourSevenEightBreathingView: View {
         }
         .onDisappear {
             exerciseTimer?.invalidate()
+            
+            exerciseTimer = nil
+
+                        // Stop the audio
+                        audioPlayer?.stop()
         }
         .sheet(isPresented: $isSheetPresented) {
             Summary(elapsedTime: Int(exerciseTimeElapsed))
@@ -98,7 +105,10 @@ struct FourSevenEightBreathingView: View {
                 //                Text("4-7-8 Breathing")
                 //                    .font(.system(size: 20))
                 
-                SettingsView()
+                Text("4-7-8 Breathing")
+                    .font(.system(size: 20))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
                 
                 Button(action: {
                     showTooltip.toggle()

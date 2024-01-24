@@ -50,254 +50,262 @@ struct BoxBreathingView: View {
     }
     
     var body: some View {
-        VStack {
-            VStack(spacing: 0) {
-                HStack {
-                    if isAnimating {
-                        VStack(alignment: .leading)  {
-                            HStack {
-                                Text(formattedTime(for: elapsedTime))
-                                    .font(.footnote)
-                                    .padding(8)  // Small padding around the text
-                                    .background(
-                                        Color.gray.opacity(0.2)
-                                            .cornerRadius(8)
-                                    )
-                                    .foregroundColor(.white)
-                                
-                                Spacer()
-                                
-                                Image(systemName: "leaf.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 30, height: 30)
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(height: 1)
-                                .padding(.horizontal, 5)
-                                .padding(.top, 20)
-                            
-                            BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
-                                .padding(.top, 40)
-                                .padding(.leading, 4)
-                            
-                        }
-                    } else {
-                        VStack(alignment: .leading) {
-                            HStack {
-//                                Text("Box Breathing")
-//                                    .font(.system(size: 20))
-//                                    .foregroundColor(.white)
-                                
-                                SettingsView()
-                                
-                                Button(action: {
-                                    showTooltip.toggle()
-                                }) {
-                                    Image(systemName: "questionmark.circle.fill")
-                                        .foregroundColor(Color.gray)
-                                }
-                                .popover(isPresented: $showTooltip, arrowEdge: .top) {
-                                    BoxBreathInfo()
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                            .edgesIgnoringSafeArea(.all)
+            
+            VStack {
+                VStack(spacing: 0) {
+                    HStack {
+                        if isAnimating {
+                            VStack(alignment: .leading)  {
+                                HStack {
+                                    Text(formattedTime(for: elapsedTime))
+                                        .font(.footnote)
+                                        .padding(8)  // Small padding around the text
+                                        .background(
+                                            Color.gray.opacity(0.2)
+                                                .cornerRadius(8)
+                                        )
+                                        .foregroundColor(.white)
+                                    
                                     Spacer()
+                                    
+                                    Image(systemName: "leaf.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.white)
                                 }
-                                .foregroundColor(.white)
                                 
-                                Spacer()
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(height: 1)
+                                    .padding(.horizontal, 5)
+                                    .padding(.top, 20)
                                 
-                                Image(systemName: "leaf.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 30, height: 30)
+                                BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
+                                    .padding(.top, 40)
+                                    .padding(.leading, 4)
+                                
+                            }
+                        } else {
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    //                                Text("Box Breathing")
+                                    //                                    .font(.system(size: 20))
+                                    //                                    .foregroundColor(.white)
+                                    
+                                    Text("Box Breathing")
+                                        .font(.system(size: 20))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                    
+                                    Button(action: {
+                                        showTooltip.toggle()
+                                    }) {
+                                        Image(systemName: "questionmark.circle.fill")
+                                            .foregroundColor(Color.gray)
+                                    }
+                                    .popover(isPresented: $showTooltip, arrowEdge: .top) {
+                                        BoxBreathInfo()
+                                        Spacer()
+                                    }
                                     .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "leaf.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.white)
+                                }
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(height: 1)
+                                    .padding(.horizontal, 5)
+                                    .padding(.top, 20)
                             }
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(height: 1)
-                                .padding(.horizontal, 5)
-                                .padding(.top, 20)
-                        }
-                        
-                    }
-                    Spacer()
-                }
-                .padding(.top, 50)
-                .padding(.horizontal, 20)
-                
-                Spacer()
-                
-                // If animation is active, we'll draw the animated square here
-                if isAnimating {
-                    VStack {
-                        ZStack {
-                            // Faded square
-                            Path { path in
-                                let rounding: CGFloat = 6
-                                let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
-                                path.move(to: startingPoint)
-                                
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
-                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
-                                
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
-                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
-                                
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
-                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
-                                
-                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
-                                path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
-                                path.addLine(to: startingPoint)
-                            }
-                            .stroke(Color.white.opacity(0.2), lineWidth: 5)
                             
-                            Path { path in
-                                let rounding: CGFloat = 6
-                                let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
-                                path.move(to: startingPoint)
-                                
-                                if completedSides >= 1 {
+                        }
+                        Spacer()
+                    }
+                    .padding(.top, 50)
+                    .padding(.horizontal, 20)
+                    
+                    Spacer()
+                    
+                    // If animation is active, we'll draw the animated square here
+                    if isAnimating {
+                        VStack {
+                            ZStack {
+                                // Faded square
+                                Path { path in
+                                    let rounding: CGFloat = 6
+                                    let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
+                                    path.move(to: startingPoint)
+                                    
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
-                                }
-                                
-                                if completedSides >= 2 {
+                                    
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
-                                }
-                                
-                                if completedSides >= 3 {
+                                    
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
-                                }
-                                
-                                if completedSides == 4 {
+                                    
                                     path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
                                     path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
                                     path.addLine(to: startingPoint)
                                 }
-                            }
-                            .trim(from: 0, to: progress)
-                            .stroke(Color.white, lineWidth: 5)
-                            .onAppear {
-                                animateSquareDrawing(sideDuration: durationInSeconds)
-                            }
-                            
-//                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
-//                            
-//                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
-//                            
-//                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
-//                            
-//                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
-                        }
-                    }
-                    .frame(height: sizeForSquare)
-                    .padding(.top, animationTopPadding)
-                }
-                
-                if isRectangleVisible && !isAnimating {
-                    VStack {
-                        ZStack {
-                            Rectangle()
-                                .stroke(Color.white, lineWidth: 9)
-                                .frame(width: sizeForSquare, height: sizeForSquare)
-                                .cornerRadius(6)
-                                .animation(isDragging ? .none : .easeInOut(duration: 0.5))
-                            
-                            Text("\(durationInSeconds) sec")
-                                .font(.footnote)
-                                .foregroundColor(.white)
-                                .offset(y: -(sizeForSquare / 2 + 25))
-                            
-                            Text("\(durationInSeconds)")
-                                .font(.footnote)
-                                .foregroundColor(.white)
-                                .offset(y: sizeForSquare / 2 + 25)
-                            
-                            Text("\(durationInSeconds)")
-                                .font(.footnote)
-                                .foregroundColor(.white)
-                                .offset(x: -(sizeForSquare / 2 + 25))
-                            
-                            Text("\(durationInSeconds)")
-                                .font(.footnote)
-                                .foregroundColor(.white)
-                                .offset(x: sizeForSquare / 2 + 25)
-                            
-                        }
-                    }
-                    .frame(height: sizeForSquare)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .leading) {
-                    if isAnimating {
-                        HStack {
-                            Button("Stop") {
-                                squareAnimationWorkItem?.cancel()
-                                isAnimating = false // stop the animation
-                                progress = 0
-                                completedSides = 0
-                                isStopButtonVisible = false
-                                isSliderVisible = true
+                                .stroke(Color.white.opacity(0.2), lineWidth: 5)
                                 
-                                self.elapsedTimeTimer?.invalidate()
-                                timer?.invalidate()
+                                Path { path in
+                                    let rounding: CGFloat = 6
+                                    let startingPoint = CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding)
+                                    path.move(to: startingPoint)
+                                    
+                                    if completedSides >= 1 {
+                                        path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding))
+                                        path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
+                                    }
+                                    
+                                    if completedSides >= 2 {
+                                        path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2, y: -animationTopPadding + sizeForSquare - rounding))
+                                        path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 + sizeForSquare/2 - rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+                                    }
+                                    
+                                    if completedSides >= 3 {
+                                        path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare))
+                                        path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + sizeForSquare - rounding), radius: rounding, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+                                    }
+                                    
+                                    if completedSides == 4 {
+                                        path.addLine(to: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2, y: -animationTopPadding + rounding))
+                                        path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+                                        path.addLine(to: startingPoint)
+                                    }
+                                }
+                                .trim(from: 0, to: progress)
+                                .stroke(Color.white, lineWidth: 5)
+                                .onAppear {
+                                    animateSquareDrawing(sideDuration: durationInSeconds)
+                                }
                                 
-                                isSheetPresented.toggle()
+                                //                            animatedText(side: 1, x: UIScreen.main.bounds.width/2, y: -animationTopPadding - 30)
+                                //
+                                //                            animatedText(side: 2, x: UIScreen.main.bounds.width/2 + sizeForSquare/2 + 30, y: -animationTopPadding + sizeForSquare / 2)
+                                //
+                                //                            animatedText(side: 3, x: UIScreen.main.bounds.width/2, y: -animationTopPadding + sizeForSquare + 30)
+                                //
+                                //                            animatedText(side: 4, x: UIScreen.main.bounds.width/2 - sizeForSquare/2 - 30, y: -animationTopPadding + sizeForSquare/2)
                             }
-                            .font(.footnote)
-                            .padding()
-                            .background(.white)
-                            .foregroundColor(.black)
-                            .cornerRadius(50)
-                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                            .padding(.leading, 30)
-                            .padding(.top, 10)
-                            
-                            Spacer()
                         }
-                        
-                    } else {
-                        HStack {
-                            Spacer()
-                            CustomSlider(value: $sliderValue, isDragging: $isDragging)
-                            Spacer()
-                        }
-                        .padding(.horizontal, 20)
-                        .frame(height: 40)
-                        
-                        Button("Breathe") {
-                            self.elapsedTime = 0
-                            
-                            // Start the elapsed time timer
-                            self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
-                            self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                                self.elapsedTime += 1
-                            }
-                            isAnimating = true
-                        }
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(
-                            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
-                        )
-                        .cornerRadius(50)
-                        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 10)
-                        
+                        .frame(height: sizeForSquare)
+                        .padding(.top, animationTopPadding)
                     }
                     
+                    if isRectangleVisible && !isAnimating {
+                        VStack {
+                            ZStack {
+                                Rectangle()
+                                    .stroke(Color.white, lineWidth: 9)
+                                    .frame(width: sizeForSquare, height: sizeForSquare)
+                                    .cornerRadius(6)
+                                    .animation(isDragging ? .none : .easeInOut(duration: 0.5))
+                                
+                                Text("\(durationInSeconds) sec")
+                                    .font(.footnote)
+                                    .foregroundColor(.white)
+                                    .offset(y: -(sizeForSquare / 2 + 25))
+                                
+                                Text("\(durationInSeconds)")
+                                    .font(.footnote)
+                                    .foregroundColor(.white)
+                                    .offset(y: sizeForSquare / 2 + 25)
+                                
+                                Text("\(durationInSeconds)")
+                                    .font(.footnote)
+                                    .foregroundColor(.white)
+                                    .offset(x: -(sizeForSquare / 2 + 25))
+                                
+                                Text("\(durationInSeconds)")
+                                    .font(.footnote)
+                                    .foregroundColor(.white)
+                                    .offset(x: sizeForSquare / 2 + 25)
+                                
+                            }
+                        }
+                        .frame(height: sizeForSquare)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .leading) {
+                        if isAnimating {
+                            HStack {
+                                Button("Stop") {
+                                    squareAnimationWorkItem?.cancel()
+                                    isAnimating = false // stop the animation
+                                    progress = 0
+                                    completedSides = 0
+                                    isStopButtonVisible = false
+                                    isSliderVisible = true
+                                    
+                                    self.elapsedTimeTimer?.invalidate()
+                                    timer?.invalidate()
+                                    
+                                    isSheetPresented.toggle()
+                                }
+                                .font(.footnote)
+                                .padding()
+                                .background(.white)
+                                .foregroundColor(.black)
+                                .cornerRadius(50)
+                                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                                .padding(.leading, 30)
+                                .padding(.top, 10)
+                                
+                                Spacer()
+                            }
+                            
+                        } else {
+                            HStack {
+                                Spacer()
+                                CustomSlider(value: $sliderValue, isDragging: $isDragging)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 20)
+                            .frame(height: 40)
+                            
+                            Button("Breathe") {
+                                self.elapsedTime = 0
+                                
+                                // Start the elapsed time timer
+                                self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
+                                self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                                    self.elapsedTime += 1
+                                }
+                                isAnimating = true
+                            }
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(
+                                LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
+                            )
+                            .cornerRadius(50)
+                            .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
+                            .padding(.horizontal, 30)
+                            .padding(.vertical, 10)
+                            
+                        }
+                        
+                    }
+                    .padding(.bottom, 25)
                 }
-                .padding(.bottom, 25)
             }
         }
         .onAppear {
@@ -312,6 +320,21 @@ struct BoxBreathingView: View {
         .sheet(isPresented: $isSheetPresented) {
             Summary(elapsedTime: self.elapsedTime)
         }
+        .onDisappear {
+                   // Stop and invalidate the timer
+                   timer?.invalidate()
+                   elapsedTimeTimer?.invalidate()
+                   squareAnimationWorkItem?.cancel()
+
+                   // Stop the audio player
+                   audioPlayer?.stop()
+
+                   // Reset any state as needed
+                   isAnimating = false
+                   progress = 0
+                   completedSides = 0
+                   // ... any other state reset you might need ...
+               }
     }
     
     func playAudio(named fileName: String) {

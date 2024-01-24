@@ -38,6 +38,6 @@ struct AnimatedHeaderView: View {
                     .offset(x: CGFloat.random(in: -100...50), y: CGFloat(index * 10))
             }
         }
-        .padding(.vertical, 30)
+        //.padding(.vertical, 30)
     }
 }
