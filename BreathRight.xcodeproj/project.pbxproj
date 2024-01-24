@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C549C24E2B61BEF7006F040A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549C24D2B61BEF7006F040A /* HomeView.swift */; };
 		C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */; };
 		C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC02B2FB90D00F583C7 /* SettingsView.swift */; };
 		C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C549C24D2B61BEF7006F040A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathInfo.swift; sourceTree = "<group>"; };
 		C549EAC02B2FB90D00F583C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathingView.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				C549EAC02B2FB90D00F583C7 /* SettingsView.swift */,
 				C549EAC22B2FBC8A00F583C7 /* BoxBreathingView.swift */,
 				C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */,
+				C549C24D2B61BEF7006F040A /* HomeView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C549EAC92B300B5400F583C7 /* FourSevenEightBreathInfo.swift in Sources */,
+				C549C24E2B61BEF7006F040A /* HomeView.swift in Sources */,
 				C5B417EA2AC8766B005C7E45 /* BreathRight.xcdatamodeld in Sources */,
 				C549EAC32B2FBC8A00F583C7 /* BoxBreathingView.swift in Sources */,
 				C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */,
