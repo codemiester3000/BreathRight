@@ -15,6 +15,17 @@ enum BreathingExercise: String, CaseIterable {
             return ["Improves sleep", "Manages cravings", "Reduces stress"]
         }
     }
+    
+    func timeForOneCycle() -> Int {
+            switch self {
+            case .boxBreathing:
+                // Box breathing is typically 4 seconds inhale, 4 seconds hold, 4 seconds exhale, 4 seconds hold
+                return 4 + 4 + 4 + 4 // 16 seconds
+            case .fourSevenEight:
+                // 4-7-8 breathing is 4 seconds inhale, 7 seconds hold, 8 seconds exhale
+                return 4 + 7 + 8 // 19 seconds
+            }
+        }
 }
 
 struct HomeView: View {
@@ -73,7 +84,7 @@ struct HomeView: View {
                     VStack(alignment: .center) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
-                                BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits, numCycles: numCycles)
+                                BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits, numCycles: numCycles, timeForCycle: exercise.timeForOneCycle())
                                     .padding(.bottom, 12)
                             }
                         }
@@ -122,6 +133,7 @@ struct BeautifulButton: View {
     let title: String
     let benefits: [String]
     let numCycles: Int // New parameter for the number of cycles
+    let timeForCycle: Int
 
     let screenWidth = UIScreen.main.bounds.width
 
@@ -164,7 +176,7 @@ struct BeautifulButton: View {
                         .foregroundColor(.backgroundBeige)
                         .font(.caption)
 
-                    Text("Cycles: \(numCycles)")
+                    Text("\(numCycles) cycles")
                         .foregroundColor(.white)
                         .font(.caption)
                         .padding(.trailing, 12)
@@ -174,7 +186,7 @@ struct BeautifulButton: View {
                         .foregroundColor(.backgroundBeige)
                         .font(.caption)
 
-                    Text("ETA: 5 min")
+                    Text(etaText)
                         .foregroundColor(.white)
                         .font(.caption)
                         .padding(.trailing, 12)
@@ -195,6 +207,16 @@ struct BeautifulButton: View {
         )
         .shadow(radius: 5)
     }
+    
+    private var etaText: String {
+            let totalSeconds = timeForCycle * numCycles
+            if totalSeconds < 60 {
+                return "\(totalSeconds) sec"
+            } else {
+                let roundedMinutes = (totalSeconds + 30) / 60 // Round to nearest minute
+                return "\(roundedMinutes) min"
+            }
+        }
 }
 
 
