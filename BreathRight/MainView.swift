@@ -6,6 +6,8 @@ extension Color {
     static let deepGreen = Color(hex: "2E8B57")
     static let deepBlue = Color(hex: "003366")
     static let lighterBlue = Color(hex: "0055b7")
+    static let backgroundBeige = Color(hex: "f5be69")
+    static let myTurqoise = Color(hex: "5de1e6")
 }
 
 struct MainView: View {

@@ -9,63 +9,68 @@ struct FourSevenEightBreathingView: View {
     @State private var exerciseTimeElapsed: Double = 0
     @State private var currentPhaseTimeRemaining: Int = 0
     @State private var exerciseTimer: Timer?
-    @State private var isSheetPresented = false
+    //@State private var isSheetPresented = false
     
     // State for diagram animation
     @State private var currentPhase: BreathingPhase = .inhale
     @State private var progress: CGFloat = 0.0
     @State private var isPhaseTransition: Bool = false
     
+    @State private var navigateToSummary = false
+    
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
-                            .edgesIgnoringSafeArea(.all)
-            // Your original VStack content on top of the LinearGradient
-            VStack {
-                if isBreathingExerciseActive {
-                    timerView
-                    
-                    Spacer()
-                    
-                    Diagram(currentPhase: $currentPhase,
-                            progress: $progress,
-                            isPhaseTransition: $isPhaseTransition,
-                            currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
-                    .frame(width: 300, height: 300)
-                    
-                    Spacer()
-                    
-                    HStack {
-                        stopButton
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
+                // Your original VStack content on top of the LinearGradient
+                VStack {
+                    if isBreathingExerciseActive {
+                        timerView
+                        
                         Spacer()
-                    }
-                } else {
-                    headerView
-                    Spacer()
-                    
-                    CircleView()
-                    
-                    Spacer()
-                    
-                    HStack {
-                        startButton
+                        
+                        Diagram(currentPhase: $currentPhase,
+                                progress: $progress,
+                                isPhaseTransition: $isPhaseTransition,
+                                currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
+                        .frame(width: 300, height: 300)
+                        
                         Spacer()
+                        
+                        HStack {
+                            stopButton
+                            Spacer()
+                        }
+                    } else if navigateToSummary {
+                        Summary(elapsedTime: Int(exerciseTimeElapsed))
+                    } else {
+                        headerView
+                        Spacer()
+                        
+                        CircleView()
+                        
+                        Spacer()
+                        
+                        HStack {
+                            startButton
+                            Spacer()
+                        }
+                        .padding(.bottom, 25)
                     }
-                    .padding(.bottom, 25)
                 }
             }
-        }
+        
         .onDisappear {
             exerciseTimer?.invalidate()
             
             exerciseTimer = nil
-
-                        // Stop the audio
-                        audioPlayer?.stop()
+            
+            // Stop the audio
+            audioPlayer?.stop()
         }
-        .sheet(isPresented: $isSheetPresented) {
-            Summary(elapsedTime: Int(exerciseTimeElapsed))
-        }
+        //        .sheet(isPresented: $isSheetPresented) {
+        //            Summary(elapsedTime: Int(exerciseTimeElapsed))
+        //        }
     }
     
     private var timerView: some View {
@@ -141,29 +146,34 @@ struct FourSevenEightBreathingView: View {
     }
     
     private var startButton: some View {
-        Button(action: {
-            playAudio(named: "Inhale")
-            startBreathingExercise()
-        }) {
-            Text("Breathe")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(.white)
-                .frame(minWidth: 0, maxWidth: .infinity)
-                .padding(.vertical, 15)
-                .background(
-                    LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
-                )
-                .cornerRadius(50)
-                .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
-                .padding(.horizontal, 30)
-                .padding(.vertical, 10)
+        GeometryReader { geometry in
+            Button(action: {
+                playAudio(named: "Inhale")
+                startBreathingExercise()
+            }) {
+                Text("Breathe")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .padding(.horizontal, 12)
+                    .frame(width: geometry.size.width * 0.8) // Set the width to 80% of the screen width
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.white, lineWidth: 2)
+                    )
+                    .background(Color.myTurqoise.opacity(0.2))
+            }
+            .frame(width: geometry.size.width) // This is to ensure the button is centered
         }
+        .frame(height: 50) // Set a fixed height for the button
+        .padding(.bottom, 32)
     }
-
+    
     private var stopButton: some View {
         Button("Stop") {
-            isSheetPresented.toggle()
+            //isSheetPresented.toggle()
             stopBreathingExercise()
+            navigateToSummary = true
         }
         .font(.footnote)
         .padding()

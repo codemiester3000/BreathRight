@@ -51,8 +51,8 @@ struct BoxBreathingView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
-                            .edgesIgnoringSafeArea(.all)
+            LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
             
             VStack {
                 VStack(spacing: 0) {
@@ -71,10 +71,10 @@ struct BoxBreathingView: View {
                                     
                                     Spacer()
                                     
-                                    Image(systemName: "leaf.fill")
+                                    Image(systemName: "square")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                        .frame(width: 30, height: 30)
+                                        .frame(width: 24, height: 24)
                                         .foregroundColor(.white)
                                 }
                                 
@@ -92,10 +92,6 @@ struct BoxBreathingView: View {
                         } else {
                             VStack(alignment: .leading) {
                                 HStack {
-                                    //                                Text("Box Breathing")
-                                    //                                    .font(.system(size: 20))
-                                    //                                    .foregroundColor(.white)
-                                    
                                     Text("Box Breathing")
                                         .font(.system(size: 20))
                                         .fontWeight(.bold)
@@ -115,11 +111,11 @@ struct BoxBreathingView: View {
                                     
                                     Spacer()
                                     
-                                    Image(systemName: "leaf.fill")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 30, height: 30)
-                                        .foregroundColor(.white)
+                                    //                                    Image(systemName: "leaf.fill")
+                                    //                                        .resizable()
+                                    //                                        .aspectRatio(contentMode: .fit)
+                                    //                                        .frame(width: 30, height: 30)
+                                    //                                        .foregroundColor(.white)
                                 }
                                 Rectangle()
                                     .fill(Color.gray.opacity(0.3))
@@ -133,6 +129,14 @@ struct BoxBreathingView: View {
                     }
                     .padding(.top, 50)
                     .padding(.horizontal, 20)
+                    
+                    //                    HStack {
+                    //                        CustomSlider(value: $sliderValue, isDragging: $isDragging, timeInSecond: durationInSeconds)
+                    //                        Spacer()
+                    //                    }
+                    //                    .frame(height: 40)
+                    //                    .padding(.top, 44)
+                    //                    .padding(.horizontal)
                     
                     Spacer()
                     
@@ -208,6 +212,7 @@ struct BoxBreathingView: View {
                     
                     if isRectangleVisible && !isAnimating {
                         VStack {
+                            
                             ZStack {
                                 Rectangle()
                                     .stroke(Color.white, lineWidth: 9)
@@ -215,25 +220,29 @@ struct BoxBreathingView: View {
                                     .cornerRadius(6)
                                     .animation(isDragging ? .none : .easeInOut(duration: 0.5))
                                 
-                                Text("\(durationInSeconds) sec")
-                                    .font(.footnote)
-                                    .foregroundColor(.white)
-                                    .offset(y: -(sizeForSquare / 2 + 25))
-                                
-                                Text("\(durationInSeconds)")
-                                    .font(.footnote)
-                                    .foregroundColor(.white)
-                                    .offset(y: sizeForSquare / 2 + 25)
-                                
-                                Text("\(durationInSeconds)")
-                                    .font(.footnote)
-                                    .foregroundColor(.white)
-                                    .offset(x: -(sizeForSquare / 2 + 25))
-                                
-                                Text("\(durationInSeconds)")
-                                    .font(.footnote)
-                                    .foregroundColor(.white)
-                                    .offset(x: sizeForSquare / 2 + 25)
+                                //                                Text("\(durationInSeconds) sec")
+                                //                                    .font(.footnote)
+                                //                                    .foregroundColor(.white)
+                                //                                    .fontWeight(.bold)
+                                //                                    .offset(y: -(sizeForSquare / 2 + 25))
+                                //
+                                //                                Text("\(durationInSeconds)")
+                                //                                    .font(.footnote)
+                                //                                    .foregroundColor(.white)
+                                //                                    .fontWeight(.bold)
+                                //                                    .offset(y: sizeForSquare / 2 + 25)
+                                //
+                                //                                Text("\(durationInSeconds)")
+                                //                                    .font(.footnote)
+                                //                                    .foregroundColor(.white)
+                                //                                    .fontWeight(.bold)
+                                //                                    .offset(x: -(sizeForSquare / 2 + 25))
+                                //
+                                //                                Text("\(durationInSeconds)")
+                                //                                    .font(.footnote)
+                                //                                    .foregroundColor(.white)
+                                //                                    .fontWeight(.bold)
+                                //                                    .offset(x: sizeForSquare / 2 + 25)
                                 
                             }
                         }
@@ -271,35 +280,56 @@ struct BoxBreathingView: View {
                             }
                             
                         } else {
-                            HStack {
-                                Spacer()
-                                CustomSlider(value: $sliderValue, isDragging: $isDragging)
-                                Spacer()
-                            }
-                            .padding(.horizontal, 20)
-                            .frame(height: 40)
                             
-                            Button("Breathe") {
-                                self.elapsedTime = 0
+                            
+                            HStack {
                                 
-                                // Start the elapsed time timer
-                                self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
-                                self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                                    self.elapsedTime += 1
+                                VStack(alignment: .leading) {
+                                    HStack {
+                                        CustomSlider(value: $sliderValue, isDragging: $isDragging, timeInSecond: durationInSeconds)
+                                        Spacer()
+                                    }
+                                    .frame(height: 40)
+                                    .padding(.bottom, 44)
+                                    .padding(.horizontal)
+                                    
+                                    
+                                    GeometryReader { geometry in
+                                        Button(action: {
+                                            self.elapsedTime = 0
+                                            
+                                            // Start the elapsed time timer
+                                            self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
+                                            self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                                                self.elapsedTime += 1
+                                            }
+                                            isAnimating = true
+                                        }) {
+                                            Text("Breathe")
+                                                .font(.headline)
+                                                .foregroundColor(.white)
+                                                .padding()
+                                                .padding(.horizontal, 12)
+                                                .frame(width: geometry.size.width * 0.8) // Set the width to 80% of the screen width
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 10)
+                                                        .stroke(Color.white, lineWidth: 2)
+                                                )
+                                                .background(Color.myTurqoise.opacity(0.2))
+                                        }
+                                        .frame(width: geometry.size.width) // This is to ensure the button is centered
+                                    }
+                                    .frame(height: 50) // Set a fixed height for the button
+                                    .padding(.bottom, 32)
                                 }
-                                isAnimating = true
+                                
+                                
+                                
+                                
+                                Spacer()
                             }
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(
-                                LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue]), startPoint: .leading, endPoint: .trailing)
-                            )
-                            .cornerRadius(50)
-                            .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 6)
-                            .padding(.horizontal, 30)
-                            .padding(.vertical, 10)
+                            .padding(.horizontal)
+                            
                             
                         }
                         
@@ -321,20 +351,20 @@ struct BoxBreathingView: View {
             Summary(elapsedTime: self.elapsedTime)
         }
         .onDisappear {
-                   // Stop and invalidate the timer
-                   timer?.invalidate()
-                   elapsedTimeTimer?.invalidate()
-                   squareAnimationWorkItem?.cancel()
-
-                   // Stop the audio player
-                   audioPlayer?.stop()
-
-                   // Reset any state as needed
-                   isAnimating = false
-                   progress = 0
-                   completedSides = 0
-                   // ... any other state reset you might need ...
-               }
+            // Stop and invalidate the timer
+            timer?.invalidate()
+            elapsedTimeTimer?.invalidate()
+            squareAnimationWorkItem?.cancel()
+            
+            // Stop the audio player
+            audioPlayer?.stop()
+            
+            // Reset any state as needed
+            isAnimating = false
+            progress = 0
+            completedSides = 0
+            // ... any other state reset you might need ...
+        }
     }
     
     func playAudio(named fileName: String) {
@@ -506,41 +536,66 @@ struct CustomToggle: View {
 struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
-    let trackColor = Color.white.opacity(0.2)
+    var timeInSecond: Int
+    let trackColor = Color.backgroundBeige.opacity(0.5)
     let thumbColor = Color.white
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
-    let thumbSize: CGFloat = 30
+    let thumbSize: CGFloat = 20 // smaller thumb for a minimalist look
     
     var body: some View {
-        HStack {
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 15)
-                        .frame(width: geometry.size.width, height: 5)
-                        .foregroundColor(trackColor)
-                    
-                    RoundedRectangle(cornerRadius: 15)
-                        .frame(width: geometry.size.width * value, height: 5)
-                        .foregroundColor(thumbColor)
-                    
-                    Circle()
-                        .frame(width: thumbSize, height: thumbSize)
-                        .foregroundColor(thumbColor)
-                        .position(x: geometry.size.width * value, y: geometry.size.height / 2)
-                        .gesture(
-                            DragGesture().onChanged { gesture in
-                                self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
-                                self.isDragging = true  // user has started dragging
-                            }.onEnded { _ in
-                                self.isDragging = false  // user has ended dragging
-                            }
-                        )
-                }
+        VStack(alignment: .leading) {
+            HStack {
+                Image(systemName: "heart.square").foregroundColor(.white)
+                
+                Text("Adjust Breath Duration") // The text label
+                    .font(.system(size: 16)) // You can adjust the font size and style
+                    .foregroundColor(.white) // Text color, adjust as needed
+                    .frame(alignment: .leading) // Left aligned
+                
+                Spacer()
+                
+                Text("\(timeInSecond) Sec") // The text label
+                    .font(.system(size: 16)) // You can adjust the font size and style
+                    .foregroundColor(.white) // Text color, adjust as needed
+                    .frame(alignment: .leading) // Left aligned
+                    .padding(.trailing, 12)
             }
-            .frame(width: sliderWidth)
+            .padding(.bottom, 24)
+            
+            HStack(alignment: .center, spacing: 10) { // Added alignment and spacing
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        Capsule() // sleek and modern shape
+                            .frame(width: geometry.size.width, height: 3) // thinner track
+                            .foregroundColor(trackColor)
+                        
+                        Capsule()
+                            .frame(width: geometry.size.width * value, height: 3)
+                            .foregroundColor(thumbColor)
+                        
+                        Circle() // keeping the thumb circular for a clean look
+                            .frame(width: thumbSize, height: thumbSize)
+                            .foregroundColor(thumbColor)
+                            .position(x: geometry.size.width * value, y: geometry.size.height / 2)
+                        // drag gesture remains the same
+                            .gesture(
+                                DragGesture().onChanged { gesture in
+                                    self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
+                                    self.isDragging = true
+                                }.onEnded { _ in
+                                    self.isDragging = false
+                                }
+                            )
+                    }
+                }
+                .frame(width: sliderWidth)
+            }
         }
     }
 }
+
+
+
 
 extension Color {
     init(hex: String) {

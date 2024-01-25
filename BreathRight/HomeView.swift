@@ -21,7 +21,7 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(alignment: .leading) {
@@ -117,7 +117,7 @@ struct BeautifulButton: View {
                     ForEach(benefits, id: \.self) { benefit in
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.yellow)
+                                .foregroundColor(.backgroundBeige)
                             Text(benefit)
                                 .foregroundColor(.white)
                         }
@@ -136,7 +136,7 @@ struct BeautifulButton: View {
         }
         .padding()
         .frame(width: 300, height: 140)
-        .background(Color.gray.opacity(0.3))
+        .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
