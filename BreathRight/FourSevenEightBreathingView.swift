@@ -18,10 +18,16 @@ struct FourSevenEightBreathingView: View {
     
     @State private var navigateToSummary = false
     
+    @State private var isFirstLoad = true
+
+    
     var body: some View {
             ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isBreathingExerciseActive ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
+                    .animation(.easeInOut(duration: 0.5), value: isBreathingExerciseActive)
+                    .animation(.easeInOut(duration: 0.5), value: isFirstLoad)
+                
                 // Your original VStack content on top of the LinearGradient
                 VStack {
                     if isBreathingExerciseActive {
@@ -67,6 +73,9 @@ struct FourSevenEightBreathingView: View {
             
             // Stop the audio
             audioPlayer?.stop()
+        }
+        .onAppear {
+            isFirstLoad = false
         }
         //        .sheet(isPresented: $isSheetPresented) {
         //            Summary(elapsedTime: Int(exerciseTimeElapsed))
