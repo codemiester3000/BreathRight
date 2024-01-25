@@ -73,7 +73,7 @@ struct HomeView: View {
                     VStack(alignment: .center) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
-                                BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits)
+                                BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits, numCycles: numCycles)
                                     .padding(.bottom, 12)
                             }
                         }
@@ -121,9 +121,10 @@ struct HomeView: View {
 struct BeautifulButton: View {
     let title: String
     let benefits: [String]
-    
+    let numCycles: Int // New parameter for the number of cycles
+
     let screenWidth = UIScreen.main.bounds.width
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -131,9 +132,9 @@ struct BeautifulButton: View {
                     Text(title)
                         .font(.headline)
                         .foregroundColor(.white)
-                    
-                    Divider().background(Color.white).frame(width: screenWidth * 0.8 * 0.58) // Adjusted
-                    
+
+                    Divider().background(Color.white).frame(width: screenWidth * 0.8 * 0.58)
+
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(benefits, id: \.self) { benefit in
                             HStack {
@@ -146,28 +147,56 @@ struct BeautifulButton: View {
                     }
                     .font(.caption)
                 }
-                .frame(width: screenWidth * 0.8 * 0.53, height: 140) // Adjusted
+                .frame(width: screenWidth * 0.8 * 0.53, height: 140)
                 .padding(.leading, 8)
-                
-                Spacer() // Add a spacer to push the arrow to the right
-                
+
+                Spacer()
+
                 Image(systemName: "chevron.right")
                     .foregroundColor(.white)
                     .imageScale(.large)
             }
-            .padding()
-            .frame(width: screenWidth * 0.8, height: 140) // 80% of screen width
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white, lineWidth: 1)
-            )
-            .shadow(radius: 5)
+            .padding([.top, .leading, .trailing])
+
+            HStack {
+                HStack {
+                    Image(systemName: "arrow.2.squarepath")
+                        .foregroundColor(.backgroundBeige)
+                        .font(.caption)
+
+                    Text("Cycles: \(numCycles)")
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .padding(.trailing, 12)
+                }
+                HStack {
+                    Image(systemName: "timer")
+                        .foregroundColor(.backgroundBeige)
+                        .font(.caption)
+
+                    Text("ETA: 5 min")
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .padding(.trailing, 12)
+                }
+                Spacer()
+            }
+            .padding(.bottom, 32)
+            .padding(.horizontal)
+
+            // Maintaining the styling for the whole button
         }
-        .frame(height: 140) // Fixed height for the button
+        .frame(width: screenWidth * 0.9, height: 160) // Adjusted height for the new row
+        .background(Color.gray.opacity(0.2))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.white, lineWidth: 1)
+        )
+        .shadow(radius: 5)
     }
 }
+
 
 struct BreathCycleSelector: View {
     @Binding var cycles: Int // Binding to the number of breath cycles
