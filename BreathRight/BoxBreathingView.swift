@@ -57,7 +57,7 @@ struct BoxBreathingView: View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isAnimating ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
-                .animation(.easeInOut(duration: 0.5), value: isAnimating)
+                .animation(.easeInOut(duration: 1.0), value: isAnimating)
             
             if isSheetPresented {
                 Summary(elapsedTime: self.elapsedTime)
@@ -267,14 +267,17 @@ struct BoxBreathingView: View {
                                         
                                         isSheetPresented.toggle()
                                     }
-                                    .font(.footnote)
+                                    .font(.headline)
+                                    .foregroundColor(.white)
                                     .padding()
-                                    .background(.white)
-                                    .foregroundColor(.black)
-                                    .cornerRadius(50)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-                                    .padding(.leading, 30)
-                                    .padding(.top, 10)
+                                    .padding(.horizontal, 12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.white, lineWidth: 2)
+                                    )
+                                    .background(Color.lighterBlue.opacity(0.2))
+                                    .cornerRadius(10)
+                                    .padding(.leading, 24)
                                     
                                     Spacer()
                                 }

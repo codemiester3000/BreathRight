@@ -25,8 +25,7 @@ struct FourSevenEightBreathingView: View {
             ZStack {
                 LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isBreathingExerciseActive ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
-                    .animation(.easeInOut(duration: 0.5), value: isBreathingExerciseActive)
-                    .animation(.easeInOut(duration: 0.5), value: isFirstLoad)
+                    .animation(.easeInOut(duration: 1.0), value: isBreathingExerciseActive)
                 
                 // Your original VStack content on top of the LinearGradient
                 VStack {
@@ -94,11 +93,11 @@ struct FourSevenEightBreathingView: View {
                 
                 Spacer()
                 
-                Image(systemName: "leaf.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.white)
+//                Image(systemName: "leaf.fill")
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//                    .frame(width: 30, height: 30)
+//                    .foregroundColor(.white)
             }
             .padding(.horizontal)
             
@@ -137,11 +136,11 @@ struct FourSevenEightBreathingView: View {
                 
                 Spacer()
                 
-                Image(systemName: "leaf.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .foregroundColor(.white)
+//                Image(systemName: "leaf.fill")
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//                    .frame(width: 30, height: 30)
+//                    .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
             .padding(.top, 50)
@@ -184,15 +183,18 @@ struct FourSevenEightBreathingView: View {
             stopBreathingExercise()
             navigateToSummary = true
         }
-        .font(.footnote)
+        .font(.headline)
+        .foregroundColor(.white)
         .padding()
-        .background(.white)
-        .foregroundColor(.black)
-        .cornerRadius(50)
-        .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
-        .padding(.leading, 30)
-        .padding(.top, 10)
-        .padding(.bottom, 20)
+        .padding(.horizontal, 12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.white, lineWidth: 2)
+        )
+        .background(Color.lighterBlue.opacity(0.2))
+        .cornerRadius(10)
+        .padding(.leading, 24)
+        .padding(.bottom)
     }
     
     private func stopBreathingExercise() {

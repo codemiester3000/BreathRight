@@ -62,12 +62,16 @@ struct Summary: View {
                         self.presentationMode.wrappedValue.dismiss()
                     }) {
                         Text("Dismiss")
-                            .font(.footnote)
+                            .font(.headline)
+                            .foregroundColor(.white)
                             .padding()
-                            .background(Color.white)
-                            .foregroundColor(.black)
-                            .cornerRadius(50)
-                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                            .padding(.horizontal, 12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.white, lineWidth: 2)
+                            )
+                            .background(Color.lighterBlue.opacity(0.6))
+                            .cornerRadius(10)
                     }
                 }
                 .padding()
