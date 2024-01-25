@@ -49,9 +49,9 @@ struct BoxBreathingView: View {
         _sliderValue = State(initialValue: initialValue)
     }
     
-//    if isSheetPresented {
-//        Summary(elapsedTime: self.elapsedTime)
-//    }
+    //    if isSheetPresented {
+    //        Summary(elapsedTime: self.elapsedTime)
+    //    }
     
     var body: some View {
         ZStack {
@@ -288,6 +288,7 @@ struct BoxBreathingView: View {
                                 HStack {
                                     
                                     VStack(alignment: .leading) {
+                                        
                                         HStack {
                                             CustomSlider(value: $sliderValue, isDragging: $isDragging, timeInSecond: durationInSeconds)
                                             Spacer()
@@ -351,9 +352,9 @@ struct BoxBreathingView: View {
                 }
             }
         }
-//        .sheet(isPresented: $isSheetPresented) {
-//            Summary(elapsedTime: self.elapsedTime)
-//        }
+        //        .sheet(isPresented: $isSheetPresented) {
+        //            Summary(elapsedTime: self.elapsedTime)
+        //        }
         .onDisappear {
             // Stop and invalidate the timer
             timer?.invalidate()
