@@ -266,7 +266,7 @@ struct BreathCycleSelector: View {
                             DragGesture().onChanged { gesture in
                                 if !isUnlimited {
                                     let newCycleValue = Int((gesture.location.x / sliderWidth) * CGFloat(maxCycles))
-                                    cycles = min(max(newCycleValue, 0), maxCycles)
+                                    cycles = min(max(newCycleValue, 1), maxCycles)
                                 }
                             }
                         )
