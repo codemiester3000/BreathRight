@@ -17,20 +17,24 @@ enum BreathingExercise: String, CaseIterable {
     }
     
     func timeForOneCycle() -> Int {
-            switch self {
-            case .boxBreathing:
-                // Box breathing is typically 4 seconds inhale, 4 seconds hold, 4 seconds exhale, 4 seconds hold
-                return 4 + 4 + 4 + 4 // 16 seconds
-            case .fourSevenEight:
-                // 4-7-8 breathing is 4 seconds inhale, 7 seconds hold, 8 seconds exhale
-                return 4 + 7 + 8 // 19 seconds
-            }
+        switch self {
+        case .boxBreathing:
+            // Box breathing is typically 4 seconds inhale, 4 seconds hold, 4 seconds exhale, 4 seconds hold
+            return 4 + 4 + 4 + 4 // 16 seconds
+        case .fourSevenEight:
+            // 4-7-8 breathing is 4 seconds inhale, 7 seconds hold, 8 seconds exhale
+            return 4 + 7 + 8 // 19 seconds
         }
+    }
 }
 
 struct HomeView: View {
-    @State private var numCycles: Int = 10
-    @State private var unlimtedCycles: Bool = false
+    @State private var numCycles: Int = {
+            let savedValue = UserDefaults.standard.integer(forKey: "numCycles")
+            return savedValue != 0 ? savedValue : 10 // If savedValue is 0 (not set), return 10
+        }()
+        
+        @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
     
     var body: some View {
         NavigationView {
@@ -43,7 +47,7 @@ struct HomeView: View {
                     AnimatedHeaderView()
                         .padding(.top, -45)
                         .padding(.bottom, 42)
-                        //.padding(.bottom, 32)
+                    //.padding(.bottom, 32)
                     
                     VStack(alignment: .leading) {
                         // Dynamic greeting
@@ -79,12 +83,18 @@ struct HomeView: View {
                             .padding(.top)
                             .padding(.leading)
                     }
-                   
+                    
                     
                     VStack(alignment: .center) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
-                                BeautifulButton(title: exercise.rawValue, benefits: exercise.benefits, numCycles: numCycles, timeForCycle: exercise.timeForOneCycle())
+                                BeautifulButton(
+                                    title: exercise.rawValue,
+                                    benefits: exercise.benefits,
+                                    numCycles: numCycles,
+                                    timeForCycle: exercise.timeForOneCycle(),
+                                    isInfinite: unlimtedCycles
+                                )
                                     .padding(.bottom, 12)
                             }
                         }
@@ -134,9 +144,10 @@ struct BeautifulButton: View {
     let benefits: [String]
     let numCycles: Int // New parameter for the number of cycles
     let timeForCycle: Int
-
+    let isInfinite: Bool
+    
     let screenWidth = UIScreen.main.bounds.width
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -144,9 +155,9 @@ struct BeautifulButton: View {
                     Text(title)
                         .font(.headline)
                         .foregroundColor(.white)
-
+                    
                     Divider().background(Color.white).frame(width: screenWidth * 0.8 * 0.58)
-
+                    
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(benefits, id: \.self) { benefit in
                             HStack {
@@ -161,22 +172,22 @@ struct BeautifulButton: View {
                 }
                 .frame(width: screenWidth * 0.8 * 0.53, height: 140)
                 .padding(.leading, 8)
-
+                
                 Spacer()
-
+                
                 Image(systemName: "chevron.right")
                     .foregroundColor(.white)
                     .imageScale(.large)
             }
             .padding([.top, .leading, .trailing])
-
+            
             HStack {
                 HStack {
                     Image(systemName: "arrow.2.squarepath")
                         .foregroundColor(.backgroundBeige)
                         .font(.caption)
-
-                    Text("\(numCycles) cycles")
+                    
+                    Text(isInfinite ? "∞ cycles" : "\(numCycles) cycles")
                         .foregroundColor(.white)
                         .font(.caption)
                         .padding(.trailing, 12)
@@ -185,8 +196,8 @@ struct BeautifulButton: View {
                     Image(systemName: "timer")
                         .foregroundColor(.backgroundBeige)
                         .font(.caption)
-
-                    Text(etaText)
+                    
+                    Text(isInfinite ? "∞" : etaText)
                         .foregroundColor(.white)
                         .font(.caption)
                         .padding(.trailing, 12)
@@ -195,7 +206,7 @@ struct BeautifulButton: View {
             }
             .padding(.bottom, 32)
             .padding(.horizontal)
-
+            
             // Maintaining the styling for the whole button
         }
         .frame(width: screenWidth * 0.9, height: 160) // Adjusted height for the new row
@@ -209,14 +220,14 @@ struct BeautifulButton: View {
     }
     
     private var etaText: String {
-            let totalSeconds = timeForCycle * numCycles
-            if totalSeconds < 60 {
-                return "\(totalSeconds) sec"
-            } else {
-                let roundedMinutes = (totalSeconds + 30) / 60 // Round to nearest minute
-                return "\(roundedMinutes) min"
-            }
+        let totalSeconds = timeForCycle * numCycles
+        if totalSeconds < 60 {
+            return "\(totalSeconds) sec"
+        } else {
+            let roundedMinutes = (totalSeconds + 30) / 60 // Round to nearest minute
+            return "\(roundedMinutes) min"
         }
+    }
 }
 
 
@@ -228,7 +239,7 @@ struct BreathCycleSelector: View {
     let trackColor = Color.backgroundBeige.opacity(0.5)
     let thumbColor = Color.white
     let maxCycles = 120 // Maximum number of cycles
-
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -266,17 +277,21 @@ struct BreathCycleSelector: View {
                             DragGesture().onChanged { gesture in
                                 if !isUnlimited {
                                     let newCycleValue = Int((gesture.location.x / sliderWidth) * CGFloat(maxCycles))
-                                    cycles = min(max(newCycleValue, 1), maxCycles)
+                                    let adjustedValue = min(max(newCycleValue, 1), maxCycles)
+                                    cycles = adjustedValue
+                                    UserDefaults.standard.set(adjustedValue, forKey: "numCycles")
                                 }
                             }
                         )
                 }
                 .padding(.trailing)
-
+                
                 Button(action: {
                     isUnlimited.toggle()
+                    UserDefaults.standard.set(isUnlimited, forKey: "unlimtedCycles")
                     if isUnlimited {
                         cycles = maxCycles
+                        UserDefaults.standard.set(maxCycles, forKey: "numCycles")
                     }
                 }) {
                     Image(systemName: "infinity")
@@ -290,4 +305,5 @@ struct BreathCycleSelector: View {
         }
     }
 }
+
 
