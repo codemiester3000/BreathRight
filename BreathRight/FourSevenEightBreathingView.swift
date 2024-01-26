@@ -19,51 +19,56 @@ struct FourSevenEightBreathingView: View {
     @State private var navigateToSummary = false
     
     @State private var isFirstLoad = true
-
+    
+    @State private var completedCycles = 0
+    
+    /// User Defaults values
+    let savedNumCycles = UserDefaults.standard.integer(forKey: "numCycles")
+    let savedIsInfinite = UserDefaults.standard.bool(forKey: "unlimtedCycles")
     
     var body: some View {
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isBreathingExerciseActive ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
-                    .animation(.easeInOut(duration: 1.0), value: isBreathingExerciseActive)
-                
-                // Your original VStack content on top of the LinearGradient
-                VStack {
-                    if isBreathingExerciseActive {
-                        timerView
-                        
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isBreathingExerciseActive ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+                .animation(.easeInOut(duration: 1.0), value: isBreathingExerciseActive)
+            
+            // Your original VStack content on top of the LinearGradient
+            VStack {
+                if isBreathingExerciseActive {
+                    timerView
+                    
+                    Spacer()
+                    
+                    Diagram(currentPhase: $currentPhase,
+                            progress: $progress,
+                            isPhaseTransition: $isPhaseTransition,
+                            currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
+                    .frame(width: 300, height: 300)
+                    
+                    Spacer()
+                    
+                    HStack {
+                        stopButton
                         Spacer()
-                        
-                        Diagram(currentPhase: $currentPhase,
-                                progress: $progress,
-                                isPhaseTransition: $isPhaseTransition,
-                                currentPhaseTimeRemaining: $currentPhaseTimeRemaining)
-                        .frame(width: 300, height: 300)
-                        
-                        Spacer()
-                        
-                        HStack {
-                            stopButton
-                            Spacer()
-                        }
-                    } else if navigateToSummary {
-                        Summary(elapsedTime: Int(exerciseTimeElapsed))
-                    } else {
-                        headerView
-                        Spacer()
-                        
-                        CircleView()
-                        
-                        Spacer()
-                        
-                        HStack {
-                            startButton
-                            Spacer()
-                        }
-                        .padding(.bottom, 25)
                     }
+                } else if navigateToSummary {
+                    Summary(elapsedTime: Int(exerciseTimeElapsed))
+                } else {
+                    headerView
+                    Spacer()
+                    
+                    CircleView()
+                    
+                    Spacer()
+                    
+                    HStack {
+                        startButton
+                        Spacer()
+                    }
+                    .padding(.bottom, 25)
                 }
             }
+        }
         
         .onDisappear {
             exerciseTimer?.invalidate()
@@ -93,11 +98,14 @@ struct FourSevenEightBreathingView: View {
                 
                 Spacer()
                 
-//                Image(systemName: "leaf.fill")
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fit)
-//                    .frame(width: 30, height: 30)
-//                    .foregroundColor(.white)
+                Text("\(completedCycles) of \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
+                    .font(.footnote)
+                    .padding(8)  // Small padding around the text
+                    .background(
+                        Color.gray.opacity(0.2)
+                            .cornerRadius(8)
+                    )
+                    .foregroundColor(.white)
             }
             .padding(.horizontal)
             
@@ -115,9 +123,6 @@ struct FourSevenEightBreathingView: View {
     private var headerView: some View {
         VStack(alignment: .leading) {
             HStack {
-                //                Text("4-7-8 Breathing")
-                //                    .font(.system(size: 20))
-                
                 Text("4-7-8 Breathing")
                     .font(.system(size: 20))
                     .fontWeight(.bold)
@@ -135,12 +140,6 @@ struct FourSevenEightBreathingView: View {
                 }
                 
                 Spacer()
-                
-//                Image(systemName: "leaf.fill")
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fit)
-//                    .frame(width: 30, height: 30)
-//                    .foregroundColor(.white)
             }
             .padding(.horizontal, 20)
             .padding(.top, 50)
@@ -149,7 +148,15 @@ struct FourSevenEightBreathingView: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 1)
                 .padding(.horizontal, 5)
-                .padding(.top, 30)
+                .padding(.vertical, 30)
+            
+            HStack {
+                Image(systemName: "arrow.3.trianglepath").foregroundColor(.white)
+                Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
+                    .font(.system(size: 16))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 20)
+            }
         }
     }
     
@@ -219,7 +226,7 @@ struct FourSevenEightBreathingView: View {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 // Step 1: Set the audio session category
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
                 // Step 2: Activate the audio session
                 try AVAudioSession.sharedInstance().setActive(true)
                 
@@ -272,8 +279,14 @@ struct FourSevenEightBreathingView: View {
                     playAudio(named: "Exhale")
                 case .exhale:
                     currentPhase = .inhale
-                    startTimerForPhase(.inhale)
-                    playAudio(named: "Inhale")
+                    self.completedCycles += 1 // Increment completedCycles here
+                    if self.completedCycles >= self.savedNumCycles && !self.savedIsInfinite {
+                        self.navigateToSummary = true
+                        self.stopBreathingExercise()
+                    } else {
+                        self.startTimerForPhase(.inhale)
+                        self.playAudio(named: "Inhale")
+                    }
                 }
             }
         }

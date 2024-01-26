@@ -132,10 +132,12 @@ struct BoxBreathingView: View {
                                         .padding(.horizontal, 5)
                                         .padding(.vertical, 20)
                                     
-                                    
-                                    Text(savedIsInfinite ? "∞ cycles"  : "\(savedNumCycles) cycles")
-                                        .font(.system(size: 16))
-                                        .foregroundColor(.white)
+                                    HStack {
+                                        Image(systemName: "arrow.3.trianglepath").foregroundColor(.white)
+                                        Text(savedIsInfinite ? "∞ cycles"  : "\(savedNumCycles) cycles")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.white)
+                                    }
                                 }
                                 
                                 
@@ -388,7 +390,7 @@ struct BoxBreathingView: View {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 // Step 1: Set the audio session category
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
                 // Step 2: Activate the audio session
                 try AVAudioSession.sharedInstance().setActive(true)
                 

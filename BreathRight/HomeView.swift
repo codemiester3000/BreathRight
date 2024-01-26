@@ -45,12 +45,10 @@ struct HomeView: View {
                 VStack(alignment: .center) {
                     
                     AnimatedHeaderView()
-                        .padding(.top, -45)
-                        .padding(.bottom, 42)
-                    //.padding(.bottom, 32)
+                        .padding(.top, -40)
+                        .padding(.bottom, 40)
                     
                     VStack(alignment: .leading) {
-                        // Dynamic greeting
                         HStack {
                             Text(greetingMessage())
                                 .font(.largeTitle)
@@ -70,7 +68,6 @@ struct HomeView: View {
                             BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
                             Spacer()
                         }
-                        .frame(height: 40)
                         .padding(.top, 32)
                         .padding(.horizontal)
                         .padding(.bottom)
@@ -83,7 +80,6 @@ struct HomeView: View {
                             .padding(.top)
                             .padding(.leading)
                     }
-                    
                     
                     VStack(alignment: .center) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
@@ -99,10 +95,8 @@ struct HomeView: View {
                             }
                         }
                     }
-                    
-                    Spacer()
                 }
-                .padding(.horizontal)
+               .padding(.horizontal)
             }
         }
     }
@@ -142,7 +136,7 @@ struct HomeView: View {
 struct BeautifulButton: View {
     let title: String
     let benefits: [String]
-    let numCycles: Int // New parameter for the number of cycles
+    let numCycles: Int
     let timeForCycle: Int
     let isInfinite: Bool
     
@@ -249,7 +243,7 @@ struct BreathCycleSelector: View {
                     .foregroundColor(.white)
                 Spacer()
                 if isUnlimited {
-                    Text("∞") // Infinity symbol for unlimited
+                    Text("∞ cycles") // Infinity symbol for unlimited
                         .font(.system(size: 16))
                         .foregroundColor(.white)
                 } else {
