@@ -130,11 +130,11 @@ struct BoxBreathingView: View {
                                         .fill(Color.gray.opacity(0.3))
                                         .frame(height: 1)
                                         .padding(.horizontal, 5)
-                                        .padding(.top, 20)
+                                        .padding(.vertical, 20)
                                     
                                     
                                     Text(savedIsInfinite ? "∞ cycles"  : "\(savedNumCycles) cycles")
-                                        .font(.system(size: 12))
+                                        .font(.system(size: 16))
                                         .foregroundColor(.white)
                                 }
                                 
