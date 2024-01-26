@@ -234,7 +234,7 @@ struct BeautifulButton: View {
 struct BreathCycleSelector: View {
     @Binding var cycles: Int // Binding to the number of breath cycles
     @Binding var isUnlimited: Bool // Binding to toggle unlimited cycles
-    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 120
+    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 140
     let thumbSize: CGFloat = 20
     let trackColor = Color.backgroundBeige.opacity(0.5)
     let thumbColor = Color.white
@@ -301,6 +301,7 @@ struct BreathCycleSelector: View {
                         .clipShape(Circle())
                 }
                 .buttonStyle(PlainButtonStyle())
+                .padding(.leading)
             }
         }
     }

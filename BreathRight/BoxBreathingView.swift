@@ -1,10 +1,3 @@
-//
-//  BoxBreathingView.swift
-//  BreathRight
-//
-//  Created by Owen Khoury on 12/17/23.
-//
-
 import SwiftUI
 import AVFoundation
 
@@ -33,12 +26,18 @@ struct BoxBreathingView: View {
     
     @State private var showBreathingSelectionPage = false
     
+    @State private var completedCycles = 0
+    
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
     let minSquareSize: CGFloat = 200
     let maxSquareSize: CGFloat = 280
     let topPadding: CGFloat = 100
     let animationTopPadding: CGFloat = 20
+    
+    /// User Defaults values
+    let savedNumCycles = UserDefaults.standard.integer(forKey: "numCycles")
+    let savedIsInfinite = UserDefaults.standard.bool(forKey: "unlimtedCycles")
     
     var durationInSeconds: Int {
         Int(minDuration + (maxDuration - minDuration) * sliderValue)
@@ -48,10 +47,6 @@ struct BoxBreathingView: View {
         let initialValue = (4 - minDuration) / (maxDuration - minDuration)
         _sliderValue = State(initialValue: initialValue)
     }
-    
-    //    if isSheetPresented {
-    //        Summary(elapsedTime: self.elapsedTime)
-    //    }
     
     var body: some View {
         ZStack {
@@ -79,11 +74,23 @@ struct BoxBreathingView: View {
                                         
                                         Spacer()
                                         
-                                        Image(systemName: "square")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 24, height: 24)
+                                        //                                        Image(systemName: "square")
+                                        //                                            .resizable()
+                                        //                                            .aspectRatio(contentMode: .fit)
+                                        //                                            .frame(width: 24, height: 24)
+                                        //                                            .foregroundColor(.white)
+                                        
+                                        // todo: put the cycles count here:
+                                        
+                                        Text("\(completedCycles) of \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
+                                            .font(.footnote)
+                                            .padding(8)  // Small padding around the text
+                                            .background(
+                                                Color.gray.opacity(0.2)
+                                                    .cornerRadius(8)
+                                            )
                                             .foregroundColor(.white)
+
                                     }
                                     
                                     Rectangle()
@@ -118,19 +125,19 @@ struct BoxBreathingView: View {
                                         .foregroundColor(.white)
                                         
                                         Spacer()
-                                        
-                                        //                                    Image(systemName: "leaf.fill")
-                                        //                                        .resizable()
-                                        //                                        .aspectRatio(contentMode: .fit)
-                                        //                                        .frame(width: 30, height: 30)
-                                        //                                        .foregroundColor(.white)
                                     }
                                     Rectangle()
                                         .fill(Color.gray.opacity(0.3))
                                         .frame(height: 1)
                                         .padding(.horizontal, 5)
                                         .padding(.top, 20)
+                                    
+                                    
+                                    Text(savedIsInfinite ? "∞ cycles"  : "\(savedNumCycles) cycles")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.white)
                                 }
+                                
                                 
                             }
                             Spacer()
@@ -255,17 +262,7 @@ struct BoxBreathingView: View {
                             if isAnimating {
                                 HStack {
                                     Button("Stop") {
-                                        squareAnimationWorkItem?.cancel()
-                                        isAnimating = false // stop the animation
-                                        progress = 0
-                                        completedSides = 0
-                                        isStopButtonVisible = false
-                                        isSliderVisible = true
-                                        
-                                        self.elapsedTimeTimer?.invalidate()
-                                        timer?.invalidate()
-                                        
-                                        isSheetPresented.toggle()
+                                        stopAnimationAndReset()
                                     }
                                     .font(.headline)
                                     .foregroundColor(.white)
@@ -372,6 +369,21 @@ struct BoxBreathingView: View {
         }
     }
     
+    func stopAnimationAndReset() {
+        squareAnimationWorkItem?.cancel()
+        isAnimating = false
+        progress = 0
+        completedSides = 0
+        isStopButtonVisible = false
+        isSliderVisible = true
+        
+        elapsedTimeTimer?.invalidate()
+        timer?.invalidate()
+        
+        isSheetPresented.toggle()
+    }
+    
+    
     func playAudio(named fileName: String) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
@@ -422,7 +434,13 @@ struct BoxBreathingView: View {
         }
         
         squareAnimationWorkItem = DispatchWorkItem {
+            if !self.savedIsInfinite && self.completedCycles >= self.savedNumCycles - 1 {
+                self.stopAnimationAndReset()
+            }
+            
             if self.isAnimating {
+                self.completedCycles += 1
+                
                 self.progress = 0
                 self.completedSides = 0
                 self.sideToShow = 0
