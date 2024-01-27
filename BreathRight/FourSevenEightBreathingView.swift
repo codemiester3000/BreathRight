@@ -320,7 +320,8 @@ struct Diagram: View {
     @Binding var progress: CGFloat
     @Binding var isPhaseTransition: Bool
     @Binding var currentPhaseTimeRemaining: Int
-    
+    @State private var textScale: CGFloat = 1.0
+
     var body: some View {
         ZStack {
             Circle()
@@ -340,19 +341,37 @@ struct Diagram: View {
                 Text(currentPhase.rawValue)
                     .font(.system(size: 20))
                     .fontWeight(.bold)
-                    .animation(.easeIn, value: currentPhase)
+                    .scaleEffect(textScale)
                     .foregroundColor(.white)
-                //                Text("\(currentPhaseTimeRemaining) seconds")
-                //                    .font(.title2)
             }
         }
         .padding(40)
+        .onAppear {
+            applyScalingBasedOnPhase(currentPhase)
+        }
+        .onChange(of: currentPhase) { newValue in
+            applyScalingBasedOnPhase(newValue)
+        }
+    }
+    
+    private func applyScalingBasedOnPhase(_ phase: BreathingPhase) {
+        withAnimation(.easeInOut(duration: 2.0)) {
+            switch phase {
+            case .inhale:
+                textScale = 1.2 // Scale up for inhale
+            case .hold:
+                // Do nothing, maintain current scale
+                break
+            case .exhale:
+                textScale = 0.8 // Scale down for exhale
+            }
+        }
     }
     
     private var phaseColor: Color {
         switch currentPhase {
         case .inhale:
-            return Color.white // Color(hex: "2E8B57")
+            return Color.white
         case .hold:
             return Color(hex: "862e8b")
         case .exhale:
@@ -360,6 +379,7 @@ struct Diagram: View {
         }
     }
 }
+
 
 enum BreathingPhase: String {
     case inhale = "Inhale"
