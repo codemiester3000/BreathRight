@@ -62,6 +62,11 @@ struct BoxBreathingView: View {
                         HStack {
                             if isAnimating {
                                 VStack(alignment: .leading)  {
+                                    
+                                    AnimatedHeaderView()
+                                        .padding(.top, -40)
+                                        .padding(.bottom, 60)
+                                    
                                     HStack {
                                         Text(formattedTime(for: elapsedTime))
                                             .font(.footnote)
@@ -73,14 +78,6 @@ struct BoxBreathingView: View {
                                             .foregroundColor(.white)
                                         
                                         Spacer()
-                                        
-                                        //                                        Image(systemName: "square")
-                                        //                                            .resizable()
-                                        //                                            .aspectRatio(contentMode: .fit)
-                                        //                                            .frame(width: 24, height: 24)
-                                        //                                            .foregroundColor(.white)
-                                        
-                                        // todo: put the cycles count here:
                                         
                                         Text("\(completedCycles) of \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
                                             .font(.footnote)
@@ -101,7 +98,7 @@ struct BoxBreathingView: View {
                                     
                                     BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
                                         .padding(.top, 40)
-                                        .padding(.leading, 4)
+                                        .padding(.leading, 12)
                                     
                                 }
                             } else {
@@ -513,13 +510,37 @@ struct BreathView: View {
     @Binding var showText: Bool
     @Binding var instruction: String
     let duration: Double
-    
+    @State private var scale: CGFloat = 1.0
+
     var body: some View {
         if showText {
-            Text("\(instruction)")
+            Text(instruction)
                 .font(.custom("Inter-Variable", size: 20))
-                .transition(.opacity)
+                .scaleEffect(scale)
                 .foregroundColor(.white)
+                .onAppear {
+                    animateBasedOnInstruction(instruction)
+                }
+                .onChange(of: instruction) { newValue in
+                    animateBasedOnInstruction(newValue)
+                }
+                .transition(.opacity)
+        }
+    }
+
+    private func animateBasedOnInstruction(_ instruction: String) {
+        withAnimation(.easeInOut(duration: duration)) {
+            switch instruction {
+            case "Inhale":
+                scale = 1.2 // Adjust this value as needed
+            case "Hold":
+                // Keep the current scale
+                break
+            case "Exhale":
+                scale = 0.8 // Adjust this value as needed
+            default:
+                break
+            }
         }
     }
 }
