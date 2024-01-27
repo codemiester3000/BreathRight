@@ -15,7 +15,7 @@ struct CosineAnimation: View {
                 )
             
         }
-        .frame(height: 50)
+        .frame(height: 55)
         .padding(.horizontal)
         .onAppear() {
             // Randomized delay
@@ -42,7 +42,7 @@ struct CosineAnimation: View {
             let height = Double(rect.height)
             let midHeight = height / 2
             
-            let amplitude = 0.5 * height // Adjust this value for higher or lower waves
+            let amplitude = 0.5 * height - 5 // Adjust this value for higher or lower waves
             
             for x in stride(from: 0, through: width, by: 1) {
                 let relX = x / width

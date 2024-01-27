@@ -155,8 +155,8 @@ struct FourSevenEightBreathingView: View {
                 Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
                     .font(.system(size: 16))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 20)
             }
+            .padding(.horizontal, 20)
         }
     }
     
