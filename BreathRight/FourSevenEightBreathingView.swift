@@ -89,6 +89,10 @@ struct FourSevenEightBreathingView: View {
     private var timerView: some View {
         VStack() {
             
+            AnimatedHeaderView()
+                .padding(.top, -40)
+                .padding(.bottom, 60)
+            
             HStack {
                 Text("\(formattedTime(for: Int(exerciseTimeElapsed)))")
                     .font(.footnote)
