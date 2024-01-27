@@ -321,7 +321,18 @@ struct Diagram: View {
     @Binding var isPhaseTransition: Bool
     @Binding var currentPhaseTimeRemaining: Int
     @State private var textScale: CGFloat = 1.0
-
+    
+    @State private var circleOpacity: Double = 0.0
+    
+    private func fadeInCircle() {
+        // Initially hide the circle
+        self.circleOpacity = 0.0
+        // Fade in the circle
+        withAnimation(.easeInOut(duration: 1.0)) {
+            self.circleOpacity = 1.0
+        }
+    }
+    
     var body: some View {
         ZStack {
             Circle()
@@ -329,6 +340,10 @@ struct Diagram: View {
                 .opacity(0.3)
                 .foregroundColor(phaseColor)
                 .frame(width: 300, height: 300)
+                .animation(.easeIn(duration: 0.5), value: phaseColor)
+                .onAppear {
+                    fadeInCircle()
+                }
             
             Circle()
                 .trim(from: 0.0, to: progress)
@@ -336,6 +351,10 @@ struct Diagram: View {
                 .foregroundColor(phaseColor)
                 .rotationEffect(Angle(degrees: 270))
                 .animation(isPhaseTransition ? nil : .smooth, value: progress)
+                .animation(.easeIn(duration: 0.5), value: phaseColor)
+                .onAppear {
+                    fadeInCircle()
+                }
             
             VStack {
                 Text(currentPhase.rawValue)
