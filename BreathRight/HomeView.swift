@@ -30,11 +30,11 @@ enum BreathingExercise: String, CaseIterable {
 
 struct HomeView: View {
     @State private var numCycles: Int = {
-            let savedValue = UserDefaults.standard.integer(forKey: "numCycles")
-            return savedValue != 0 ? savedValue : 10 // If savedValue is 0 (not set), return 10
-        }()
-        
-        @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
+        let savedValue = UserDefaults.standard.integer(forKey: "numCycles")
+        return savedValue != 0 ? savedValue : 10 // If savedValue is 0 (not set), return 10
+    }()
+    
+    @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
     
     var body: some View {
         NavigationView {
@@ -52,6 +52,7 @@ struct HomeView: View {
                         HStack {
                             Text(greetingMessage())
                                 .font(.largeTitle)
+                                .fontWeight(.bold)
                                 .foregroundColor(.white)
                             Spacer()
                             Image(systemName: greetingIconName())
@@ -91,12 +92,12 @@ struct HomeView: View {
                                     timeForCycle: exercise.timeForOneCycle(),
                                     isInfinite: unlimtedCycles
                                 )
-                                    .padding(.bottom, 12)
+                                .padding(.bottom, 12)
                             }
                         }
                     }
                 }
-               .padding(.horizontal)
+                .padding(.horizontal)
             }
         }
     }

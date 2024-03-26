@@ -19,11 +19,11 @@ struct MainView: View {
             AnimatedHeaderView()
             
             switch selectedBreathingType {
-                        case .boxBreathing:
-                            BoxBreathingView()
-                        case .fourSevenEight:
-                            FourSevenEightBreathingView() // This is the new view for 4-7-8 Breathing
-                        }
+            case .boxBreathing:
+                BoxBreathingView()
+            case .fourSevenEight:
+                FourSevenEightBreathingView() // This is the new view for 4-7-8 Breathing
+            }
         }
         .background(
             LinearGradient(gradient: Gradient(colors: [Color.deepBlue, Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
