@@ -101,15 +101,6 @@ struct BoxBreathingView: View {
                                         
                                         Spacer()
                                         
-//                                        Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
-//                                            .font(.footnote)
-//                                            .padding(8)
-//                                            .background(
-//                                                Color.gray.opacity(flashOpacity)
-//                                                    .cornerRadius(8)
-//                                            )
-//                                            .foregroundColor(.white)
-                                        
                                         Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
                                             .font(.system(.footnote, design: .rounded))
                                             .fontWeight(.medium)

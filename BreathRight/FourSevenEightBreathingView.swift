@@ -9,18 +9,13 @@ struct FourSevenEightBreathingView: View {
     @State private var exerciseTimeElapsed: Double = 0
     @State private var currentPhaseTimeRemaining: Int = 0
     @State private var exerciseTimer: Timer?
-    //@State private var isSheetPresented = false
-    
-    // State for diagram animation
     @State private var currentPhase: BreathingPhase = .inhale
     @State private var progress: CGFloat = 0.0
     @State private var isPhaseTransition: Bool = false
-    
     @State private var navigateToSummary = false
-    
     @State private var isFirstLoad = true
-    
     @State private var completedCycles = 0
+    @State private var flashOpacity: Double = 0
     
     /// User Defaults values
     let savedNumCycles = UserDefaults.standard.integer(forKey: "numCycles")
@@ -48,6 +43,7 @@ struct FourSevenEightBreathingView: View {
                     Spacer()
                     
                     HStack {
+                        Spacer()
                         stopButton
                         Spacer()
                     }
@@ -81,9 +77,6 @@ struct FourSevenEightBreathingView: View {
         .onAppear {
             isFirstLoad = false
         }
-        //        .sheet(isPresented: $isSheetPresented) {
-        //            Summary(elapsedTime: Int(exerciseTimeElapsed))
-        //        }
     }
     
     private var timerView: some View {
@@ -95,26 +88,60 @@ struct FourSevenEightBreathingView: View {
             
             HStack {
                 Text("\(formattedTime(for: Int(exerciseTimeElapsed)))")
-                    .font(.footnote)
-                    .padding(8)
-                    .background(Color.gray.opacity(0.2).cornerRadius(8))
+                    .font(.system(.footnote, design: .rounded))
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(0.1))
+                            .overlay(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                .mask(RoundedRectangle(cornerRadius: 16))
+                            )
+                    )
                     .foregroundColor(.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                 
                 Spacer()
                 
-                Text("\(completedCycles) of \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
-                    .font(.footnote)
-                    .padding(8)  // Small padding around the text
+                Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
+                    .font(.system(.footnote, design: .rounded))
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
                     .background(
-                        Color.gray.opacity(0.2)
-                            .cornerRadius(8)
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(flashOpacity))
+                            .overlay(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                .mask(RoundedRectangle(cornerRadius: 16))
+                            )
                     )
                     .foregroundColor(.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            
             }
             .padding(.horizontal)
             
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.white.opacity(0.3))
                 .frame(height: 1)
                 .padding(.horizontal, 5)
                 .padding(.top, 30)
@@ -196,16 +223,28 @@ struct FourSevenEightBreathingView: View {
         }
         .font(.headline)
         .foregroundColor(.white)
-        .padding()
-        .padding(.horizontal, 12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.white, lineWidth: 2)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                )
         )
-        .background(Color.lighterBlue.opacity(0.2))
-        .cornerRadius(10)
-        .padding(.leading, 24)
-        .padding(.bottom)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+    
+    func flashCyclesText() {
+        withAnimation(Animation.easeInOut(duration: 0.5)) {
+            flashOpacity = 0.4
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(Animation.easeInOut(duration: 0.5)) {
+                flashOpacity = 0.1
+            }
+        }
     }
     
     private func stopBreathingExercise() {
@@ -284,6 +323,8 @@ struct FourSevenEightBreathingView: View {
                 case .exhale:
                     currentPhase = .inhale
                     self.completedCycles += 1 // Increment completedCycles here
+                    self.flashCyclesText()
+                    
                     if self.completedCycles >= self.savedNumCycles && !self.savedIsInfinite {
                         self.navigateToSummary = true
                         self.stopBreathingExercise()
@@ -326,7 +367,7 @@ struct Diagram: View {
     
     private func fadeInCircle() {
         // Initially hide the circle
-        self.circleOpacity = 0.0
+        self.circleOpacity = 0.7
         // Fade in the circle
         withAnimation(.easeInOut(duration: 1.0)) {
             self.circleOpacity = 1.0
