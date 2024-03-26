@@ -181,7 +181,7 @@ struct BeautifulButton: View {
                         .foregroundColor(.backgroundBeige)
                         .font(.caption)
                     
-                    Text(isInfinite ? "∞ cycles" : "\(numCycles) cycles")
+                    Text(isInfinite ? "∞" : "\(numCycles) cycles")
                         .foregroundColor(.white)
                         .font(.caption)
                         .padding(.trailing, 12)

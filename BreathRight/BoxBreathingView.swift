@@ -21,12 +21,10 @@ struct BoxBreathingView: View {
     @State private var breathInstruction: String = "Inhale"
     @State private var showBreathInstruction = false
     @State private var showTooltip: Bool = false
-    
     @State private var isSheetPresented = false
-    
     @State private var showBreathingSelectionPage = false
-    
     @State private var completedCycles = 0
+    @State private var flashOpacity: Double = 0
     
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
@@ -68,30 +66,77 @@ struct BoxBreathingView: View {
                                         .padding(.bottom, 60)
                                     
                                     HStack {
+//                                        Text(formattedTime(for: elapsedTime))
+//                                            .font(.footnote)
+//                                            .padding(8)  // Small padding around the text
+//                                            .background(
+//                                                Color.gray.opacity(0.2)
+//                                                    .cornerRadius(8)
+//                                            )
+//                                            .foregroundColor(.white)
+                                        
                                         Text(formattedTime(for: elapsedTime))
-                                            .font(.footnote)
-                                            .padding(8)  // Small padding around the text
+                                            .font(.system(.footnote, design: .rounded))
+                                            .fontWeight(.medium)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
                                             .background(
-                                                Color.gray.opacity(0.2)
-                                                    .cornerRadius(8)
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .fill(Color.white.opacity(0.1))
+                                                    .overlay(
+                                                        LinearGradient(
+                                                            gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
+                                                            startPoint: .top,
+                                                            endPoint: .bottom
+                                                        )
+                                                        .mask(RoundedRectangle(cornerRadius: 16))
+                                                    )
                                             )
                                             .foregroundColor(.white)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                                         
                                         Spacer()
                                         
-                                        Text("\(completedCycles) of \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
-                                            .font(.footnote)
-                                            .padding(8)  // Small padding around the text
+//                                        Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
+//                                            .font(.footnote)
+//                                            .padding(8)
+//                                            .background(
+//                                                Color.gray.opacity(flashOpacity)
+//                                                    .cornerRadius(8)
+//                                            )
+//                                            .foregroundColor(.white)
+                                        
+                                        Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
+                                            .font(.system(.footnote, design: .rounded))
+                                            .fontWeight(.medium)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
                                             .background(
-                                                Color.gray.opacity(0.2)
-                                                    .cornerRadius(8)
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .fill(Color.white.opacity(flashOpacity))
+                                                    .overlay(
+                                                        LinearGradient(
+                                                            gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
+                                                            startPoint: .top,
+                                                            endPoint: .bottom
+                                                        )
+                                                        .mask(RoundedRectangle(cornerRadius: 16))
+                                                    )
                                             )
                                             .foregroundColor(.white)
-
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                                     }
                                     
                                     Rectangle()
-                                        .fill(Color.gray.opacity(0.3))
+                                        .fill(Color.white.opacity(0.3))
                                         .frame(height: 1)
                                         .padding(.horizontal, 5)
                                         .padding(.top, 20)
@@ -169,7 +214,9 @@ struct BoxBreathingView: View {
                                         path.addArc(center: CGPoint(x: UIScreen.main.bounds.width/2 - sizeForSquare/2 + rounding, y: -animationTopPadding + rounding), radius: rounding, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
                                         path.addLine(to: startingPoint)
                                     }
+                                    //.stroke(Color.white.opacity(0.2), lineWidth: 5)
                                     .stroke(Color.white.opacity(0.2), lineWidth: 5)
+                                    .shadow(color: Color.white.opacity(0.3), radius: 10, x: 0, y: 0)
                                     
                                     Path { path in
                                         let rounding: CGFloat = 6
@@ -199,6 +246,7 @@ struct BoxBreathingView: View {
                                     }
                                     .trim(from: 0, to: progress)
                                     .stroke(Color.white, lineWidth: 5)
+                                    .shadow(color: Color.white.opacity(0.5), radius: 5, x: 0, y: 0)
                                     .onAppear {
                                         animateSquareDrawing(sideDuration: durationInSeconds)
                                     }
@@ -260,20 +308,40 @@ struct BoxBreathingView: View {
                         VStack(alignment: .leading) {
                             if isAnimating {
                                 HStack {
+                                    
+                                    Spacer()
+                                    
+//                                    Button("Stop") {
+//                                        stopAnimationAndReset()
+//                                    }
+//                                    .font(.headline)
+//                                    .foregroundColor(.white)
+//                                    .padding()
+//                                    .padding(.horizontal, 12)
+//                                    .overlay(
+//                                        RoundedRectangle(cornerRadius: 50)
+//                                            .stroke(Color.white, lineWidth: 2)
+//                                    )
+//                                    .background(Color.lighterBlue.opacity(0.1))
+//                                    .cornerRadius(50)
+//                                    //.padding(.leading, 24)
+                                    
                                     Button("Stop") {
                                         stopAnimationAndReset()
                                     }
                                     .font(.headline)
                                     .foregroundColor(.white)
-                                    .padding()
-                                    .padding(.horizontal, 12)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(Color.white, lineWidth: 2)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color.white.opacity(0.1))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                            )
                                     )
-                                    .background(Color.lighterBlue.opacity(0.2))
-                                    .cornerRadius(10)
-                                    .padding(.leading, 24)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                                     
                                     Spacer()
                                 }
@@ -382,6 +450,16 @@ struct BoxBreathingView: View {
         isSheetPresented.toggle()
     }
     
+    func flashCyclesText() {
+        withAnimation(Animation.easeInOut(duration: 0.5)) {
+            flashOpacity = 0.4
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(Animation.easeInOut(duration: 0.5)) {
+                flashOpacity = 0.1
+            }
+        }
+    }
     
     func playAudio(named fileName: String) {
         DispatchQueue.global(qos: .userInitiated).async {
@@ -439,6 +517,7 @@ struct BoxBreathingView: View {
             
             if self.isAnimating {
                 self.completedCycles += 1
+                self.flashCyclesText()
                 
                 self.progress = 0
                 self.completedSides = 0
@@ -511,39 +590,100 @@ struct BreathView: View {
     @Binding var instruction: String
     let duration: Double
     @State private var scale: CGFloat = 1.0
-
+    @State private var opacity: Double = 0.0
+    
     var body: some View {
         if showText {
             Text(instruction)
-                .font(.custom("Inter-Variable", size: 20))
+                .font(.system(size: 28, weight: .semibold, design: .default))
                 .scaleEffect(scale)
-                .foregroundColor(.white)
+                .opacity(opacity)
+                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
+                .transition(.opacity)
                 .onAppear {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        opacity = 1.0
+                    }
                     animateBasedOnInstruction(instruction)
                 }
                 .onChange(of: instruction) { newValue in
-                    animateBasedOnInstruction(newValue)
+                    if (instruction == "Inhale" || instruction == "Exhale") {
+                        animateBasedOnInstruction(newValue)
+                    }
                 }
-                .transition(.opacity)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding()
         }
     }
-
+    
     private func animateBasedOnInstruction(_ instruction: String) {
         withAnimation(.easeInOut(duration: duration)) {
             switch instruction {
             case "Inhale":
-                scale = 1.2 // Adjust this value as needed
-            case "Hold":
-                // Keep the current scale
-                break
+                scale = 1.2
             case "Exhale":
-                scale = 0.8 // Adjust this value as needed
+                scale = 0.8
             default:
-                break
+                scale = 0.0
             }
         }
     }
 }
+
+//struct BreathView: View {
+//    @Binding var showText: Bool
+//    @Binding var instruction: String
+//    let duration: Double
+//    @State private var scale: CGFloat = 1.0
+//    @State private var opacity: Double = 0.0
+//    
+//    var body: some View {
+//        if showText {
+//            Text(instruction)
+//                .font(.system(.title2, design: .default))
+//                .fontWeight(.medium)
+//                .scaleEffect(scale)
+//                .foregroundColor(.primary)
+//                .opacity(opacity)
+//                .onAppear {
+//                    animateBasedOnInstruction(instruction)
+//                }
+//                .onChange(of: instruction) { newValue in
+//                    animateBasedOnInstruction(newValue)
+//                }
+//                .transition(.opacity)
+//                .padding(16)
+//                .background(
+//                    RoundedRectangle(cornerRadius: 12)
+//                        .fill(Color.secondary.opacity(0.1))
+//                )
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 12)
+//                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+//                )
+//        }
+//    }
+//    
+//    private func animateBasedOnInstruction(_ instruction: String) {
+//        withAnimation(.easeInOut(duration: duration)) {
+//            switch instruction {
+//            case "Inhale":
+//                scale = 1.05
+//                opacity = 1.0
+//            case "Hold":
+//                scale = 1.0
+//                opacity = 0.8
+//            case "Exhale":
+//                scale = 0.95
+//                opacity = 1.0
+//            default:
+//                scale = 1.0
+//                opacity = 1.0
+//            }
+//        }
+//    }
+//}
 
 struct CustomToggle: View {
     @State private var isOn: Bool = true
