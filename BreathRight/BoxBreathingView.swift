@@ -59,121 +59,99 @@ struct BoxBreathingView: View {
                     VStack(spacing: 0) {
                         HStack {
                             if isAnimating {
-                                VStack(alignment: .leading)  {
-                                    
+                                VStack(alignment: .leading, spacing: 0) {
+
                                     AnimatedHeaderView()
-                                        .padding(.top, -40)
-                                        .padding(.bottom, 60)
-                                    
+                                        .padding(.top, -50)
+                                        .padding(.bottom, 40)
+                                        .opacity(0.8)
+
+                                    // Stats pills row
                                     HStack {
-//                                        Text(formattedTime(for: elapsedTime))
-//                                            .font(.footnote)
-//                                            .padding(8)  // Small padding around the text
-//                                            .background(
-//                                                Color.gray.opacity(0.2)
-//                                                    .cornerRadius(8)
-//                                            )
-//                                            .foregroundColor(.white)
-                                        
-                                        Text(formattedTime(for: elapsedTime))
-                                            .font(.system(.footnote, design: .rounded))
-                                            .fontWeight(.medium)
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .fill(Color.white.opacity(0.1))
-                                                    .overlay(
-                                                        LinearGradient(
-                                                            gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
-                                                            startPoint: .top,
-                                                            endPoint: .bottom
-                                                        )
-                                                        .mask(RoundedRectangle(cornerRadius: 16))
-                                                    )
-                                            )
-                                            .foregroundColor(.white)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                            )
-                                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                                        
+                                        // Time pill
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "clock")
+                                                .font(.system(size: 11, weight: .medium))
+                                            Text(formattedTime(for: elapsedTime))
+                                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(Color.white.opacity(0.12))
+                                        .clipShape(Capsule())
+
                                         Spacer()
-                                        
-                                        Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
-                                            .font(.system(.footnote, design: .rounded))
-                                            .fontWeight(.medium)
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .fill(Color.white.opacity(flashOpacity))
-                                                    .overlay(
-                                                        LinearGradient(
-                                                            gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
-                                                            startPoint: .top,
-                                                            endPoint: .bottom
-                                                        )
-                                                        .mask(RoundedRectangle(cornerRadius: 16))
-                                                    )
-                                            )
-                                            .foregroundColor(.white)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                            )
-                                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+
+                                        // Cycles pill
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "arrow.2.squarepath")
+                                                .font(.system(size: 11, weight: .medium))
+                                            Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)")")
+                                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                        }
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(Color.white.opacity(flashOpacity + 0.12))
+                                        .clipShape(Capsule())
                                     }
-                                    
+
+                                    // Subtle separator
                                     Rectangle()
-                                        .fill(Color.white.opacity(0.3))
+                                        .fill(Color.white.opacity(0.15))
                                         .frame(height: 1)
-                                        .padding(.horizontal, 5)
                                         .padding(.top, 20)
-                                    
+
+                                    // Breath instruction
                                     BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
-                                        .padding(.top, 40)
-                                        .padding(.leading, 12)
-                                    
+                                        .padding(.top, 32)
+
                                 }
                             } else {
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 0) {
                                     HStack {
                                         Text("Box Breathing")
-                                            .font(.system(size: 20))
-                                            .fontWeight(.bold)
+                                            .font(.system(size: 28, weight: .bold, design: .rounded))
                                             .foregroundColor(.white)
-                                        
+
                                         Button(action: {
                                             showTooltip.toggle()
                                         }) {
                                             Image(systemName: "questionmark.circle.fill")
-                                                .foregroundColor(Color.gray)
+                                                .font(.system(size: 18))
+                                                .foregroundColor(.white.opacity(0.5))
                                         }
                                         .popover(isPresented: $showTooltip, arrowEdge: .top) {
                                             BoxBreathInfo()
                                             Spacer()
                                         }
-                                        .foregroundColor(.white)
-                                        
+
                                         Spacer()
                                     }
+
+                                    // Subtle separator
                                     Rectangle()
-                                        .fill(Color.gray.opacity(0.3))
+                                        .fill(Color.white.opacity(0.15))
                                         .frame(height: 1)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 20)
-                                    
-                                    HStack {
-                                        Image(systemName: "arrow.3.trianglepath").foregroundColor(.white)
-                                        Text(savedIsInfinite ? "∞ cycles"  : "\(savedNumCycles) cycles")
-                                            .font(.system(size: 16))
-                                            .foregroundColor(.white)
+                                        .padding(.top, 16)
+
+                                    // Cycles indicator pill
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "arrow.3.trianglepath")
+                                            .font(.system(size: 12, weight: .medium))
+                                        Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
+                                            .font(.system(size: 13, weight: .medium))
                                     }
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(Color.white.opacity(0.1))
+                                    .clipShape(Capsule())
+                                    .padding(.top, 20)
                                 }
-                                
-                                
+
+
                             }
                             Spacer()
                         }
@@ -299,41 +277,24 @@ struct BoxBreathingView: View {
                         VStack(alignment: .leading) {
                             if isAnimating {
                                 HStack {
-                                    
                                     Spacer()
-                                    
-//                                    Button("Stop") {
-//                                        stopAnimationAndReset()
-//                                    }
-//                                    .font(.headline)
-//                                    .foregroundColor(.white)
-//                                    .padding()
-//                                    .padding(.horizontal, 12)
-//                                    .overlay(
-//                                        RoundedRectangle(cornerRadius: 50)
-//                                            .stroke(Color.white, lineWidth: 2)
-//                                    )
-//                                    .background(Color.lighterBlue.opacity(0.1))
-//                                    .cornerRadius(50)
-//                                    //.padding(.leading, 24)
-                                    
-                                    Button("Stop") {
+
+                                    Button(action: {
                                         stopAnimationAndReset()
-                                    }
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(Color.white.opacity(0.1))
+                                    }) {
+                                        Text("End Session")
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 28)
+                                            .padding(.vertical, 14)
+                                            .background(Color.white.opacity(0.12))
+                                            .clipShape(Capsule())
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                                Capsule()
+                                                    .stroke(Color.white.opacity(0.25), lineWidth: 1)
                                             )
-                                    )
-                                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                                    
+                                    }
+
                                     Spacer()
                                 }
                                 
@@ -356,30 +317,39 @@ struct BoxBreathingView: View {
                                         GeometryReader { geometry in
                                             Button(action: {
                                                 self.elapsedTime = 0
-                                                
+
                                                 // Start the elapsed time timer
-                                                self.elapsedTimeTimer?.invalidate()  // Invalidate any existing timer first
+                                                self.elapsedTimeTimer?.invalidate()
                                                 self.elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
                                                     self.elapsedTime += 1
                                                 }
                                                 isAnimating = true
                                             }) {
-                                                Text("Breathe")
-                                                    .font(.headline)
+                                                Text("Begin Session")
+                                                    .font(.system(size: 16, weight: .semibold))
                                                     .foregroundColor(.white)
-                                                    .padding()
-                                                    .padding(.horizontal, 12)
-                                                    .frame(width: geometry.size.width * 0.8) // Set the width to 80% of the screen width
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 10)
-                                                            .stroke(Color.white, lineWidth: 2)
+                                                    .frame(width: geometry.size.width * 0.85, height: 52)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 16)
+                                                            .fill(Color.white.opacity(0.15))
                                                     )
-                                                    .background(Color.myTurqoise.opacity(0.2))
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 16)
+                                                            .stroke(
+                                                                LinearGradient(
+                                                                    colors: [Color.white.opacity(0.4), Color.white.opacity(0.15)],
+                                                                    startPoint: .topLeading,
+                                                                    endPoint: .bottomTrailing
+                                                                ),
+                                                                lineWidth: 1
+                                                            )
+                                                    )
+                                                    .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
                                             }
-                                            .frame(width: geometry.size.width) // This is to ensure the button is centered
+                                            .frame(width: geometry.size.width)
                                         }
-                                        .frame(height: 50) // Set a fixed height for the button
-                                        .padding(.bottom, 32)
+                                        .frame(height: 52)
+                                        .padding(.bottom, 40)
                                     }
                                     
                                     
@@ -582,14 +552,14 @@ struct BreathView: View {
     let duration: Double
     @State private var scale: CGFloat = 1.0
     @State private var opacity: Double = 0.0
-    
+
     var body: some View {
         if showText {
             Text(instruction)
-                .font(.system(size: 28, weight: .semibold, design: .default))
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
+                .foregroundColor(.white)
                 .scaleEffect(scale)
                 .opacity(opacity)
-                .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 2)
                 .transition(.opacity)
                 .onAppear {
                     withAnimation(.easeOut(duration: 0.5)) {
@@ -598,25 +568,24 @@ struct BreathView: View {
                     animateBasedOnInstruction(instruction)
                 }
                 .onChange(of: instruction) { newValue in
-                    if (instruction == "Inhale" || instruction == "Exhale") {
+                    if instruction == "Inhale" || instruction == "Exhale" {
                         animateBasedOnInstruction(newValue)
                     }
                 }
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding()
         }
     }
-    
+
     private func animateBasedOnInstruction(_ instruction: String) {
         withAnimation(.easeInOut(duration: duration)) {
             switch instruction {
             case "Inhale":
-                scale = 1.2
+                scale = 1.15
             case "Exhale":
-                scale = 0.8
+                scale = 0.85
             default:
-                scale = 0.0
+                scale = 1.0
             }
         }
     }
@@ -714,59 +683,59 @@ struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
     var timeInSecond: Int
-    let trackColor = Color.backgroundBeige.opacity(0.5)
+    let trackColor = Color.white.opacity(0.2)
     let thumbColor = Color.white
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
-    let thumbSize: CGFloat = 20 // smaller thumb for a minimalist look
-    
+    let thumbSize: CGFloat = 18
+
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header row
             HStack {
-                Image(systemName: "heart.square").foregroundColor(.white)
-                
-                Text("Adjust Breath Duration") // The text label
-                    .font(.system(size: 16)) // You can adjust the font size and style
-                    .foregroundColor(.white) // Text color, adjust as needed
-                    .frame(alignment: .leading) // Left aligned
-                
-                Spacer()
-                
-                Text("\(timeInSecond) Sec") // The text label
-                    .font(.system(size: 16)) // You can adjust the font size and style
-                    .foregroundColor(.white) // Text color, adjust as needed
-                    .frame(alignment: .leading) // Left aligned
-                    .padding(.trailing, 12)
-            }
-            .padding(.bottom, 24)
-            
-            HStack(alignment: .center, spacing: 10) { // Added alignment and spacing
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        Capsule() // sleek and modern shape
-                            .frame(width: geometry.size.width, height: 3) // thinner track
-                            .foregroundColor(trackColor)
-                        
-                        Capsule()
-                            .frame(width: geometry.size.width * value, height: 3)
-                            .foregroundColor(thumbColor)
-                        
-                        Circle() // keeping the thumb circular for a clean look
-                            .frame(width: thumbSize, height: thumbSize)
-                            .foregroundColor(thumbColor)
-                            .position(x: geometry.size.width * value, y: geometry.size.height / 2)
-                        // drag gesture remains the same
-                            .gesture(
-                                DragGesture().onChanged { gesture in
-                                    self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
-                                    self.isDragging = true
-                                }.onEnded { _ in
-                                    self.isDragging = false
-                                }
-                            )
-                    }
+                HStack(spacing: 8) {
+                    Image(systemName: "timer")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                    Text("Breath duration")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.9))
                 }
-                .frame(width: sliderWidth)
+                Spacer()
+                Text("\(timeInSecond) sec")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
             }
+
+            // Slider
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // Track background
+                    Capsule()
+                        .frame(width: geometry.size.width, height: 2)
+                        .foregroundColor(trackColor)
+
+                    // Track fill
+                    Capsule()
+                        .frame(width: geometry.size.width * value, height: 2)
+                        .foregroundColor(thumbColor)
+
+                    // Thumb
+                    Circle()
+                        .fill(thumbColor)
+                        .frame(width: thumbSize, height: thumbSize)
+                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                        .position(x: geometry.size.width * value, y: geometry.size.height / 2)
+                        .gesture(
+                            DragGesture().onChanged { gesture in
+                                self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
+                                self.isDragging = true
+                            }.onEnded { _ in
+                                self.isDragging = false
+                            }
+                        )
+                }
+            }
+            .frame(width: sliderWidth, height: 24)
         }
     }
 }

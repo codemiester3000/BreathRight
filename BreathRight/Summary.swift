@@ -3,81 +3,104 @@ import SwiftUI
 struct Summary: View {
     let elapsedTime: Int
     @State private var animationProgress: CGFloat = 0.0
-    
+
     @Environment(\.presentationMode) var presentationMode
-    
+
     var formattedTime: String {
         let minutes = elapsedTime / 60
         let seconds = elapsedTime % 60
         return "\(minutes) min \(seconds) sec"
     }
-    
+
     var body: some View {
         ZStack {
-            
             ConfettiAnimation()
-            
+
             LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
-            
-            HStack {
-                VStack(alignment: .leading) {
-                    
-                    HStack {
-                        Text("Session Complete")
-                            .font(.system(size: 20, weight: .semibold))
-                            .padding(.top)
-                            .foregroundColor(.white)
-                        Spacer()
-                        Image(systemName: "leaf.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.white)
-                    }
-                    
-                    Text("Time completed: \(formattedTime)")
-                        .font(.footnote)
-                        .padding(16)
-                        .background(
-                            Color.gray.opacity(0.2)
-                                .cornerRadius(8)
-                        )
+
+            VStack(spacing: 0) {
+                Spacer()
+
+                // Success icon
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.15))
+                        .frame(width: 100, height: 100)
+
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 40, weight: .semibold))
                         .foregroundColor(.white)
-                        .padding(.top)
-                    
-                    //Spacer()
-                    
-                    ForEach(0..<48, id: \.self) { _ in
-                        AnimatedSquareView(size: 50)
-                                        .position(x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                                                  y: CGFloat.random(in: 0...UIScreen.main.bounds.height - 100))
-                                }
-                    
-                    Spacer()
-                    
-                    // Spacer()
-                    
-                    Button(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Text("Dismiss")
-                            .font(.headline)
+                }
+                .padding(.bottom, 32)
+
+                // Title
+                Text("Session Complete")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .padding(.bottom, 8)
+
+                // Subtitle
+                Text("Great work on your breathing practice")
+                    .font(.system(size: 15))
+                    .foregroundColor(.white.opacity(0.7))
+                    .padding(.bottom, 32)
+
+                // Stats card
+                VStack(spacing: 16) {
+                    HStack {
+                        Image(systemName: "clock")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                        Text("Duration")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                        Spacer()
+                        Text(formattedTime)
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
-                            .padding()
-                            .padding(.horizontal, 12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.white, lineWidth: 2)
-                            )
-                            .background(Color.lighterBlue.opacity(0.6))
-                            .cornerRadius(10)
                     }
                 }
-                .padding()
-                .padding(.bottom, 16)
-                
+                .padding(20)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.1))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+                .padding(.horizontal, 32)
+
                 Spacer()
+
+                // Dismiss button
+                Button(action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Done")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white.opacity(0.15))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(0.4), Color.white.opacity(0.15)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
+                }
+                .padding(.horizontal, 32)
+                .padding(.bottom, 40)
             }
         }
     }

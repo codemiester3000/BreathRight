@@ -12,26 +12,28 @@ struct SettingsView: View {
     var body: some View {
         VStack {
             Menu {
-                // Loop through the breathing types
                 ForEach(BreathingType.allCases, id: \.self) { breathingType in
                     Button(breathingType.rawValue) {
                         self.selectedBreathingType = breathingType
                     }
                 }
             } label: {
-                HStack {
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.white)
+                HStack(spacing: 8) {
                     Text(selectedBreathingType.rawValue)
-                        .font(.system(size: 20))
-                        .fontWeight(.bold)
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
-
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.7))
                 }
-                .background(RoundedRectangle(cornerRadius: 15).fill(Color.clear))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color.white.opacity(0.1))
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
             }
         }
     }

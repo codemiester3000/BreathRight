@@ -2,30 +2,36 @@ import SwiftUI
 
 struct FourSevenEightBreathInfo: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header
             Text("What is 4-7-8 Breathing?")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(Color.primary) // Adapts to theme
-            
-            Text("The 4-7-8 breathing technique is a calming practice that involves breathing in for 4 seconds, holding the breath for 7 seconds, and exhaling for 8 seconds.")
-                .font(.system(size: 16))
-                .foregroundColor(Color.secondary) // Subtle in both themes
-                .padding(.bottom, 20)
-            
-            Text("Benefits:")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundColor(Color.primary)
-            
+                .padding(.bottom, 12)
+
+            // Description
+            Text("The 4-7-8 breathing technique is a calming practice that involves breathing in for 4 seconds, holding the breath for 7 seconds, and exhaling for 8 seconds.")
+                .font(.system(size: 14))
+                .foregroundColor(Color.secondary)
+                .lineSpacing(4)
+                .padding(.bottom, 20)
+
+            // Benefits section
+            Text("BENEFITS")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(Color.secondary)
+                .tracking(1)
+                .padding(.bottom, 12)
+
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(FourSevenEightBenefit.allCases, id: \.self) { benefit in
                     BenefitRowNew(benefit: benefit)
                 }
             }
         }
-        .padding()
-        .background(Color(UIColor.systemBackground)) // Adapts to theme
-        .cornerRadius(10)
-        .shadow(color: Color.gray.opacity(0.2), radius: 5, x: 0, y: 2)
+        .padding(20)
+        .background(Color(UIColor.systemBackground))
+        .cornerRadius(16)
     }
 }
 
@@ -33,10 +39,12 @@ struct BenefitRowNew: View {
     let benefit: FourSevenEightBenefit
 
     var body: some View {
-        HStack(spacing: 15) {
+        HStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
+                .font(.system(size: 14))
+                .foregroundColor(Color(hex: "22c55e"))
             Text(benefit.description)
+                .font(.system(size: 14))
                 .foregroundColor(Color.primary)
         }
     }

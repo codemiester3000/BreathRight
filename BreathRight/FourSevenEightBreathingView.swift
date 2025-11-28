@@ -80,114 +80,100 @@ struct FourSevenEightBreathingView: View {
     }
     
     private var timerView: some View {
-        VStack() {
-            
+        VStack(alignment: .leading, spacing: 0) {
+
             AnimatedHeaderView()
-                .padding(.top, -40)
-                .padding(.bottom, 60)
-            
+                .padding(.top, -50)
+                .padding(.bottom, 40)
+                .opacity(0.8)
+
+            // Stats pills row
             HStack {
-                Text("\(formattedTime(for: Int(exerciseTimeElapsed)))")
-                    .font(.system(.footnote, design: .rounded))
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white.opacity(0.1))
-                            .overlay(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                                .mask(RoundedRectangle(cornerRadius: 16))
-                            )
-                    )
-                    .foregroundColor(.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                    )
-                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                
+                // Time pill
+                HStack(spacing: 6) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 11, weight: .medium))
+                    Text(formattedTime(for: Int(exerciseTimeElapsed)))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.white.opacity(0.12))
+                .clipShape(Capsule())
+
                 Spacer()
-                
-                Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)") cycles")
-                    .font(.system(.footnote, design: .rounded))
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white.opacity(flashOpacity))
-                            .overlay(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.2)]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                                .mask(RoundedRectangle(cornerRadius: 16))
-                            )
-                    )
-                    .foregroundColor(.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                    )
-                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-            
+
+                // Cycles pill
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.2.squarepath")
+                        .font(.system(size: 11, weight: .medium))
+                    Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)")")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.white.opacity(flashOpacity + 0.12))
+                .clipShape(Capsule())
             }
-            .padding(.horizontal)
-            
+
+            // Subtle separator
             Rectangle()
-                .fill(Color.white.opacity(0.3))
+                .fill(Color.white.opacity(0.15))
                 .frame(height: 1)
-                .padding(.horizontal, 5)
-                .padding(.top, 30)
+                .padding(.top, 20)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 24)
         .padding(.top, 50)
     }
     
     
     private var headerView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("4-7-8 Breathing")
-                    .font(.system(size: 20))
-                    .fontWeight(.bold)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
-                
+
                 Button(action: {
                     showTooltip.toggle()
                 }) {
                     Image(systemName: "questionmark.circle.fill")
-                        .foregroundColor(Color.gray)
+                        .font(.system(size: 18))
+                        .foregroundColor(.white.opacity(0.5))
                 }
                 .popover(isPresented: $showTooltip, arrowEdge: .top) {
                     FourSevenEightBreathInfo()
                     Spacer()
                 }
-                
+
                 Spacer()
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 24)
             .padding(.top, 50)
-            
+
+            // Subtle separator
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.white.opacity(0.15))
                 .frame(height: 1)
-                .padding(.horizontal, 5)
-                .padding(.vertical, 30)
-            
-            HStack {
-                Image(systemName: "arrow.3.trianglepath").foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+
+            // Cycles indicator pill
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.3.trianglepath")
+                    .font(.system(size: 12, weight: .medium))
                 Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
-                    .font(.system(size: 16))
-                    .foregroundColor(.white)
+                    .font(.system(size: 13, weight: .medium))
             }
-            .padding(.horizontal, 20)
+            .foregroundColor(.white.opacity(0.9))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.1))
+            .clipShape(Capsule())
+            .padding(.horizontal, 24)
+            .padding(.top, 20)
         }
     }
     
@@ -197,43 +183,50 @@ struct FourSevenEightBreathingView: View {
                 playAudio(named: "Inhale")
                 startBreathingExercise()
             }) {
-                Text("Breathe")
-                    .font(.headline)
+                Text("Begin Session")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
-                    .padding()
-                    .padding(.horizontal, 12)
-                    .frame(width: geometry.size.width * 0.8) // Set the width to 80% of the screen width
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white, lineWidth: 2)
+                    .frame(width: geometry.size.width * 0.85, height: 52)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(0.15))
                     )
-                    .background(Color.myTurqoise.opacity(0.2))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color.white.opacity(0.4), Color.white.opacity(0.15)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    )
+                    .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
             }
-            .frame(width: geometry.size.width) // This is to ensure the button is centered
+            .frame(width: geometry.size.width)
         }
-        .frame(height: 50) // Set a fixed height for the button
-        .padding(.bottom, 32)
+        .frame(height: 52)
+        .padding(.bottom, 40)
     }
-    
+
     private var stopButton: some View {
-        Button("Stop") {
-            //isSheetPresented.toggle()
+        Button(action: {
             stopBreathingExercise()
             navigateToSummary = true
-        }
-        .font(.headline)
-        .foregroundColor(.white)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white.opacity(0.1))
+        }) {
+            Text("End Session")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 28)
+                .padding(.vertical, 14)
+                .background(Color.white.opacity(0.12))
+                .clipShape(Capsule())
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    Capsule()
+                        .stroke(Color.white.opacity(0.25), lineWidth: 1)
                 )
-        )
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        }
     }
     
     func flashCyclesText() {
@@ -349,10 +342,11 @@ struct FourSevenEightBreathingView: View {
 struct CircleView: View {
     var body: some View {
         Circle()
-            .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
-            .foregroundColor(Color.white.opacity(0.4))   //Color(hex: "2E8B57").opacity(0.4))
+            .stroke(style: StrokeStyle(lineWidth: 16, lineCap: .round, lineJoin: .round))
+            .foregroundColor(Color.white.opacity(0.2))
             .rotationEffect(Angle(degrees: 270))
-            .frame(width: 300, height: 300)
+            .frame(width: 260, height: 260)
+            .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
     }
 }
 
@@ -362,48 +356,47 @@ struct Diagram: View {
     @Binding var isPhaseTransition: Bool
     @Binding var currentPhaseTimeRemaining: Int
     @State private var textScale: CGFloat = 1.0
-    
     @State private var circleOpacity: Double = 0.0
-    
+
     private func fadeInCircle() {
-        // Initially hide the circle
         self.circleOpacity = 0.7
-        // Fade in the circle
         withAnimation(.easeInOut(duration: 1.0)) {
             self.circleOpacity = 1.0
         }
     }
-    
+
     var body: some View {
         ZStack {
+            // Background circle
             Circle()
-                .stroke(lineWidth: 20)
-                .opacity(0.3)
+                .stroke(lineWidth: 16)
+                .opacity(0.2)
                 .foregroundColor(phaseColor)
-                .frame(width: 300, height: 300)
+                .frame(width: 260, height: 260)
                 .animation(.easeIn(duration: 0.5), value: phaseColor)
                 .onAppear {
                     fadeInCircle()
                 }
-            
+
+            // Progress circle
             Circle()
                 .trim(from: 0.0, to: progress)
-                .stroke(style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round))
+                .stroke(style: StrokeStyle(lineWidth: 16, lineCap: .round, lineJoin: .round))
                 .foregroundColor(phaseColor)
                 .rotationEffect(Angle(degrees: 270))
                 .animation(isPhaseTransition ? nil : .smooth, value: progress)
                 .animation(.easeIn(duration: 0.5), value: phaseColor)
+                .frame(width: 260, height: 260)
+                .shadow(color: phaseColor.opacity(0.3), radius: 8)
                 .onAppear {
                     fadeInCircle()
                 }
-            
-            VStack {
-                Text(currentPhase.rawValue)
-                    .font(.system(size: 20))
-                    .fontWeight(.bold)
-                    .scaleEffect(textScale)
-                    .foregroundColor(.white)
-            }
+
+            // Phase text
+            Text(currentPhase.rawValue)
+                .font(.system(size: 28, weight: .semibold, design: .rounded))
+                .scaleEffect(textScale)
+                .foregroundColor(.white)
         }
         .padding(40)
         .onAppear {
@@ -413,29 +406,28 @@ struct Diagram: View {
             applyScalingBasedOnPhase(newValue)
         }
     }
-    
+
     private func applyScalingBasedOnPhase(_ phase: BreathingPhase) {
         withAnimation(.easeInOut(duration: 2.0)) {
             switch phase {
             case .inhale:
-                textScale = 1.2 // Scale up for inhale
+                textScale = 1.15
             case .hold:
-                // Do nothing, maintain current scale
                 break
             case .exhale:
-                textScale = 0.8 // Scale down for exhale
+                textScale = 0.85
             }
         }
     }
-    
+
     private var phaseColor: Color {
         switch currentPhase {
         case .inhale:
             return Color.white
         case .hold:
-            return Color(hex: "862e8b")
+            return Color(hex: "a855f7") // Purple
         case .exhale:
-            return Color(hex: "2e8b86")
+            return Color(hex: "22d3ee") // Cyan
         }
     }
 }
