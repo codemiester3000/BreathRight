@@ -6,11 +6,8 @@ struct BreathRightApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                HomeView()
-                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
-            }
-            .accentColor(.white) // This sets the navigation bar item color to white
+            SplashScreen()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
