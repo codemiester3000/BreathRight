@@ -340,13 +340,29 @@ struct FourSevenEightBreathingView: View {
 }
 
 struct CircleView: View {
+    @State private var glowOpacity: Double = 0.3
+
     var body: some View {
-        Circle()
-            .stroke(style: StrokeStyle(lineWidth: 16, lineCap: .round, lineJoin: .round))
-            .foregroundColor(Color.white.opacity(0.2))
-            .rotationEffect(Angle(degrees: 270))
-            .frame(width: 260, height: 260)
-            .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
+        ZStack {
+            // Subtle glow
+            Circle()
+                .stroke(lineWidth: 20)
+                .foregroundColor(.white)
+                .opacity(glowOpacity * 0.1)
+                .frame(width: 260, height: 260)
+                .blur(radius: 6)
+
+            // Main circle
+            Circle()
+                .stroke(style: StrokeStyle(lineWidth: 12, lineCap: .round, lineJoin: .round))
+                .foregroundColor(Color.white.opacity(0.2))
+                .frame(width: 250, height: 250)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                glowOpacity = 0.6
+            }
+        }
     }
 }
 
@@ -356,54 +372,63 @@ struct Diagram: View {
     @Binding var isPhaseTransition: Bool
     @Binding var currentPhaseTimeRemaining: Int
     @State private var textScale: CGFloat = 1.0
-    @State private var circleOpacity: Double = 0.0
-
-    private func fadeInCircle() {
-        self.circleOpacity = 0.7
-        withAnimation(.easeInOut(duration: 1.0)) {
-            self.circleOpacity = 1.0
-        }
-    }
+    @State private var glowOpacity: Double = 0.4
 
     var body: some View {
         ZStack {
-            // Background circle
+            // Outer glow effect
             Circle()
-                .stroke(lineWidth: 16)
-                .opacity(0.2)
+                .stroke(lineWidth: 24)
                 .foregroundColor(phaseColor)
-                .frame(width: 260, height: 260)
-                .animation(.easeIn(duration: 0.5), value: phaseColor)
-                .onAppear {
-                    fadeInCircle()
-                }
+                .opacity(glowOpacity * 0.15)
+                .frame(width: 270, height: 270)
+                .blur(radius: 8)
+                .animation(.easeInOut(duration: 0.8), value: phaseColor)
+
+            // Background circle track
+            Circle()
+                .stroke(lineWidth: 12)
+                .foregroundColor(.white.opacity(0.15))
+                .frame(width: 250, height: 250)
 
             // Progress circle
             Circle()
                 .trim(from: 0.0, to: progress)
-                .stroke(style: StrokeStyle(lineWidth: 16, lineCap: .round, lineJoin: .round))
-                .foregroundColor(phaseColor)
+                .stroke(
+                    LinearGradient(
+                        colors: [phaseColor, phaseColor.opacity(0.7)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(lineWidth: 12, lineCap: .round, lineJoin: .round)
+                )
                 .rotationEffect(Angle(degrees: 270))
-                .animation(isPhaseTransition ? nil : .smooth, value: progress)
-                .animation(.easeIn(duration: 0.5), value: phaseColor)
-                .frame(width: 260, height: 260)
-                .shadow(color: phaseColor.opacity(0.3), radius: 8)
-                .onAppear {
-                    fadeInCircle()
-                }
+                .frame(width: 250, height: 250)
+                .shadow(color: phaseColor.opacity(0.5), radius: 12, x: 0, y: 0)
+                .animation(.easeInOut(duration: 0.1), value: progress)
+                .animation(.easeInOut(duration: 0.8), value: phaseColor)
 
             // Phase text
-            Text(currentPhase.rawValue)
-                .font(.system(size: 28, weight: .semibold, design: .rounded))
-                .scaleEffect(textScale)
-                .foregroundColor(.white)
+            VStack(spacing: 4) {
+                Text(currentPhase.rawValue)
+                    .font(.system(size: 28, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
+                    .scaleEffect(textScale)
+            }
         }
         .padding(40)
         .onAppear {
             applyScalingBasedOnPhase(currentPhase)
+            startGlowAnimation()
         }
         .onChange(of: currentPhase) { newValue in
             applyScalingBasedOnPhase(newValue)
+        }
+    }
+
+    private func startGlowAnimation() {
+        withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+            glowOpacity = 0.8
         }
     }
 
@@ -423,11 +448,11 @@ struct Diagram: View {
     private var phaseColor: Color {
         switch currentPhase {
         case .inhale:
-            return Color.white
+            return .white
         case .hold:
-            return Color(hex: "a855f7") // Purple
+            return Color.backgroundBeige // Warm gold/beige from theme
         case .exhale:
-            return Color(hex: "22d3ee") // Cyan
+            return Color.myTurqoise // Turquoise from theme
         }
     }
 }
