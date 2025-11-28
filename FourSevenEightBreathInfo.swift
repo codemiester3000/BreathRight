@@ -4,18 +4,16 @@ struct FourSevenEightBreathInfo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("What is 4-7-8 Breathing?")
-                .font(.custom("Inter-Variable", size: 22))
-                .fontWeight(.bold)
+                .font(.system(size: 22, weight: .bold))
                 .foregroundColor(Color.primary) // Adapts to theme
             
             Text("The 4-7-8 breathing technique is a calming practice that involves breathing in for 4 seconds, holding the breath for 7 seconds, and exhaling for 8 seconds.")
-                .font(.custom("Inter-Variable", size: 16))
+                .font(.system(size: 16))
                 .foregroundColor(Color.secondary) // Subtle in both themes
                 .padding(.bottom, 20)
             
             Text("Benefits:")
-                .font(.custom("Inter-Variable", size: 18))
-                .fontWeight(.bold)
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(Color.primary)
             
             VStack(alignment: .leading, spacing: 10) {

@@ -7,20 +7,28 @@ struct CosineAnimation: View {
         ZStack {
             // The actual animated wave
             SineWave(phaseShift: phaseShift)
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
                 .mask(
-                    // The gradient mask for the fading effect
-                    LinearGradient(gradient: Gradient(colors: [Color.clear, Color.blue]),
-                                   startPoint: .leading, endPoint: .trailing)
+                    // Refined gradient mask for smoother fading
+                    LinearGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: .clear, location: 0),
+                            .init(color: .white.opacity(0.4), location: 0.25),
+                            .init(color: .white, location: 0.6),
+                            .init(color: .clear, location: 1.0)
+                        ]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
                 )
-            
+
         }
         .frame(height: 55)
         .padding(.horizontal)
         .onAppear() {
-            // Randomized delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.1...2.3)) {
-                withAnimation(Animation.linear(duration: 5).repeatForever(autoreverses: false)) {
+            // Randomized delay for organic feel
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.1...2.5)) {
+                withAnimation(Animation.linear(duration: 8).repeatForever(autoreverses: false)) {
                     phaseShift = 2 * .pi  // One full cycle to the right
                 }
             }

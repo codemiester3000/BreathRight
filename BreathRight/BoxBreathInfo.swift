@@ -4,18 +4,16 @@ struct BoxBreathInfo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("What is Box Breathing?")
-                .font(.custom("Inter-Variable", size: 22))
-                .fontWeight(.bold)
+                .font(.system(size: 22, weight: .bold))
                 .foregroundColor(Color.primary) // Adapts to theme
             
             Text("Box breathing is a powerful stress-relieving technique. It involves inhaling, holding, exhaling, and holding the breath again, each for an equal count.")
-                .font(.custom("Inter-Variable", size: 16))
+                .font(.system(size: 16))
                 .foregroundColor(Color.secondary) // Subtle in both themes
                 .padding(.bottom, 20)
             
             Text("Benefits:")
-                .font(.custom("Inter-Variable", size: 18))
-                .fontWeight(.bold)
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(Color.primary)
             
             VStack(alignment: .leading, spacing: 10) {

@@ -42,47 +42,53 @@ struct HomeView: View {
                 LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
                 
-                VStack(alignment: .center) {
-                    
+                VStack(alignment: .center, spacing: 0) {
+
                     AnimatedHeaderView()
-                        .padding(.top, -40)
-                        .padding(.bottom, 40)
-                    
-                    VStack(alignment: .leading) {
+                        .padding(.top, -60)
+                        .padding(.bottom, 16)
+                        .opacity(0.8)
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Greeting section
                         HStack {
                             Text(greetingMessage())
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                             Spacer()
                             Image(systemName: greetingIconName())
-                                .foregroundColor(.white)
-                                .imageScale(.large)
+                                .font(.system(size: 24, weight: .light))
+                                .foregroundColor(.white.opacity(0.8))
                         }
-                        .padding(.top)
-                        .padding(.horizontal)
-                        
-                        Divider().background(.white)
-                        
-                        //Spacer()
+                        .padding(.top, 8)
+                        .padding(.horizontal, 24)
+
+                        // Subtle separator
+                        Rectangle()
+                            .fill(Color.white.opacity(0.15))
+                            .frame(height: 1)
+                            .padding(.horizontal, 24)
+                            .padding(.top, 16)
+
+                        // Breath cycle selector
                         HStack {
                             BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
                             Spacer()
                         }
                         .padding(.top, 32)
-                        .padding(.horizontal)
-                        .padding(.bottom)
-                        
-                        // Subheader
-                        Text("Select your breathing exercise:")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(.bottom)
-                            .padding(.top)
-                            .padding(.leading)
+                        .padding(.horizontal, 24)
+
+                        // Section header - refined uppercase style
+                        Text("SELECT YOUR EXERCISE")
+                            .font(.system(size: 12, weight: .semibold))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.top, 32)
+                            .padding(.bottom, 16)
+                            .padding(.leading, 24)
                     }
                     
-                    VStack(alignment: .center) {
+                    VStack(alignment: .center, spacing: 16) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
                                 BeautifulButton(
@@ -92,12 +98,13 @@ struct HomeView: View {
                                     timeForCycle: exercise.timeForOneCycle(),
                                     isInfinite: unlimtedCycles
                                 )
-                                .padding(.bottom, 12)
                             }
                         }
                     }
+
+                    Spacer()
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 16)
             }
         }
     }
@@ -140,78 +147,103 @@ struct BeautifulButton: View {
     let numCycles: Int
     let timeForCycle: Int
     let isInfinite: Bool
-    
+
     let screenWidth = UIScreen.main.bounds.width
-    
+
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Divider().background(Color.white).frame(width: screenWidth * 0.8 * 0.58)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(benefits, id: \.self) { benefit in
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.backgroundBeige)
-                                Text(benefit)
-                                    .foregroundColor(.white)
-                            }
-                        }
+        VStack(alignment: .leading, spacing: 0) {
+            // Top accent line
+            RoundedRectangle(cornerRadius: 1)
+                .fill(Color.white.opacity(0.4))
+                .frame(width: 40, height: 2)
+                .padding(.top, 20)
+                .padding(.leading, 20)
+
+            // Title
+            Text(title)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.top, 12)
+                .padding(.horizontal, 20)
+
+            // Benefits list
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(benefits, id: \.self) { benefit in
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(.backgroundBeige)
+                        Text(benefit)
+                            .font(.system(size: 13))
+                            .foregroundColor(.white.opacity(0.85))
                     }
-                    .font(.caption)
                 }
-                .frame(width: screenWidth * 0.8 * 0.53, height: 140)
-                .padding(.leading, 8)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .foregroundColor(.white)
-                    .imageScale(.large)
             }
-            .padding([.top, .leading, .trailing])
-            
-            HStack {
-                HStack {
+            .padding(.top, 12)
+            .padding(.horizontal, 20)
+
+            Spacer()
+
+            // Bottom metadata row
+            HStack(spacing: 16) {
+                // Cycles pill
+                HStack(spacing: 4) {
                     Image(systemName: "arrow.2.squarepath")
-                        .foregroundColor(.backgroundBeige)
-                        .font(.caption)
-                    
-                    Text(isInfinite ? "∞" : "\(numCycles) cycles")
-                        .foregroundColor(.white)
-                        .font(.caption)
-                        .padding(.trailing, 12)
+                        .font(.system(size: 10, weight: .medium))
+                    Text(isInfinite ? "∞" : "\(numCycles)")
+                        .font(.system(size: 11, weight: .medium))
                 }
-                HStack {
+                .foregroundColor(.white.opacity(0.9))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.white.opacity(0.12))
+                .clipShape(Capsule())
+
+                // Duration pill
+                HStack(spacing: 4) {
                     Image(systemName: "timer")
-                        .foregroundColor(.backgroundBeige)
-                        .font(.caption)
-                    
+                        .font(.system(size: 10, weight: .medium))
                     Text(isInfinite ? "∞" : etaText)
-                        .foregroundColor(.white)
-                        .font(.caption)
-                        .padding(.trailing, 12)
+                        .font(.system(size: 11, weight: .medium))
                 }
+                .foregroundColor(.white.opacity(0.9))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.white.opacity(0.12))
+                .clipShape(Capsule())
+
                 Spacer()
+
+                // Arrow indicator
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.6))
             }
-            .padding(.bottom, 32)
-            .padding(.horizontal)
-            
-            // Maintaining the styling for the whole button
+            .padding(.horizontal, 20)
+            .padding(.bottom, 16)
         }
-        .frame(width: screenWidth * 0.9, height: 160) // Adjusted height for the new row
-        .background(Color.gray.opacity(0.2))
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white, lineWidth: 1)
+        .frame(width: screenWidth * 0.88, height: 170)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.08))
         )
-        .shadow(radius: 5)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial.opacity(0.3))
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.35), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.12), radius: 20, y: 10)
     }
     
     private var etaText: String {
@@ -227,47 +259,51 @@ struct BeautifulButton: View {
 
 
 struct BreathCycleSelector: View {
-    @Binding var cycles: Int // Binding to the number of breath cycles
-    @Binding var isUnlimited: Bool // Binding to toggle unlimited cycles
+    @Binding var cycles: Int
+    @Binding var isUnlimited: Bool
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 140
-    let thumbSize: CGFloat = 20
-    let trackColor = Color.backgroundBeige.opacity(0.5)
+    let thumbSize: CGFloat = 18
+    let trackColor = Color.white.opacity(0.2)
     let thumbColor = Color.white
-    let maxCycles = 120 // Maximum number of cycles
-    
+    let maxCycles = 120
+
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header row
             HStack {
-                Image(systemName: "arrow.3.trianglepath").foregroundColor(.white)
-                Text("Breath cycles")
-                    .font(.system(size: 16))
-                    .foregroundColor(.white)
-                Spacer()
-                if isUnlimited {
-                    Text("∞ cycles") // Infinity symbol for unlimited
-                        .font(.system(size: 16))
-                        .foregroundColor(.white)
-                } else {
-                    Text("\(cycles) cycles")
-                        .font(.system(size: 16))
-                        .foregroundColor(.white)
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.3.trianglepath")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                    Text("Breath cycles")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.9))
                 }
+                Spacer()
+                Text(isUnlimited ? "∞ cycles" : "\(cycles) cycles")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
             }
-            
-            HStack {
+
+            // Slider row
+            HStack(spacing: 16) {
                 ZStack(alignment: .leading) {
+                    // Track background
                     Capsule()
-                        .frame(width: sliderWidth, height: 3)
+                        .frame(width: sliderWidth, height: 2)
                         .foregroundColor(trackColor)
-                    
+
+                    // Track fill
                     Capsule()
-                        .frame(width: isUnlimited ? sliderWidth : sliderWidth * CGFloat(cycles) / CGFloat(maxCycles), height: 3)
+                        .frame(width: isUnlimited ? sliderWidth : sliderWidth * CGFloat(cycles) / CGFloat(maxCycles), height: 2)
                         .foregroundColor(thumbColor)
-                    
+
+                    // Thumb
                     Circle()
+                        .fill(thumbColor)
                         .frame(width: thumbSize, height: thumbSize)
-                        .foregroundColor(thumbColor)
-                        .offset(x: isUnlimited ? sliderWidth : sliderWidth * CGFloat(cycles) / CGFloat(maxCycles) - thumbSize / 2)
+                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                        .offset(x: isUnlimited ? sliderWidth - thumbSize / 2 : sliderWidth * CGFloat(cycles) / CGFloat(maxCycles) - thumbSize / 2)
                         .gesture(
                             DragGesture().onChanged { gesture in
                                 if !isUnlimited {
@@ -279,8 +315,8 @@ struct BreathCycleSelector: View {
                             }
                         )
                 }
-                .padding(.trailing)
-                
+
+                // Infinity toggle button
                 Button(action: {
                     isUnlimited.toggle()
                     UserDefaults.standard.set(isUnlimited, forKey: "unlimtedCycles")
@@ -290,13 +326,17 @@ struct BreathCycleSelector: View {
                     }
                 }) {
                     Image(systemName: "infinity")
-                        .foregroundColor(isUnlimited ? .myTurqoise : .white)
-                        .frame(width: 40, height: 40)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(isUnlimited ? .myTurqoise : .white.opacity(0.7))
+                        .frame(width: 36, height: 36)
                         .background(isUnlimited ? Color.white : Color.clear)
                         .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(isUnlimited ? 0 : 0.3), lineWidth: 1)
+                        )
                 }
                 .buttonStyle(PlainButtonStyle())
-                .padding(.leading)
             }
         }
     }

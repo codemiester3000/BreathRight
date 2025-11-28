@@ -22,9 +22,6 @@
 		C5B417FC2AC8766E005C7E45 /* BreathRightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B417FB2AC8766E005C7E45 /* BreathRightTests.swift */; };
 		C5B418062AC8766E005C7E45 /* BreathRightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418052AC8766E005C7E45 /* BreathRightUITests.swift */; };
 		C5B418082AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418072AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift */; };
-		C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
-		C5B418162AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
-		C5B418172AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */; };
 		C5B4181A2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
 		C5B4181B2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
 		C5B4181C2AC8FF49005C7E45 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5B418192AC8FF49005C7E45 /* BreathingView.swift */; };
@@ -76,7 +73,6 @@
 		C5B418012AC8766E005C7E45 /* BreathRightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BreathRightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5B418052AC8766E005C7E45 /* BreathRightUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightUITests.swift; sourceTree = "<group>"; };
 		C5B418072AC8766E005C7E45 /* BreathRightUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathRightUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-VariableFont_slnt,wght.ttf"; path = "../../../Downloads/Inter/Inter-VariableFont_slnt,wght.ttf"; sourceTree = "<group>"; };
 		C5B418182AC88414005C7E45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C5B418192AC8FF49005C7E45 /* BreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingView.swift; sourceTree = "<group>"; };
 		C5B418232ACEF163005C7E45 /* Hold.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Hold.mp3; sourceTree = "<group>"; };
@@ -142,7 +138,6 @@
 				C5B417E62AC8766B005C7E45 /* Persistence.swift */,
 				C5B417EB2AC8766B005C7E45 /* MainView.swift */,
 				C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */,
-				C5B418142AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf */,
 				C5B417ED2AC8766E005C7E45 /* Assets.xcassets */,
 				C5B4182D2ADB818F005C7E45 /* TinyIcon.png */,
 				C5B418272ACEF1D5005C7E45 /* Exhale.mp3 */,
@@ -296,7 +291,6 @@
 				C5B417F22AC8766E005C7E45 /* Preview Assets.xcassets in Resources */,
 				C5B418242ACEF163005C7E45 /* Hold.mp3 in Resources */,
 				C5B418282ACEF1D5005C7E45 /* Exhale.mp3 in Resources */,
-				C5B418152AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 				C5B4182E2ADB818F005C7E45 /* TinyIcon.png in Resources */,
 				C5B417EE2AC8766E005C7E45 /* Assets.xcassets in Resources */,
 			);
@@ -307,7 +301,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5B4182F2ADB818F005C7E45 /* TinyIcon.png in Resources */,
-				C5B418162AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,7 +309,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C5B418302ADB818F005C7E45 /* TinyIcon.png in Resources */,
-				C5B418172AC883DA005C7E45 /* Inter-VariableFont_slnt,wght.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

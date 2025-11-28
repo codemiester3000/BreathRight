@@ -25,7 +25,7 @@ struct Summary: View {
                     
                     HStack {
                         Text("Session Complete")
-                            .font(.custom("Inter-Variable", size: 20))
+                            .font(.system(size: 20, weight: .semibold))
                             .padding(.top)
                             .foregroundColor(.white)
                         Spacer()

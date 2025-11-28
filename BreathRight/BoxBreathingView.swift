@@ -482,7 +482,7 @@ struct BoxBreathingView: View {
     @ViewBuilder
     private func animatedText(side: Int, x: CGFloat, y: CGFloat) -> some View {
         Text("\(currentCountDown)")
-            .font(.custom("Inter-Variable", size: 20))
+            .font(.system(size: 20, weight: .medium))
             .position(x: x, y: y)
             .opacity(sideToShow == side ? 1 : 0)
             .transition(.opacity)
@@ -703,7 +703,7 @@ struct CustomToggle: View {
                 }
                 
                 Text(isOn ? "Voice A" : "Voice B")
-                    .font(.custom("Inter-Variable", size: 15))
+                    .font(.system(size: 15))
                     .multilineTextAlignment(.leading)
             }
         }
