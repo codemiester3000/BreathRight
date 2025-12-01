@@ -33,15 +33,15 @@ struct HomeView: View {
         let savedValue = UserDefaults.standard.integer(forKey: "numCycles")
         return savedValue != 0 ? savedValue : 10 // If savedValue is 0 (not set), return 10
     }()
-    
+
     @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
-    
+
     var body: some View {
         NavigationView {
             ZStack {
                 LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
                     .edgesIgnoringSafeArea(.all)
-                
+
                 VStack(alignment: .center, spacing: 0) {
 
                     AnimatedHeaderView()
@@ -50,52 +50,35 @@ struct HomeView: View {
                         .opacity(0.8)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        // Greeting section
-                        HStack {
-                            Text(greetingMessage())
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                            Spacer()
-                            Image(systemName: greetingIconName())
-                                .font(.system(size: 24, weight: .light))
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                        .padding(.top, 8)
-                        .padding(.horizontal, 24)
-
-                        // Subtle separator
-                        Rectangle()
-                            .fill(Color.white.opacity(0.15))
-                            .frame(height: 1)
+                        // Greeting section - professional redesign
+                        GreetingHeader()
+                            .padding(.top, 8)
                             .padding(.horizontal, 24)
-                            .padding(.top, 16)
 
                         // Breath cycle selector
                         HStack {
                             BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
                             Spacer()
                         }
-                        .padding(.top, 32)
+                        .padding(.top, 28)
                         .padding(.horizontal, 24)
 
                         // Section header - refined uppercase style
                         Text("SELECT YOUR EXERCISE")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold))
                             .tracking(1.5)
-                            .foregroundColor(.white.opacity(0.7))
-                            .padding(.top, 32)
-                            .padding(.bottom, 16)
+                            .foregroundColor(.white.opacity(0.5))
+                            .padding(.top, 28)
+                            .padding(.bottom, 14)
                             .padding(.leading, 24)
                     }
-                    
-                    VStack(alignment: .center, spacing: 16) {
+
+                    VStack(alignment: .center, spacing: 14) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
-                                BeautifulButton(
-                                    title: exercise.rawValue,
-                                    benefits: exercise.benefits,
+                                ExerciseCard(
+                                    exercise: exercise,
                                     numCycles: numCycles,
-                                    timeForCycle: exercise.timeForOneCycle(),
                                     isInfinite: unlimtedCycles
                                 )
                             }
@@ -107,6 +90,7 @@ struct HomeView: View {
                 .padding(.horizontal, 16)
             }
         }
+        .navigationViewStyle(.stack)
     }
     
     @ViewBuilder
@@ -120,140 +104,232 @@ struct HomeView: View {
         }
     }
     
-    // Function to determine greeting based on time of day
-    private func greetingMessage() -> String {
-        let hour = Calendar.current.component(.hour, from: Date())
+}
+
+// MARK: - Professional Greeting Header
+struct GreetingHeader: View {
+    private var hour: Int {
+        Calendar.current.component(.hour, from: Date())
+    }
+
+    private var greeting: String {
         switch hour {
         case 6..<12: return "Good Morning"
         case 12..<17: return "Good Afternoon"
         default: return "Good Evening"
         }
     }
-    
-    private func greetingIconName() -> String {
-        let hour = Calendar.current.component(.hour, from: Date())
+
+    private var iconName: String {
         switch hour {
-        case 6..<12: return "sunrise.fill" // Morning icon
-        case 12..<17: return "sun.max.fill" // Afternoon icon
-        case 17..<20: return "moon.stars.fill" // Evening icon
-        default: return "moon.stars.fill" // Night icon
+        case 6..<12: return "sun.horizon.fill"
+        case 12..<17: return "sun.max.fill"
+        default: return "moon.stars.fill"
+        }
+    }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(greeting)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                Text("Ready to breathe?")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.6))
+            }
+
+            Spacer()
+
+            // Icon with subtle glow
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 48, height: 48)
+
+                Image(systemName: iconName)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(.white.opacity(0.9))
+            }
         }
     }
 }
 
-struct BeautifulButton: View {
-    let title: String
-    let benefits: [String]
-    let numCycles: Int
-    let timeForCycle: Int
-    let isInfinite: Bool
-
-    let screenWidth = UIScreen.main.bounds.width
+// MARK: - Geometric Animations for Cards
+struct RotatingSquaresAnimation: View {
+    @State private var rotation: Double = 0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Top accent line
-            RoundedRectangle(cornerRadius: 1)
-                .fill(Color.white.opacity(0.4))
-                .frame(width: 40, height: 2)
-                .padding(.top, 20)
-                .padding(.leading, 20)
+        ZStack {
+            ForEach(0..<3, id: \.self) { index in
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(Color.white.opacity(0.12 - Double(index) * 0.03), lineWidth: 1)
+                    .frame(width: 24 - CGFloat(index * 5), height: 24 - CGFloat(index * 5))
+                    .rotationEffect(.degrees(rotation + Double(index * 20)))
+            }
+        }
+        .frame(width: 32, height: 32)
+        .onAppear {
+            withAnimation(.linear(duration: 12).repeatForever(autoreverses: false)) {
+                rotation = 360
+            }
+        }
+    }
+}
 
-            // Title
-            Text(title)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.white)
+struct OrbitingDotsAnimation: View {
+    @State private var rotation: Double = 0
+
+    var body: some View {
+        ZStack {
+            // Center point
+            Circle()
+                .fill(Color.white.opacity(0.15))
+                .frame(width: 3, height: 3)
+
+            // Orbiting dots
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .fill(Color.white.opacity(0.2 - Double(index) * 0.05))
+                    .frame(width: 4, height: 4)
+                    .offset(x: 10 + CGFloat(index * 2))
+                    .rotationEffect(.degrees(rotation + Double(index * 120)))
+            }
+        }
+        .frame(width: 32, height: 32)
+        .onAppear {
+            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+                rotation = 360
+            }
+        }
+    }
+}
+
+// MARK: - Professional Exercise Card
+struct ExerciseCard: View {
+    let exercise: BreathingExercise
+    let numCycles: Int
+    let isInfinite: Bool
+
+    private let screenWidth = UIScreen.main.bounds.width
+
+    private var etaText: String {
+        let totalSeconds = exercise.timeForOneCycle() * numCycles
+        if totalSeconds < 60 {
+            return "\(totalSeconds)s"
+        } else {
+            let minutes = totalSeconds / 60
+            return "\(minutes)m"
+        }
+    }
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Title row
+                HStack(alignment: .center) {
+                    Text(exercise.rawValue)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.white)
+
+                    Spacer()
+                }
+                .padding(.top, 18)
+                .padding(.horizontal, 20)
+
+                // Benefits list
+                VStack(alignment: .leading, spacing: 5) {
+                    ForEach(exercise.benefits, id: \.self) { benefit in
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(Color.backgroundBeige.opacity(0.9))
+                                .frame(width: 5, height: 5)
+                            Text(benefit)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(.white.opacity(0.75))
+                        }
+                    }
+                }
                 .padding(.top, 12)
                 .padding(.horizontal, 20)
 
-            // Benefits list
-            VStack(alignment: .leading, spacing: 6) {
-                ForEach(benefits, id: \.self) { benefit in
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(.backgroundBeige)
-                        Text(benefit)
-                            .font(.system(size: 13))
-                            .foregroundColor(.white.opacity(0.85))
-                    }
-                }
-            }
-            .padding(.top, 12)
-            .padding(.horizontal, 20)
-
-            Spacer()
-
-            // Bottom metadata row
-            HStack(spacing: 16) {
-                // Cycles pill
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.2.squarepath")
-                        .font(.system(size: 10, weight: .medium))
-                    Text(isInfinite ? "∞" : "\(numCycles)")
-                        .font(.system(size: 11, weight: .medium))
-                }
-                .foregroundColor(.white.opacity(0.9))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(Color.white.opacity(0.12))
-                .clipShape(Capsule())
-
-                // Duration pill
-                HStack(spacing: 4) {
-                    Image(systemName: "timer")
-                        .font(.system(size: 10, weight: .medium))
-                    Text(isInfinite ? "∞" : etaText)
-                        .font(.system(size: 11, weight: .medium))
-                }
-                .foregroundColor(.white.opacity(0.9))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(Color.white.opacity(0.12))
-                .clipShape(Capsule())
-
                 Spacer()
 
-                // Arrow indicator
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.6))
+                // Bottom metadata row
+                HStack(spacing: 12) {
+                    // Cycles pill
+                    Label {
+                        Text(isInfinite ? "∞" : "\(numCycles)")
+                            .font(.system(size: 11, weight: .medium))
+                    } icon: {
+                        Image(systemName: "repeat")
+                            .font(.system(size: 9, weight: .semibold))
+                    }
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Capsule())
+
+                    // Duration pill
+                    Label {
+                        Text(isInfinite ? "∞" : etaText)
+                            .font(.system(size: 11, weight: .medium))
+                    } icon: {
+                        Image(systemName: "clock")
+                            .font(.system(size: 9, weight: .semibold))
+                    }
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Capsule())
+
+                    Spacer()
+
+                    // Arrow
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.4))
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16)
+
+            // Geometric animation in upper right
+            Group {
+                switch exercise {
+                case .boxBreathing:
+                    RotatingSquaresAnimation()
+                case .fourSevenEight:
+                    OrbitingDotsAnimation()
+                }
+            }
+            .padding(.top, 14)
+            .padding(.trailing, 14)
         }
-        .frame(width: screenWidth * 0.88, height: 170)
+        .frame(width: screenWidth * 0.88, height: 155)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.08))
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.06))
         )
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial.opacity(0.3))
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.ultraThinMaterial.opacity(0.25))
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(
                     LinearGradient(
-                        colors: [Color.white.opacity(0.35), Color.white.opacity(0.1)],
+                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.05)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 1
+                    lineWidth: 0.5
                 )
         )
-        .shadow(color: .black.opacity(0.12), radius: 20, y: 10)
-    }
-    
-    private var etaText: String {
-        let totalSeconds = timeForCycle * numCycles
-        if totalSeconds < 60 {
-            return "\(totalSeconds) sec"
-        } else {
-            let roundedMinutes = (totalSeconds + 30) / 60 // Round to nearest minute
-            return "\(roundedMinutes) min"
-        }
+        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
     }
 }
 
