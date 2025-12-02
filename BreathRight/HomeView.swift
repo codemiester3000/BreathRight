@@ -37,60 +37,47 @@ struct HomeView: View {
     @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
+        VStack(alignment: .leading, spacing: 0) {
 
-                VStack(alignment: .center, spacing: 0) {
+            AnimatedHeaderView()
+                .frame(maxWidth: .infinity)
+                .frame(height: 40)
+                .opacity(0.8)
 
-                    AnimatedHeaderView()
-                        .padding(.top, -60)
-                        .padding(.bottom, 16)
-                        .opacity(0.8)
+            GreetingHeader()
+                .padding(.top, 24)
 
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Greeting section - professional redesign
-                        GreetingHeader()
-                            .padding(.top, 8)
-                            .padding(.horizontal, 24)
+            BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
+                .padding(.top, 32)
 
-                        // Breath cycle selector
-                        HStack {
-                            BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
-                            Spacer()
-                        }
-                        .padding(.top, 28)
-                        .padding(.horizontal, 24)
+            Text("SELECT YOUR EXERCISE")
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(1.5)
+                .foregroundColor(.white.opacity(0.5))
+                .padding(.top, 32)
+                .padding(.bottom, 16)
 
-                        // Section header - refined uppercase style
-                        Text("SELECT YOUR EXERCISE")
-                            .font(.system(size: 11, weight: .semibold))
-                            .tracking(1.5)
-                            .foregroundColor(.white.opacity(0.5))
-                            .padding(.top, 28)
-                            .padding(.bottom, 14)
-                            .padding(.leading, 24)
+            VStack(spacing: 16) {
+                ForEach(BreathingExercise.allCases, id: \.self) { exercise in
+                    NavigationLink(destination: destinationView(for: exercise)) {
+                        ExerciseCard(
+                            exercise: exercise,
+                            numCycles: numCycles,
+                            isInfinite: unlimtedCycles
+                        )
                     }
-
-                    VStack(alignment: .center, spacing: 14) {
-                        ForEach(BreathingExercise.allCases, id: \.self) { exercise in
-                            NavigationLink(destination: destinationView(for: exercise)) {
-                                ExerciseCard(
-                                    exercise: exercise,
-                                    numCycles: numCycles,
-                                    isInfinite: unlimtedCycles
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer()
                 }
-                .padding(.horizontal, 16)
             }
+            .frame(maxWidth: .infinity)
+
+            Spacer()
         }
-        .navigationViewStyle(.stack)
+        .padding(.horizontal, 20)
+        .background(
+            LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
+                .edgesIgnoringSafeArea(.all)
+        )
+        .navigationBarHidden(true)
     }
     
     @ViewBuilder
@@ -308,7 +295,8 @@ struct ExerciseCard: View {
             .padding(.top, 14)
             .padding(.trailing, 14)
         }
-        .frame(width: screenWidth * 0.88, height: 155)
+        .frame(maxWidth: .infinity)
+        .frame(height: 155)
         .background(
             RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white.opacity(0.06))
@@ -337,7 +325,8 @@ struct ExerciseCard: View {
 struct BreathCycleSelector: View {
     @Binding var cycles: Int
     @Binding var isUnlimited: Bool
-    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 140
+    // 20pt margins on each side (40pt total) + 16pt spacing + 36pt infinity button = 92pt
+    let sliderWidth: CGFloat = UIScreen.main.bounds.width - 92
     let thumbSize: CGFloat = 18
     let trackColor = Color.white.opacity(0.2)
     let thumbColor = Color.white
