@@ -32,14 +32,16 @@ struct MainView: View {
 }
 
 struct AnimatedHeaderView: View {
+    // Fixed offsets - computed once, not on every render
+    private let xOffsets: [CGFloat] = [-80, -30, 20, -50, 10]
+
     var body: some View {
         ZStack {
             ForEach(0..<5, id: \.self) { index in
                 CosineAnimation()
-                    .frame(height: 10) // Setting a fixed height for each animation
-                    .offset(x: CGFloat.random(in: -100...50), y: CGFloat(index * 10))
+                    .frame(height: 10)
+                    .offset(x: xOffsets[index], y: CGFloat(index * 10))
             }
         }
-        //.padding(.vertical, 30)
     }
 }

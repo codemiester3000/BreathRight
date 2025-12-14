@@ -39,25 +39,33 @@ struct HomeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
 
-            AnimatedHeaderView()
-                .frame(maxWidth: .infinity)
-                .frame(height: 40)
-                .opacity(0.8)
+            ZStack {
+                ForEach(0..<5, id: \.self) { index in
+                    CosineAnimation()
+                        .frame(width: UIScreen.main.bounds.width * 0.9)
+                        .frame(height: 55)
+                        .offset(y: CGFloat(index * 12))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 100)
+            .padding(.top, -20)
+            .padding(.bottom, 48)
+            .opacity(0.8)
 
             GreetingHeader()
-                .padding(.top, 24)
 
             BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
-                .padding(.top, 32)
+                .padding(.top, 40)
 
             Text("SELECT YOUR EXERCISE")
                 .font(.system(size: 11, weight: .semibold))
                 .tracking(1.5)
                 .foregroundColor(.white.opacity(0.5))
-                .padding(.top, 32)
-                .padding(.bottom, 16)
+                .padding(.top, 40)
+                .padding(.bottom, 20)
 
-            VStack(spacing: 16) {
+            VStack(spacing: 20) {
                 ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                     NavigationLink(destination: destinationView(for: exercise)) {
                         ExerciseCard(
@@ -150,7 +158,7 @@ struct RotatingSquaresAnimation: View {
         ZStack {
             ForEach(0..<3, id: \.self) { index in
                 RoundedRectangle(cornerRadius: 2)
-                    .stroke(Color.white.opacity(0.12 - Double(index) * 0.03), lineWidth: 1)
+                    .stroke(Color(red: 0.3, green: 0.5, blue: 0.7).opacity(0.7 - Double(index) * 0.15), lineWidth: 1.5)
                     .frame(width: 24 - CGFloat(index * 5), height: 24 - CGFloat(index * 5))
                     .rotationEffect(.degrees(rotation + Double(index * 20)))
             }
@@ -171,14 +179,14 @@ struct OrbitingDotsAnimation: View {
         ZStack {
             // Center point
             Circle()
-                .fill(Color.white.opacity(0.15))
-                .frame(width: 3, height: 3)
+                .fill(Color(red: 0.3, green: 0.5, blue: 0.7).opacity(0.8))
+                .frame(width: 4, height: 4)
 
             // Orbiting dots
             ForEach(0..<3, id: \.self) { index in
                 Circle()
-                    .fill(Color.white.opacity(0.2 - Double(index) * 0.05))
-                    .frame(width: 4, height: 4)
+                    .fill(Color(red: 0.3, green: 0.5, blue: 0.7).opacity(0.7 - Double(index) * 0.1))
+                    .frame(width: 5, height: 5)
                     .offset(x: 10 + CGFloat(index * 2))
                     .rotationEffect(.degrees(rotation + Double(index * 120)))
             }
