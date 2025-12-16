@@ -35,6 +35,7 @@
 		C5E6790C2ADB5FE000754F75 /* ConfettiAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */; };
 		C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */; };
 		C5F123452D200000005C7E45 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123442D200000005C7E45 /* SplashScreen.swift */; };
+		C5F123472D200002005C7E45 /* CustomBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123462D200001005C7E45 /* CustomBreathingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		C5E6790B2ADB5FE000754F75 /* ConfettiAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiAnimation.swift; sourceTree = "<group>"; };
 		C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosineAnimation.swift; sourceTree = "<group>"; };
 		C5F123442D200000005C7E45 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		C5F123462D200001005C7E45 /* CustomBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBreathingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				C549EAC42B2FBCE600F583C7 /* FourSevenEightBreathingView.swift */,
 				C549C24D2B61BEF7006F040A /* HomeView.swift */,
 				C5F123442D200000005C7E45 /* SplashScreen.swift */,
+				C5F123462D200001005C7E45 /* CustomBreathingView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */,
 				C549EAC52B2FBCE600F583C7 /* FourSevenEightBreathingView.swift in Sources */,
 				C5F123452D200000005C7E45 /* SplashScreen.swift in Sources */,
+				C5F123472D200002005C7E45 /* CustomBreathingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,7 +517,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 3.9;
+				MARKETING_VERSION = 4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -555,7 +559,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 3.9;
+				MARKETING_VERSION = 4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";

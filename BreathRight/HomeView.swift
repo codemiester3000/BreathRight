@@ -14,6 +14,7 @@ extension Color {
 enum BreathingExercise: String, CaseIterable {
     case boxBreathing = "Box Breathing"
     case fourSevenEight = "4-7-8 Breathing"
+    case custom = "Custom Breathing"
 
     var benefits: [String] {
         switch self {
@@ -21,6 +22,8 @@ enum BreathingExercise: String, CaseIterable {
             return ["Reduces stress", "Improves concentration", "Enhances relaxation"]
         case .fourSevenEight:
             return ["Improves sleep", "Manages cravings", "Reduces stress"]
+        case .custom:
+            return ["Personalized rhythm", "Flexible durations", "Your own pace"]
         }
     }
 
@@ -30,6 +33,12 @@ enum BreathingExercise: String, CaseIterable {
             return 4 + 4 + 4 + 4
         case .fourSevenEight:
             return 4 + 7 + 8
+        case .custom:
+            // Custom will calculate dynamically based on user settings
+            let inhale = UserDefaults.standard.integer(forKey: "customInhale")
+            let hold = UserDefaults.standard.integer(forKey: "customHold")
+            let exhale = UserDefaults.standard.integer(forKey: "customExhale")
+            return (inhale > 0 ? inhale : 4) + (hold > 0 ? hold : 4) + (exhale > 0 ? exhale : 4)
         }
     }
 }
@@ -75,57 +84,58 @@ struct HomeView: View {
                 }
             }
 
-            // Main content
-            VStack(alignment: .leading, spacing: 0) {
-                // Wave animation at top
-                ZStack {
-                    ForEach(0..<5, id: \.self) { index in
-                        CosineAnimation()
-                            .frame(width: UIScreen.main.bounds.width * 0.9)
-                            .frame(height: 55)
-                            .offset(y: CGFloat(index * 12))
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 100)
-                .padding(.top, -20)
-                .padding(.bottom, 48)
-                .opacity(0.7)
-
-                GreetingHeader()
-
-                BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
-                    .padding(.top, 40)
-
-                // Section label with accent bar
-                HStack(spacing: 8) {
-                    Rectangle()
-                        .fill(Color.homeWarmAccent)
-                        .frame(width: 16, height: 2)
-                    Text("select exercise")
-                        .font(.system(size: 11, weight: .medium))
-                        .tracking(2)
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                .padding(.top, 40)
-                .padding(.bottom, 20)
-
-                VStack(spacing: 16) {
-                    ForEach(BreathingExercise.allCases, id: \.self) { exercise in
-                        NavigationLink(destination: destinationView(for: exercise)) {
-                            ExerciseCard(
-                                exercise: exercise,
-                                numCycles: numCycles,
-                                isInfinite: unlimtedCycles
-                            )
+            // Main content - scrollable
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Wave animation at top
+                    ZStack {
+                        ForEach(0..<5, id: \.self) { index in
+                            CosineAnimation()
+                                .frame(width: UIScreen.main.bounds.width * 0.9)
+                                .frame(height: 55)
+                                .offset(y: CGFloat(index * 12))
                         }
                     }
-                }
-                .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 100)
+                    .padding(.top, -20)
+                    .padding(.bottom, 48)
+                    .opacity(0.7)
 
-                Spacer()
+                    GreetingHeader()
+
+                    BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
+                        .padding(.top, 40)
+
+                    // Section label with accent bar
+                    HStack(spacing: 8) {
+                        Rectangle()
+                            .fill(Color.homeWarmAccent)
+                            .frame(width: 16, height: 2)
+                        Text("select exercise")
+                            .font(.system(size: 11, weight: .medium))
+                            .tracking(2)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+                    .padding(.top, 40)
+                    .padding(.bottom, 20)
+
+                    VStack(spacing: 16) {
+                        ForEach(BreathingExercise.allCases, id: \.self) { exercise in
+                            NavigationLink(destination: destinationView(for: exercise)) {
+                                ExerciseCard(
+                                    exercise: exercise,
+                                    numCycles: numCycles,
+                                    isInfinite: unlimtedCycles
+                                )
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 40)
+                }
+                .padding(.horizontal, 24)
             }
-            .padding(.horizontal, 24)
         }
         .navigationBarHidden(true)
     }
@@ -137,7 +147,8 @@ struct HomeView: View {
             BoxBreathingView()
         case .fourSevenEight:
             FourSevenEightBreathingView()
-            // Add cases for other exercises
+        case .custom:
+            CustomBreathingView()
         }
     }
     
@@ -281,6 +292,36 @@ struct OrbitingDotsAnimation: View {
     }
 }
 
+struct PulsingBarsAnimation: View {
+    @State private var phase: Int = 0
+
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<3, id: \.self) { index in
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(Color.homeWarmAccent.opacity(0.6))
+                    .frame(width: 3, height: barHeight(for: index))
+                    .animation(.easeInOut(duration: 1.2), value: phase)
+            }
+        }
+        .frame(width: 28, height: 28)
+        .onAppear {
+            Timer.scheduledTimer(withTimeInterval: 1.2, repeats: true) { _ in
+                phase = (phase + 1) % 3
+            }
+        }
+    }
+
+    private func barHeight(for index: Int) -> CGFloat {
+        let heights: [[CGFloat]] = [
+            [18, 10, 14],
+            [10, 18, 10],
+            [14, 10, 18]
+        ]
+        return heights[phase][index]
+    }
+}
+
 // MARK: - Spa-Tech Exercise Card
 struct ExerciseCard: View {
     let exercise: BreathingExercise
@@ -397,6 +438,8 @@ struct ExerciseCard: View {
                     RotatingSquaresAnimation()
                 case .fourSevenEight:
                     OrbitingDotsAnimation()
+                case .custom:
+                    PulsingBarsAnimation()
                 }
             }
             .padding(.top, 16)
