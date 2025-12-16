@@ -6,6 +6,8 @@ extension Color {
     static let homeWarmBlueLight = Color(red: 0.35, green: 0.55, blue: 0.75)
     static let homeWarmBlueDark = Color(red: 0.12, green: 0.3, blue: 0.5)
     static let homeWarmAccent = Color(red: 0.4, green: 0.7, blue: 0.85)
+    // Warm golden accent for contrast
+    static let homeGoldenAccent = Color(red: 0.95, green: 0.75, blue: 0.4)
 }
 
 // Enum for breathing exercises
@@ -163,6 +165,26 @@ struct GreetingHeader: View {
         }
     }
 
+    // Golden for sun, cyan for moon
+    private var iconAccentColor: Color {
+        switch hour {
+        case 6..<17: return .homeGoldenAccent
+        default: return .homeWarmAccent
+        }
+    }
+
+    // Random motivational taglines
+    private static let taglines = [
+        "find your calm",
+        "breathe with intention",
+        "your moment of peace",
+        "center yourself",
+        "embrace stillness",
+        "inhale clarity"
+    ]
+
+    @State private var tagline: String = taglines.randomElement() ?? "find your calm"
+
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
@@ -172,9 +194,9 @@ struct GreetingHeader: View {
 
                 HStack(spacing: 8) {
                     Rectangle()
-                        .fill(Color.homeWarmAccent.opacity(0.8))
+                        .fill(Color.homeGoldenAccent.opacity(0.85))
                         .frame(width: 12, height: 2)
-                    Text("ready to breathe?")
+                    Text(tagline)
                         .font(.system(size: 12, weight: .medium))
                         .tracking(0.5)
                         .foregroundColor(.white.opacity(0.55))
@@ -189,7 +211,7 @@ struct GreetingHeader: View {
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [Color.homeWarmAccent.opacity(0.15), Color.clear],
+                            colors: [iconAccentColor.opacity(0.2), Color.clear],
                             center: .center,
                             startRadius: 0,
                             endRadius: 30
@@ -198,12 +220,12 @@ struct GreetingHeader: View {
                     .frame(width: 60, height: 60)
 
                 Circle()
-                    .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
+                    .stroke(iconAccentColor.opacity(0.4), lineWidth: 1)
                     .frame(width: 44, height: 44)
 
                 Image(systemName: iconName)
-                    .font(.system(size: 18, weight: .light))
-                    .foregroundColor(.white.opacity(0.85))
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundColor(iconAccentColor.opacity(0.9))
             }
         }
     }
@@ -265,6 +287,8 @@ struct ExerciseCard: View {
     let numCycles: Int
     let isInfinite: Bool
 
+    @State private var pillScale: CGFloat = 1.0
+
     private var etaText: String {
         let totalSeconds = exercise.timeForOneCycle() * numCycles
         if totalSeconds < 60 {
@@ -325,6 +349,8 @@ struct ExerciseCard: View {
                         Capsule()
                             .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                     )
+                    .scaleEffect(pillScale)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: numCycles)
 
                     // Duration pill
                     HStack(spacing: 5) {
@@ -342,6 +368,8 @@ struct ExerciseCard: View {
                         Capsule()
                             .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                     )
+                    .scaleEffect(pillScale)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: numCycles)
 
                     Spacer()
 
@@ -388,10 +416,10 @@ struct ExerciseCard: View {
                         )
                     )
 
-                // Subtle left accent edge
+                // Subtle left accent edge (golden)
                 HStack {
                     RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.homeWarmAccent.opacity(0.4))
+                        .fill(Color.homeGoldenAccent.opacity(0.5))
                         .frame(width: 3)
                         .padding(.vertical, 20)
                     Spacer()
@@ -411,6 +439,23 @@ struct ExerciseCard: View {
                 )
         )
         .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
+        .onChange(of: numCycles) { _ in
+            animatePills()
+        }
+        .onChange(of: isInfinite) { _ in
+            animatePills()
+        }
+    }
+
+    private func animatePills() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            pillScale = 1.08
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                pillScale = 1.0
+            }
+        }
     }
 }
 
@@ -483,7 +528,7 @@ struct BreathCycleSelector: View {
                     )
                 }
 
-                // Infinity toggle button
+                // Infinity toggle button (golden when active)
                 Button(action: {
                     isUnlimited.toggle()
                     UserDefaults.standard.set(isUnlimited, forKey: "unlimtedCycles")
@@ -494,14 +539,14 @@ struct BreathCycleSelector: View {
                 }) {
                     ZStack {
                         Circle()
-                            .fill(isUnlimited ? Color.white : Color.white.opacity(0.08))
+                            .fill(isUnlimited ? Color.homeGoldenAccent : Color.white.opacity(0.08))
                             .frame(width: 36, height: 36)
                         Circle()
                             .stroke(Color.white.opacity(isUnlimited ? 0 : 0.15), lineWidth: 0.5)
                             .frame(width: 36, height: 36)
                         Image(systemName: "infinity")
-                            .font(.system(size: 15, weight: .light))
-                            .foregroundColor(isUnlimited ? .homeWarmBlue : .white.opacity(0.6))
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundColor(isUnlimited ? .homeWarmBlueDark : .white.opacity(0.6))
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
