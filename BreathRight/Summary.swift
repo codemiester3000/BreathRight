@@ -23,8 +23,23 @@ struct Summary: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, Color.myTurqoise]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+            // Warm gradient background
+            LinearGradient(
+                gradient: Gradient(colors: [Color.homeWarmBlueDark, Color.homeWarmBlue, Color.homeWarmBlueLight]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+
+            // Subtle grid lines
+            VStack(spacing: 50) {
+                ForEach(0..<14, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color.white.opacity(0.02))
+                        .frame(height: 1)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             // Floating particles background
             if particlesVisible {
@@ -38,14 +53,14 @@ struct Summary: View {
                 ZStack {
                     // Outer pulse ring
                     Circle()
-                        .stroke(Color.white.opacity(0.2), lineWidth: 2)
+                        .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
                         .frame(width: 130, height: 130)
                         .scaleEffect(pulseScale)
                         .opacity(2 - Double(pulseScale))
 
                     // Main circle background
                     Circle()
-                        .fill(Color.white.opacity(0.15))
+                        .fill(Color.white.opacity(0.1))
                         .frame(width: 100, height: 100)
                         .scaleEffect(ringScale)
                         .opacity(ringOpacity)
@@ -54,7 +69,7 @@ struct Summary: View {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [Color.white.opacity(0.3), Color.clear],
+                                colors: [Color.homeWarmAccent.opacity(0.25), Color.clear],
                                 center: .center,
                                 startRadius: 0,
                                 endRadius: 50
@@ -66,52 +81,67 @@ struct Summary: View {
 
                     // Checkmark
                     Image(systemName: "checkmark")
-                        .font(.system(size: 40, weight: .semibold))
-                        .foregroundColor(.white)
+                        .font(.system(size: 36, weight: .light))
+                        .foregroundColor(.white.opacity(0.95))
                         .scaleEffect(checkmarkScale)
                         .opacity(checkmarkOpacity)
                 }
-                .padding(.bottom, 32)
+                .padding(.bottom, 36)
 
                 // Title
                 Text("Session Complete")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 26, weight: .light, design: .rounded))
                     .foregroundColor(.white)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 10)
                     .opacity(contentOpacity)
                     .offset(y: contentOffset)
 
-                // Subtitle
-                Text("Great work on your breathing practice")
-                    .font(.system(size: 15))
-                    .foregroundColor(.white.opacity(0.7))
-                    .padding(.bottom, 32)
-                    .opacity(contentOpacity)
-                    .offset(y: contentOffset)
+                // Subtitle with accent bar
+                HStack(spacing: 8) {
+                    Rectangle()
+                        .fill(Color.homeWarmAccent.opacity(0.7))
+                        .frame(width: 12, height: 2)
+                    Text("great work on your practice")
+                        .font(.system(size: 12, weight: .medium))
+                        .tracking(0.5)
+                        .foregroundColor(.white.opacity(0.5))
+                }
+                .padding(.bottom, 36)
+                .opacity(contentOpacity)
+                .offset(y: contentOffset)
 
                 // Stats card
                 VStack(spacing: 16) {
                     HStack {
-                        Image(systemName: "clock")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
-                        Text("Duration")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
+                        HStack(spacing: 6) {
+                            Image(systemName: "clock")
+                                .font(.system(size: 13, weight: .light))
+                                .foregroundColor(.homeWarmAccent.opacity(0.8))
+                            Text("Duration")
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
                         Spacer()
                         Text(formattedTime)
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
-                            .foregroundColor(.white)
+                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.9))
                     }
                 }
-                .padding(20)
+                .padding(18)
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color.white.opacity(0.06))
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.12), Color.white.opacity(0.03)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
                 )
                 .padding(.horizontal, 32)
                 .opacity(contentOpacity)
@@ -123,26 +153,31 @@ struct Summary: View {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
-                    Text("Done")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white.opacity(0.15))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [Color.white.opacity(0.4), Color.white.opacity(0.15)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1
-                                )
-                        )
+                    HStack(spacing: 8) {
+                        Text("Done")
+                            .font(.system(size: 15, weight: .medium))
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.homeWarmAccent)
+                    }
+                    .foregroundColor(.white.opacity(0.95))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color.white.opacity(0.1))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color.white.opacity(0.2), Color.white.opacity(0.05)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 0.5
+                            )
+                    )
                 }
                 .padding(.horizontal, 32)
                 .padding(.bottom, 40)
@@ -208,7 +243,7 @@ struct FloatingParticle: View {
 
     var body: some View {
         Circle()
-            .fill(Color.white.opacity(0.3))
+            .fill(Color.homeWarmAccent.opacity(0.25))
             .frame(width: size, height: size)
             .position(x: startX, y: UIScreen.main.bounds.height + 50)
             .offset(y: yOffset)
@@ -216,7 +251,7 @@ struct FloatingParticle: View {
             .onAppear {
                 withAnimation(.easeOut(duration: 4).delay(delay)) {
                     yOffset = -UIScreen.main.bounds.height - 100
-                    opacity = 0.6
+                    opacity = 0.5
                 }
                 withAnimation(.easeIn(duration: 1).delay(delay + 3)) {
                     opacity = 0

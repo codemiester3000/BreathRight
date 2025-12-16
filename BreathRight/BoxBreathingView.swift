@@ -48,10 +48,42 @@ struct BoxBreathingView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.lighterBlue, isAnimating ? Color.myTurqoise : Color.lighterBlue]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
-                .animation(.easeInOut(duration: 1.0), value: isAnimating)
-            
+            // Warm gradient background (darker on setup, lighter when animating)
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.homeWarmBlueDark,
+                    isAnimating ? Color.homeWarmBlue : Color.homeWarmBlueDark.opacity(0.9),
+                    isAnimating ? Color.homeWarmBlueLight : Color.homeWarmBlue
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+            .animation(.easeInOut(duration: 1.0), value: isAnimating)
+
+            // Subtle grid lines
+            VStack(spacing: 50) {
+                ForEach(0..<14, id: \.self) { _ in
+                    Rectangle()
+                        .fill(Color.white.opacity(0.02))
+                        .frame(height: 1)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // Floating particles
+            GeometryReader { geometry in
+                ForEach(0..<8, id: \.self) { index in
+                    Circle()
+                        .fill(Color.white.opacity(0.05))
+                        .frame(width: CGFloat((index % 3) + 1) * 3)
+                        .position(
+                            x: CGFloat((index * 47) % Int(geometry.size.width)),
+                            y: CGFloat((index * 97) % Int(geometry.size.height))
+                        )
+                }
+            }
+
             if isSheetPresented {
                 Summary(elapsedTime: self.elapsedTime)
             } else {
@@ -64,44 +96,57 @@ struct BoxBreathingView: View {
                                     AnimatedHeaderView()
                                         .padding(.top, -50)
                                         .padding(.bottom, 40)
-                                        .opacity(0.8)
+                                        .opacity(0.6)
 
                                     // Stats pills row
                                     HStack {
                                         // Time pill
-                                        HStack(spacing: 6) {
+                                        HStack(spacing: 5) {
                                             Image(systemName: "clock")
-                                                .font(.system(size: 11, weight: .medium))
+                                                .font(.system(size: 10, weight: .medium))
                                             Text(formattedTime(for: elapsedTime))
-                                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                         }
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.white.opacity(0.8))
                                         .padding(.horizontal, 12)
-                                        .padding(.vertical, 8)
-                                        .background(Color.white.opacity(0.12))
+                                        .padding(.vertical, 7)
+                                        .background(Color.white.opacity(0.08))
                                         .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                                        )
 
                                         Spacer()
 
                                         // Cycles pill
-                                        HStack(spacing: 6) {
+                                        HStack(spacing: 5) {
                                             Image(systemName: "arrow.2.squarepath")
-                                                .font(.system(size: 11, weight: .medium))
+                                                .font(.system(size: 10, weight: .medium))
                                             Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)")")
-                                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                         }
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.white.opacity(0.8))
                                         .padding(.horizontal, 12)
-                                        .padding(.vertical, 8)
-                                        .background(Color.white.opacity(flashOpacity + 0.12))
+                                        .padding(.vertical, 7)
+                                        .background(Color.white.opacity(flashOpacity + 0.08))
                                         .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                                        )
                                     }
 
-                                    // Subtle separator
-                                    Rectangle()
-                                        .fill(Color.white.opacity(0.15))
-                                        .frame(height: 1)
-                                        .padding(.top, 20)
+                                    // Subtle separator with accent
+                                    HStack(spacing: 0) {
+                                        Rectangle()
+                                            .fill(Color.homeWarmAccent.opacity(0.6))
+                                            .frame(width: 24, height: 1)
+                                        Rectangle()
+                                            .fill(Color.white.opacity(0.1))
+                                            .frame(height: 1)
+                                    }
+                                    .padding(.top, 20)
 
                                     // Breath instruction
                                     BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
@@ -111,43 +156,73 @@ struct BoxBreathingView: View {
                             } else {
                                 VStack(alignment: .leading, spacing: 0) {
                                     HStack {
-                                        Text("Box Breathing")
-                                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                                            .foregroundColor(.white)
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("Box Breathing")
+                                                .font(.system(size: 26, weight: .light, design: .rounded))
+                                                .foregroundColor(.white)
+
+                                            HStack(spacing: 8) {
+                                                Rectangle()
+                                                    .fill(Color.homeWarmAccent.opacity(0.8))
+                                                    .frame(width: 12, height: 2)
+                                                Text("4-4-4-4 technique")
+                                                    .font(.system(size: 11, weight: .medium))
+                                                    .tracking(0.5)
+                                                    .foregroundColor(.white.opacity(0.5))
+                                            }
+                                        }
+
+                                        Spacer()
 
                                         Button(action: {
                                             showTooltip.toggle()
                                         }) {
-                                            Image(systemName: "questionmark.circle.fill")
-                                                .font(.system(size: 18))
-                                                .foregroundColor(.white.opacity(0.5))
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.white.opacity(0.08))
+                                                    .frame(width: 36, height: 36)
+                                                Circle()
+                                                    .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                                                    .frame(width: 36, height: 36)
+                                                Image(systemName: "questionmark")
+                                                    .font(.system(size: 14, weight: .medium))
+                                                    .foregroundColor(.white.opacity(0.6))
+                                            }
                                         }
                                         .popover(isPresented: $showTooltip, arrowEdge: .top) {
                                             BoxBreathInfo()
                                             Spacer()
                                         }
-
-                                        Spacer()
                                     }
 
-                                    // Subtle separator
-                                    Rectangle()
-                                        .fill(Color.white.opacity(0.15))
-                                        .frame(height: 1)
-                                        .padding(.top, 16)
+                                    // Subtle separator with accent
+                                    HStack(spacing: 0) {
+                                        Rectangle()
+                                            .fill(Color.homeWarmAccent.opacity(0.6))
+                                            .frame(width: 24, height: 1)
+                                        Rectangle()
+                                            .fill(Color.white.opacity(0.08))
+                                            .frame(height: 1)
+                                    }
+                                    .padding(.top, 20)
 
                                     // Cycles indicator pill
-                                    HStack(spacing: 6) {
+                                    HStack(spacing: 5) {
                                         Image(systemName: "arrow.3.trianglepath")
-                                            .font(.system(size: 12, weight: .medium))
+                                            .font(.system(size: 11, weight: .light))
+                                            .foregroundColor(.homeWarmAccent.opacity(0.8))
                                         Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
-                                            .font(.system(size: 13, weight: .medium))
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.7))
                                     }
-                                    .foregroundColor(.white.opacity(0.9))
                                     .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(Color.white.opacity(0.1))
+                                    .padding(.vertical, 7)
+                                    .background(Color.white.opacity(0.06))
                                     .clipShape(Capsule())
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                                    )
                                     .padding(.top, 20)
                                 }
 
@@ -282,17 +357,21 @@ struct BoxBreathingView: View {
                                     Button(action: {
                                         stopAnimationAndReset()
                                     }) {
-                                        Text("End Session")
-                                            .font(.system(size: 15, weight: .semibold))
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, 28)
-                                            .padding(.vertical, 14)
-                                            .background(Color.white.opacity(0.12))
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule()
-                                                    .stroke(Color.white.opacity(0.25), lineWidth: 1)
-                                            )
+                                        HStack(spacing: 8) {
+                                            Image(systemName: "stop.fill")
+                                                .font(.system(size: 10, weight: .medium))
+                                            Text("End Session")
+                                                .font(.system(size: 14, weight: .medium))
+                                        }
+                                        .foregroundColor(.white.opacity(0.85))
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 12)
+                                        .background(Color.white.opacity(0.08))
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                                        )
                                     }
 
                                     Spacer()
@@ -325,30 +404,35 @@ struct BoxBreathingView: View {
                                                 }
                                                 isAnimating = true
                                             }) {
-                                                Text("Begin Session")
-                                                    .font(.system(size: 16, weight: .semibold))
-                                                    .foregroundColor(.white)
-                                                    .frame(width: geometry.size.width * 0.85, height: 52)
-                                                    .background(
-                                                        RoundedRectangle(cornerRadius: 16)
-                                                            .fill(Color.white.opacity(0.15))
-                                                    )
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 16)
-                                                            .stroke(
-                                                                LinearGradient(
-                                                                    colors: [Color.white.opacity(0.4), Color.white.opacity(0.15)],
-                                                                    startPoint: .topLeading,
-                                                                    endPoint: .bottomTrailing
-                                                                ),
-                                                                lineWidth: 1
-                                                            )
-                                                    )
-                                                    .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+                                                HStack(spacing: 10) {
+                                                    Text("Begin Session")
+                                                        .font(.system(size: 15, weight: .medium))
+                                                    Image(systemName: "chevron.right")
+                                                        .font(.system(size: 12, weight: .medium))
+                                                        .foregroundColor(.homeWarmAccent)
+                                                }
+                                                .foregroundColor(.white.opacity(0.95))
+                                                .frame(width: geometry.size.width * 0.85, height: 50)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 14)
+                                                        .fill(Color.white.opacity(0.1))
+                                                )
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 14)
+                                                        .stroke(
+                                                            LinearGradient(
+                                                                colors: [Color.white.opacity(0.2), Color.white.opacity(0.05)],
+                                                                startPoint: .topLeading,
+                                                                endPoint: .bottomTrailing
+                                                            ),
+                                                            lineWidth: 0.5
+                                                        )
+                                                )
+                                                .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
                                             }
                                             .frame(width: geometry.size.width)
                                         }
-                                        .frame(height: 52)
+                                        .frame(height: 50)
                                         .padding(.bottom, 40)
                                     }
                                     
@@ -555,25 +639,33 @@ struct BreathView: View {
 
     var body: some View {
         if showText {
-            Text(instruction)
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
-                .foregroundColor(.white)
-                .scaleEffect(scale)
-                .opacity(opacity)
-                .transition(.opacity)
-                .onAppear {
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        opacity = 1.0
-                    }
-                    animateBasedOnInstruction(instruction)
+            VStack(spacing: 8) {
+                Text(instruction)
+                    .font(.system(size: 28, weight: .light, design: .rounded))
+                    .foregroundColor(.white.opacity(0.95))
+                    .scaleEffect(scale)
+                    .opacity(opacity)
+                    .transition(.opacity)
+
+                // Subtle indicator line
+                Rectangle()
+                    .fill(Color.homeWarmAccent.opacity(0.5))
+                    .frame(width: 40, height: 2)
+                    .opacity(opacity)
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    opacity = 1.0
                 }
-                .onChange(of: instruction) { newValue in
-                    if instruction == "Inhale" || instruction == "Exhale" {
-                        animateBasedOnInstruction(newValue)
-                    }
+                animateBasedOnInstruction(instruction)
+            }
+            .onChange(of: instruction) { newValue in
+                if instruction == "Inhale" || instruction == "Exhale" {
+                    animateBasedOnInstruction(newValue)
                 }
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity, alignment: .center)
+            }
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 
@@ -581,9 +673,9 @@ struct BreathView: View {
         withAnimation(.easeInOut(duration: duration)) {
             switch instruction {
             case "Inhale":
-                scale = 1.15
+                scale = 1.12
             case "Exhale":
-                scale = 0.85
+                scale = 0.88
             default:
                 scale = 1.0
             }
@@ -683,27 +775,25 @@ struct CustomSlider: View {
     @Binding var value: CGFloat
     @Binding var isDragging: Bool
     var timeInSecond: Int
-    let trackColor = Color.white.opacity(0.2)
-    let thumbColor = Color.white
     let sliderWidth: CGFloat = UIScreen.main.bounds.width - 80
-    let thumbSize: CGFloat = 18
+    let thumbSize: CGFloat = 16
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 18) {
             // Header row
             HStack {
                 HStack(spacing: 8) {
                     Image(systemName: "timer")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+                        .font(.system(size: 13, weight: .light))
+                        .foregroundColor(.homeWarmAccent.opacity(0.8))
                     Text("Breath duration")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.9))
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 Spacer()
                 Text("\(timeInSecond) sec")
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.9))
             }
 
             // Slider
@@ -712,27 +802,38 @@ struct CustomSlider: View {
                     // Track background
                     Capsule()
                         .frame(width: geometry.size.width, height: 2)
-                        .foregroundColor(trackColor)
+                        .foregroundColor(.white.opacity(0.15))
 
-                    // Track fill
+                    // Track fill with accent gradient
                     Capsule()
-                        .frame(width: geometry.size.width * value, height: 2)
-                        .foregroundColor(thumbColor)
-
-                    // Thumb
-                    Circle()
-                        .fill(thumbColor)
-                        .frame(width: thumbSize, height: thumbSize)
-                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
-                        .position(x: geometry.size.width * value, y: geometry.size.height / 2)
-                        .gesture(
-                            DragGesture().onChanged { gesture in
-                                self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
-                                self.isDragging = true
-                            }.onEnded { _ in
-                                self.isDragging = false
-                            }
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.homeWarmAccent.opacity(0.5), Color.homeWarmAccent.opacity(0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
+                        .frame(width: geometry.size.width * value, height: 2)
+
+                    // Thumb with glow
+                    ZStack {
+                        Circle()
+                            .fill(Color.homeWarmAccent.opacity(0.2))
+                            .frame(width: thumbSize + 8, height: thumbSize + 8)
+                        Circle()
+                            .fill(Color.white)
+                            .frame(width: thumbSize, height: thumbSize)
+                    }
+                    .shadow(color: Color.homeWarmAccent.opacity(0.3), radius: 6, y: 0)
+                    .position(x: geometry.size.width * value, y: geometry.size.height / 2)
+                    .gesture(
+                        DragGesture().onChanged { gesture in
+                            self.value = min(max(gesture.location.x / geometry.size.width, 0), 1)
+                            self.isDragging = true
+                        }.onEnded { _ in
+                            self.isDragging = false
+                        }
+                    )
                 }
             }
             .frame(width: sliderWidth, height: 24)
