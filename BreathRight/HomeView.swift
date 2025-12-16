@@ -348,11 +348,14 @@ struct ExerciseCard: View {
                     // Arrow with glow
                     ZStack {
                         Circle()
-                            .fill(Color.homeWarmAccent.opacity(0.1))
-                            .frame(width: 28, height: 28)
+                            .fill(Color.homeWarmAccent.opacity(0.15))
+                            .frame(width: 30, height: 30)
+                        Circle()
+                            .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
+                            .frame(width: 30, height: 30)
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(.homeWarmAccent.opacity(0.8))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.homeWarmAccent)
                     }
                 }
                 .padding(.horizontal, 18)
@@ -374,22 +377,40 @@ struct ExerciseCard: View {
         .frame(maxWidth: .infinity)
         .frame(height: 150)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.05))
+            ZStack {
+                // Base fill with subtle gradient
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+
+                // Subtle left accent edge
+                HStack {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.homeWarmAccent.opacity(0.4))
+                        .frame(width: 3)
+                        .padding(.vertical, 20)
+                    Spacer()
+                }
+            }
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(
                     LinearGradient(
-                        colors: [Color.white.opacity(0.15), Color.white.opacity(0.03)],
+                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 0.5
+                    lineWidth: 1
                 )
         )
-        .shadow(color: .black.opacity(0.1), radius: 12, y: 6)
+        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
     }
 }
 
