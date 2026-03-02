@@ -61,31 +61,8 @@ struct BoxBreathingView: View {
             .edgesIgnoringSafeArea(.all)
             .animation(.easeInOut(duration: 1.0), value: isAnimating)
 
-            // Subtle grid lines
-            VStack(spacing: 50) {
-                ForEach(0..<14, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.white.opacity(0.02))
-                        .frame(height: 1)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            // Floating particles
-            GeometryReader { geometry in
-                ForEach(0..<8, id: \.self) { index in
-                    Circle()
-                        .fill(Color.white.opacity(0.05))
-                        .frame(width: CGFloat((index % 3) + 1) * 3)
-                        .position(
-                            x: CGFloat((index * 47) % Int(geometry.size.width)),
-                            y: CGFloat((index * 97) % Int(geometry.size.height))
-                        )
-                }
-            }
-
             if isSheetPresented {
-                Summary(elapsedTime: self.elapsedTime)
+                Summary(elapsedTime: self.elapsedTime, exerciseType: "Box Breathing", cyclesCompleted: self.completedCycles)
             } else {
                 VStack {
                     VStack(spacing: 0) {

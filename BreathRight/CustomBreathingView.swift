@@ -42,31 +42,8 @@ struct CustomBreathingView: View {
             .edgesIgnoringSafeArea(.all)
             .animation(.easeInOut(duration: 1.0), value: isBreathingActive)
 
-            // Grid lines
-            VStack(spacing: 50) {
-                ForEach(0..<14, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.white.opacity(0.02))
-                        .frame(height: 1)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            // Particles
-            GeometryReader { geometry in
-                ForEach(0..<8, id: \.self) { index in
-                    Circle()
-                        .fill(Color.white.opacity(0.05))
-                        .frame(width: CGFloat((index % 3) + 1) * 3)
-                        .position(
-                            x: CGFloat((index * 41) % Int(geometry.size.width)),
-                            y: CGFloat((index * 83) % Int(geometry.size.height))
-                        )
-                }
-            }
-
             if showSummary {
-                Summary(elapsedTime: elapsedTime)
+                Summary(elapsedTime: elapsedTime, exerciseType: "Custom Breathing", cyclesCompleted: completedCycles)
             } else if isBreathingActive {
                 activeSessionView
             } else {

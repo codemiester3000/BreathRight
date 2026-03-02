@@ -2,7 +2,10 @@ import SwiftUI
 
 struct Summary: View {
     let elapsedTime: Int
+    var exerciseType: String = "Box Breathing"
+    var cyclesCompleted: Int = 0
 
+    @EnvironmentObject var dataManager: DataManager
     @Environment(\.presentationMode) var presentationMode
 
     // Animation states
@@ -13,7 +16,9 @@ struct Summary: View {
     @State private var pulseScale: CGFloat = 1.0
     @State private var contentOpacity: Double = 0
     @State private var contentOffset: CGFloat = 30
-    @State private var particlesVisible = false
+    @State private var xpCountUp: Int = 0
+    @State private var showLevelUp = false
+    @State private var hasSaved = false
 
     var formattedTime: String {
         let minutes = elapsedTime / 60
@@ -23,7 +28,7 @@ struct Summary: View {
 
     var body: some View {
         ZStack {
-            // Warm gradient background
+            // Background
             LinearGradient(
                 gradient: Gradient(colors: [Color.homeWarmBlueDark, Color.homeWarmBlue, Color.homeWarmBlueLight]),
                 startPoint: .topLeading,
@@ -31,232 +36,373 @@ struct Summary: View {
             )
             .edgesIgnoringSafeArea(.all)
 
-            // Subtle grid lines
-            VStack(spacing: 50) {
-                ForEach(0..<14, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.white.opacity(0.02))
-                        .frame(height: 1)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    Spacer().frame(height: 60)
 
-            // Floating particles background
-            if particlesVisible {
-                FloatingParticles()
-            }
+                    // Success icon
+                    ZStack {
+                        Circle()
+                            .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
+                            .frame(width: 130, height: 130)
+                            .scaleEffect(pulseScale)
+                            .opacity(2 - Double(pulseScale))
 
-            VStack(spacing: 0) {
-                Spacer()
+                        Circle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 100, height: 100)
+                            .scaleEffect(ringScale)
+                            .opacity(ringOpacity)
 
-                // Animated success icon
-                ZStack {
-                    // Outer pulse ring
-                    Circle()
-                        .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
-                        .frame(width: 130, height: 130)
-                        .scaleEffect(pulseScale)
-                        .opacity(2 - Double(pulseScale))
-
-                    // Main circle background
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 100, height: 100)
-                        .scaleEffect(ringScale)
-                        .opacity(ringOpacity)
-
-                    // Inner glow
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [Color.homeWarmAccent.opacity(0.25), Color.clear],
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 50
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [Color.homeWarmAccent.opacity(0.25), Color.clear],
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 50
+                                )
                             )
-                        )
-                        .frame(width: 100, height: 100)
-                        .scaleEffect(ringScale)
-                        .opacity(ringOpacity)
+                            .frame(width: 100, height: 100)
+                            .scaleEffect(ringScale)
+                            .opacity(ringOpacity)
 
-                    // Checkmark
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 36, weight: .light))
-                        .foregroundColor(.white.opacity(0.95))
-                        .scaleEffect(checkmarkScale)
-                        .opacity(checkmarkOpacity)
-                }
-                .padding(.bottom, 36)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 36, weight: .light))
+                            .foregroundColor(.white.opacity(0.95))
+                            .scaleEffect(checkmarkScale)
+                            .opacity(checkmarkOpacity)
+                    }
+                    .padding(.bottom, 28)
 
-                // Title
-                Text("Session Complete")
-                    .font(.system(size: 26, weight: .light, design: .rounded))
-                    .foregroundColor(.white)
-                    .padding(.bottom, 10)
+                    // Title
+                    Text("Session Complete")
+                        .font(.system(size: 26, weight: .light, design: .rounded))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 8)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
+
+                    // Subtitle
+                    HStack(spacing: 8) {
+                        Rectangle()
+                            .fill(Color.homeWarmAccent.opacity(0.7))
+                            .frame(width: 12, height: 2)
+                        Text("great work on your practice")
+                            .font(.system(size: 12, weight: .medium))
+                            .tracking(0.5)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+                    .padding(.bottom, 28)
                     .opacity(contentOpacity)
                     .offset(y: contentOffset)
 
-                // Subtitle with accent bar
-                HStack(spacing: 8) {
-                    Rectangle()
-                        .fill(Color.homeWarmAccent.opacity(0.7))
-                        .frame(width: 12, height: 2)
-                    Text("great work on your practice")
-                        .font(.system(size: 12, weight: .medium))
-                        .tracking(0.5)
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                .padding(.bottom, 36)
-                .opacity(contentOpacity)
-                .offset(y: contentOffset)
-
-                // Stats card
-                VStack(spacing: 16) {
-                    HStack {
-                        HStack(spacing: 6) {
-                            Image(systemName: "clock")
-                                .font(.system(size: 13, weight: .light))
-                                .foregroundColor(.homeWarmAccent.opacity(0.8))
-                            Text("Duration")
-                                .font(.system(size: 13, weight: .regular))
-                                .foregroundColor(.white.opacity(0.6))
+                    // Personal best banner
+                    if dataManager.isPersonalBest && elapsedTime > 0 {
+                        HStack(spacing: 8) {
+                            Image(systemName: "trophy.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.homeGoldenAccent)
+                            Text("New Personal Best!")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.homeGoldenAccent)
                         }
-                        Spacer()
-                        Text(formattedTime)
-                            .font(.system(size: 15, weight: .medium, design: .rounded))
-                            .foregroundColor(.white.opacity(0.9))
-                    }
-                }
-                .padding(18)
-                .background(
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.white.opacity(0.06))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.12), Color.white.opacity(0.03)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 0.5
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.homeGoldenAccent.opacity(0.12))
                         )
-                )
-                .padding(.horizontal, 32)
-                .opacity(contentOpacity)
-                .offset(y: contentOffset)
-
-                Spacer()
-
-                // Dismiss button
-                Button(action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    HStack(spacing: 8) {
-                        Text("Done")
-                            .font(.system(size: 15, weight: .medium))
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.homeWarmAccent)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.homeGoldenAccent.opacity(0.3), lineWidth: 0.5)
+                        )
+                        .padding(.bottom, 20)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
                     }
-                    .foregroundColor(.white.opacity(0.95))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
+
+                    // Stats card
+                    VStack(spacing: 14) {
+                        // Duration
+                        statsRow(icon: "clock", label: "Duration", value: formattedTime)
+
+                        if cyclesCompleted > 0 {
+                            Divider().background(Color.white.opacity(0.1))
+                            statsRow(icon: "arrow.2.squarepath", label: "Cycles", value: "\(cyclesCompleted)")
+                        }
+
+                        Divider().background(Color.white.opacity(0.1))
+
+                        // XP earned
+                        HStack {
+                            HStack(spacing: 6) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 13, weight: .light))
+                                    .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                                Text("XP Earned")
+                                    .font(.system(size: 13, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            Spacer()
+                            Text("+\(xpCountUp)")
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .foregroundColor(.homeGoldenAccent)
+                        }
+                    }
+                    .padding(18)
                     .background(
                         RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.white.opacity(0.1))
+                            .fill(Color.white.opacity(0.06))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(
                                 LinearGradient(
-                                    colors: [Color.white.opacity(0.2), Color.white.opacity(0.05)],
+                                    colors: [Color.white.opacity(0.12), Color.white.opacity(0.03)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
                                 lineWidth: 0.5
                             )
                     )
+                    .padding(.horizontal, 32)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
+
+                    // Streak + Level row
+                    HStack(spacing: 12) {
+                        // Streak card
+                        VStack(spacing: 6) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "flame.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.orange)
+                                Text("\(dataManager.currentStreak)")
+                                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            Text("day streak")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.white.opacity(0.06))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                        )
+
+                        // Level card
+                        VStack(spacing: 6) {
+                            let level = GamificationConstants.levelFor(xp: dataManager.currentXP)
+                            Text(level.name)
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .foregroundColor(.homeWarmAccent)
+                            let progress = GamificationConstants.xpProgressInLevel(xp: dataManager.currentXP)
+                            // XP progress bar
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color.white.opacity(0.1))
+                                        .frame(height: 6)
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [.homeWarmAccent, .homeGoldenAccent],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(width: geo.size.width * CGFloat(progress.fraction), height: 6)
+                                }
+                            }
+                            .frame(height: 6)
+                            .padding(.horizontal, 12)
+
+                            Text("Level \(level.number)")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.white.opacity(0.06))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                        )
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.top, 16)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
+
+                    // New achievements
+                    if !dataManager.newlyUnlockedAchievements.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(spacing: 8) {
+                                Rectangle()
+                                    .fill(Color.homeGoldenAccent)
+                                    .frame(width: 12, height: 2)
+                                Text("new badges unlocked")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .tracking(1.5)
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
+
+                            ForEach(dataManager.newlyUnlockedAchievements) { achievement in
+                                HStack(spacing: 12) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.homeGoldenAccent.opacity(0.15))
+                                            .frame(width: 40, height: 40)
+                                        Image(systemName: achievement.icon)
+                                            .font(.system(size: 16))
+                                            .foregroundColor(.homeGoldenAccent)
+                                    }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(achievement.name)
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.white)
+                                        Text(achievement.description)
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.white.opacity(0.5))
+                                    }
+                                    Spacer()
+                                }
+                                .padding(12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.white.opacity(0.05))
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 32)
+                        .padding(.top, 20)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
+                    }
+
+                    Spacer().frame(height: 30)
+
+                    // Done button
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack(spacing: 8) {
+                            Text("Done")
+                                .font(.system(size: 15, weight: .medium))
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.homeWarmAccent)
+                        }
+                        .foregroundColor(.white.opacity(0.95))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.white.opacity(0.1))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(0.2), Color.white.opacity(0.05)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 0.5
+                                )
+                        )
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.bottom, 40)
+                    .opacity(contentOpacity)
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 40)
-                .opacity(contentOpacity)
+            }
+
+            // Level up overlay
+            if showLevelUp {
+                LevelUpView(levelName: dataManager.newLevelName) {
+                    showLevelUp = false
+                }
             }
         }
         .onAppear {
-            startCompletionAnimation()
+            if !hasSaved {
+                hasSaved = true
+                dataManager.saveSession(
+                    exerciseType: exerciseType,
+                    durationSeconds: elapsedTime,
+                    cyclesCompleted: cyclesCompleted
+                )
+                startCompletionAnimation()
+            }
+        }
+    }
+
+    private func statsRow(icon: String, label: String, value: String) -> some View {
+        HStack {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: .light))
+                    .foregroundColor(.homeWarmAccent.opacity(0.8))
+                Text(label)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.white.opacity(0.6))
+            }
+            Spacer()
+            Text(value)
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundColor(.white.opacity(0.9))
         }
     }
 
     private func startCompletionAnimation() {
-        // Show particles
-        particlesVisible = true
-
-        // Ring appears
         withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
             ringScale = 1.0
             ringOpacity = 1.0
         }
 
-        // Checkmark bounces in
         withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.2)) {
             checkmarkScale = 1.0
             checkmarkOpacity = 1.0
         }
 
-        // Pulse animation
         withAnimation(.easeOut(duration: 1.5).repeatForever(autoreverses: false).delay(0.3)) {
             pulseScale = 1.8
         }
 
-        // Content fades in
         withAnimation(.easeOut(duration: 0.6).delay(0.4)) {
             contentOpacity = 1.0
             contentOffset = 0
         }
-    }
-}
 
-// Floating particles for celebration effect
-struct FloatingParticles: View {
-    var body: some View {
-        GeometryReader { geometry in
-            ForEach(0..<20, id: \.self) { index in
-                FloatingParticle(
-                    size: CGFloat.random(in: 4...8),
-                    startX: CGFloat.random(in: 0...geometry.size.width),
-                    delay: Double.random(in: 0...2)
-                )
+        // XP count-up animation
+        let targetXP = dataManager.lastSessionXP
+        if targetXP > 0 {
+            let steps = min(targetXP, 30)
+            let interval = 0.8 / Double(steps)
+            for i in 1...steps {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6 + Double(i) * interval) {
+                    xpCountUp = targetXP * i / steps
+                }
             }
         }
-    }
-}
 
-struct FloatingParticle: View {
-    let size: CGFloat
-    let startX: CGFloat
-    let delay: Double
-
-    @State private var yOffset: CGFloat = 0
-    @State private var opacity: Double = 0
-
-    var body: some View {
-        Circle()
-            .fill(Color.homeWarmAccent.opacity(0.25))
-            .frame(width: size, height: size)
-            .position(x: startX, y: UIScreen.main.bounds.height + 50)
-            .offset(y: yOffset)
-            .opacity(opacity)
-            .onAppear {
-                withAnimation(.easeOut(duration: 4).delay(delay)) {
-                    yOffset = -UIScreen.main.bounds.height - 100
-                    opacity = 0.5
-                }
-                withAnimation(.easeIn(duration: 1).delay(delay + 3)) {
-                    opacity = 0
-                }
+        // Level up trigger
+        if dataManager.didLevelUp {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                showLevelUp = true
             }
+        }
     }
 }
 
@@ -275,15 +421,13 @@ struct DrawingSquareModifier: AnimatableModifier {
                 let start = CGPoint(x: 0, y: 0)
                 path.move(to: start)
 
-                // Define points for square sides
                 let points = [
-                    CGPoint(x: size, y: 0), // Top side
-                    CGPoint(x: size, y: size), // Right side
-                    CGPoint(x: 0, y: size), // Bottom side
-                    CGPoint(x: 0, y: 0) // Left side
+                    CGPoint(x: size, y: 0),
+                    CGPoint(x: size, y: size),
+                    CGPoint(x: 0, y: size),
+                    CGPoint(x: 0, y: 0)
                 ]
 
-                let fullLength = points.count + 1 // Complete cycle length
                 let currentSide = Int(progress)
                 let sideProgress = progress - CGFloat(currentSide)
 
@@ -301,7 +445,6 @@ struct DrawingSquareModifier: AnimatableModifier {
         )
     }
 
-    // Interpolate between two points
     private func interpolate(from: CGPoint, to: CGPoint, progress: CGFloat) -> CGPoint {
         CGPoint(
             x: from.x + (to.x - from.x) * progress,
@@ -322,7 +465,7 @@ struct AnimatedSquareView: View {
             .modifier(DrawingSquareModifier(progress: drawProgress, size: size))
             .onAppear {
                 withAnimation(Animation.linear(duration: 4).repeatCount(1)) {
-                    drawProgress = 4 // Each side + return to start
+                    drawProgress = 4
                 }
             }
     }

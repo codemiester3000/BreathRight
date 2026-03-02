@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		172F4B3ADBB5937A069CAF42 /* LevelUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83745F4FE14E18C7E47AED17 /* LevelUpView.swift */; };
+		3884DCADE3D36039D3A8BC3E /* AchievementCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34538B9FB2C5F611CD42E478 /* AchievementCatalog.swift */; };
+		4798E44749707AB4D2E5E207 /* GamificationConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7518EEF46A8E92DF31853F /* GamificationConstants.swift */; };
+		7FE5A0AAE1B723E005359675 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CF1500097A8CF38A7A450F /* StatsView.swift */; };
+		8178813AB566FE31CDEB4852 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C410A28DA9C4D27F0D199A0 /* DataManager.swift */; };
+		A9D7804B1CECE097ABEB3984 /* BOLTTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCDC41481D4288745435F3 /* BOLTTestView.swift */; };
+		BAF8C7D6822A8A5302F55D45 /* BOLTChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1C25A949226BAD04AE9D5B /* BOLTChartView.swift */; };
 		C549C24E2B61BEF7006F040A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549C24D2B61BEF7006F040A /* HomeView.swift */; };
 		C549EABD2B2F85D700F583C7 /* BoxBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */; };
 		C549EAC12B2FB90D00F583C7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549EAC02B2FB90D00F583C7 /* SettingsView.swift */; };
@@ -36,6 +43,12 @@
 		C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */; };
 		C5F123452D200000005C7E45 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123442D200000005C7E45 /* SplashScreen.swift */; };
 		C5F123472D200002005C7E45 /* CustomBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123462D200001005C7E45 /* CustomBreathingView.swift */; };
+		D8D612E19A7CAF1504D0EFAB /* StreakBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41A8BC832E818FC635E8279 /* StreakBannerView.swift */; };
+		FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */; };
+		5D8B2F41A9E3C76018F4D3B2 /* TrainingPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */; };
+		9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */; };
+		A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6970812345678 /* GeminiService.swift */; };
+		C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6078901234567 /* TierDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +69,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B1C25A949226BAD04AE9D5B /* BOLTChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BOLTChartView.swift; sourceTree = "<group>"; };
+		2F7518EEF46A8E92DF31853F /* GamificationConstants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GamificationConstants.swift; sourceTree = "<group>"; };
+		34538B9FB2C5F611CD42E478 /* AchievementCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementCatalog.swift; sourceTree = "<group>"; };
+		3C410A28DA9C4D27F0D199A0 /* DataManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		76CF1500097A8CF38A7A450F /* StatsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		83745F4FE14E18C7E47AED17 /* LevelUpView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LevelUpView.swift; sourceTree = "<group>"; };
+		8CBCDC41481D4288745435F3 /* BOLTTestView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BOLTTestView.swift; sourceTree = "<group>"; };
+		C41A8BC832E818FC635E8279 /* StreakBannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakBannerView.swift; sourceTree = "<group>"; };
 		C549C24D2B61BEF7006F040A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathInfo.swift; sourceTree = "<group>"; };
 		C549EAC02B2FB90D00F583C7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -86,6 +107,12 @@
 		C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosineAnimation.swift; sourceTree = "<group>"; };
 		C5F123442D200000005C7E45 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		C5F123462D200001005C7E45 /* CustomBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBreathingView.swift; sourceTree = "<group>"; };
+		D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
+		DDA3318B5F37C66A70F55FC3 /* FourSevenEightBreathInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FourSevenEightBreathInfo.swift; path = BreathRight/FourSevenEightBreathInfo.swift; sourceTree = "<group>"; };
+		E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingPlan.swift; sourceTree = "<group>"; };
+		B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodaysPlanCard.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6078901234567 /* TierDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TierDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +187,20 @@
 				C549C24D2B61BEF7006F040A /* HomeView.swift */,
 				C5F123442D200000005C7E45 /* SplashScreen.swift */,
 				C5F123462D200001005C7E45 /* CustomBreathingView.swift */,
+				DDA3318B5F37C66A70F55FC3 /* FourSevenEightBreathInfo.swift */,
+				3C410A28DA9C4D27F0D199A0 /* DataManager.swift */,
+				2F7518EEF46A8E92DF31853F /* GamificationConstants.swift */,
+				34538B9FB2C5F611CD42E478 /* AchievementCatalog.swift */,
+				83745F4FE14E18C7E47AED17 /* LevelUpView.swift */,
+				8CBCDC41481D4288745435F3 /* BOLTTestView.swift */,
+				C41A8BC832E818FC635E8279 /* StreakBannerView.swift */,
+				76CF1500097A8CF38A7A450F /* StatsView.swift */,
+				0B1C25A949226BAD04AE9D5B /* BOLTChartView.swift */,
+				D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */,
+				E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */,
+				B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */,
+				F1E2D3C4B5A6970812345678 /* GeminiService.swift */,
+				A1B2C3D4E5F6078901234567 /* TierDetailView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -341,6 +382,19 @@
 				C549EAC52B2FBCE600F583C7 /* FourSevenEightBreathingView.swift in Sources */,
 				C5F123452D200000005C7E45 /* SplashScreen.swift in Sources */,
 				C5F123472D200002005C7E45 /* CustomBreathingView.swift in Sources */,
+				8178813AB566FE31CDEB4852 /* DataManager.swift in Sources */,
+				4798E44749707AB4D2E5E207 /* GamificationConstants.swift in Sources */,
+				3884DCADE3D36039D3A8BC3E /* AchievementCatalog.swift in Sources */,
+				172F4B3ADBB5937A069CAF42 /* LevelUpView.swift in Sources */,
+				A9D7804B1CECE097ABEB3984 /* BOLTTestView.swift in Sources */,
+				D8D612E19A7CAF1504D0EFAB /* StreakBannerView.swift in Sources */,
+				7FE5A0AAE1B723E005359675 /* StatsView.swift in Sources */,
+				BAF8C7D6822A8A5302F55D45 /* BOLTChartView.swift in Sources */,
+				FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */,
+				5D8B2F41A9E3C76018F4D3B2 /* TrainingPlan.swift in Sources */,
+				9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */,
+				A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */,
+				C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,7 +556,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BreathRight/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Inhale;
+				INFOPLIST_KEY_CFBundleDisplayName = uBreathe;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -517,7 +571,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3;
+				MARKETING_VERSION = 4.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -544,7 +598,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BreathRight/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Inhale;
+				INFOPLIST_KEY_CFBundleDisplayName = uBreathe;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -559,7 +613,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3;
+				MARKETING_VERSION = 4.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -44,16 +44,19 @@ enum BreathingExercise: String, CaseIterable {
 }
 
 struct HomeView: View {
+    @EnvironmentObject var dataManager: DataManager
+    @StateObject private var geminiService = GeminiService()
+
     @State private var numCycles: Int = {
         let savedValue = UserDefaults.standard.integer(forKey: "numCycles")
-        return savedValue != 0 ? savedValue : 10 // If savedValue is 0 (not set), return 10
+        return savedValue != 0 ? savedValue : 10
     }()
 
     @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
 
     var body: some View {
         ZStack {
-            // Warm gradient background (matching splash)
+            // Warm gradient background
             LinearGradient(
                 gradient: Gradient(colors: [Color.homeWarmBlueDark, Color.homeWarmBlue, Color.homeWarmBlueLight]),
                 startPoint: .topLeading,
@@ -61,66 +64,55 @@ struct HomeView: View {
             )
             .edgesIgnoringSafeArea(.all)
 
-            // Subtle grid lines (technical element)
-            VStack(spacing: 50) {
-                ForEach(0..<12, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.white.opacity(0.025))
-                        .frame(height: 1)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            // Floating particles
-            GeometryReader { geometry in
-                ForEach(0..<10, id: \.self) { index in
-                    Circle()
-                        .fill(Color.white.opacity(0.06))
-                        .frame(width: CGFloat((index % 3) + 1) * 4)
-                        .position(
-                            x: CGFloat((index * 37) % Int(geometry.size.width)),
-                            y: CGFloat((index * 89) % Int(geometry.size.height))
-                        )
-                }
-            }
-
             // Main content - scrollable
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     // Wave animation at top
                     ZStack {
-                        ForEach(0..<5, id: \.self) { index in
+                        ForEach(0..<3, id: \.self) { index in
                             CosineAnimation()
                                 .frame(width: UIScreen.main.bounds.width * 0.9)
-                                .frame(height: 55)
-                                .offset(y: CGFloat(index * 12))
+                                .frame(height: 40)
+                                .offset(y: CGFloat(index * 10))
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 100)
-                    .padding(.top, -20)
-                    .padding(.bottom, 48)
-                    .opacity(0.7)
+                    .frame(height: 60)
+                    .padding(.top, -10)
+                    .padding(.bottom, 20)
+                    .opacity(0.5)
 
-                    GreetingHeader()
+                    // Status Row (greeting + streak + level)
+                    NavigationLink(destination: StatsView()) {
+                        StatusRow()
+                    }
+                    .buttonStyle(PlainButtonStyle())
 
-                    BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
-                        .padding(.top, 40)
+                    // Journey Card (BOLT progress or onboarding)
+                    JourneyCard()
+                        .padding(.top, 20)
 
-                    // Section label with accent bar
+                    // Today's Exercise with integrated AI coach
+                    TodaysExerciseCard(geminiService: geminiService)
+                        .padding(.top, 16)
+
+                    // Free practice
                     HStack(spacing: 8) {
                         Rectangle()
                             .fill(Color.homeWarmAccent)
-                            .frame(width: 16, height: 2)
-                        Text("select exercise")
+                            .frame(width: 12, height: 2)
+                        Text("free practice")
                             .font(.system(size: 11, weight: .medium))
-                            .tracking(2)
+                            .tracking(1.5)
                             .foregroundColor(.white.opacity(0.5))
                     }
-                    .padding(.top, 40)
-                    .padding(.bottom, 20)
+                    .padding(.top, 24)
+                    .padding(.bottom, 12)
 
-                    VStack(spacing: 16) {
+                    BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
+                        .padding(.bottom, 12)
+
+                    VStack(spacing: 8) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
                             NavigationLink(destination: destinationView(for: exercise)) {
                                 ExerciseCard(
@@ -132,14 +124,27 @@ struct HomeView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
+
+                    // BOLT test
+                    NavigationLink(destination: BOLTTestView()) {
+                        BOLTTestCard()
+                    }
+                    .padding(.top, 8)
                     .padding(.bottom, 40)
                 }
                 .padding(.horizontal, 24)
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            dataManager.refreshStreak()
+            if let tier = dataManager.currentBOLTTier() {
+                let exercise = TrainingPlanProvider.todaysExercise(for: tier)
+                geminiService.fetchExerciseTip(exercise: exercise, tier: tier, dataManager: dataManager)
+            }
+        }
     }
-    
+
     @ViewBuilder
     private func destinationView(for exercise: BreathingExercise) -> some View {
         switch exercise {
@@ -151,184 +156,62 @@ struct HomeView: View {
             CustomBreathingView()
         }
     }
-    
 }
 
-// MARK: - Refined Greeting Header
-struct GreetingHeader: View {
-    private var hour: Int {
-        Calendar.current.component(.hour, from: Date())
-    }
-
-    private var greeting: String {
-        switch hour {
-        case 6..<12: return "Good Morning"
-        case 12..<17: return "Good Afternoon"
-        default: return "Good Evening"
-        }
-    }
-
-    private var iconName: String {
-        switch hour {
-        case 6..<12: return "sun.horizon.fill"
-        case 12..<17: return "sun.max.fill"
-        default: return "moon.stars.fill"
-        }
-    }
-
-    // Golden for sun, cyan for moon
-    private var iconAccentColor: Color {
-        switch hour {
-        case 6..<17: return .homeGoldenAccent
-        default: return .homeWarmAccent
-        }
-    }
-
-    // Random motivational taglines
-    private static let taglines = [
-        "find your calm",
-        "breathe with intention",
-        "your moment of peace",
-        "center yourself",
-        "embrace stillness",
-        "inhale clarity"
-    ]
-
-    @State private var tagline: String = taglines.randomElement() ?? "find your calm"
-
+// MARK: - BOLT Test Card
+struct BOLTTestCard: View {
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(greeting)
-                    .font(.system(size: 26, weight: .light, design: .rounded))
-                    .foregroundColor(.white)
+        HStack(spacing: 14) {
+            // Icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.homeGoldenAccent.opacity(0.1))
+                    .frame(width: 40, height: 40)
+                Image(systemName: "lungs.fill")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.homeGoldenAccent)
+            }
 
-                HStack(spacing: 8) {
-                    Rectangle()
-                        .fill(Color.homeGoldenAccent.opacity(0.85))
-                        .frame(width: 12, height: 2)
-                    Text(tagline)
-                        .font(.system(size: 12, weight: .medium))
-                        .tracking(0.5)
-                        .foregroundColor(.white.opacity(0.55))
-                }
+            VStack(alignment: .leading, spacing: 3) {
+                Text("BOLT Score Test")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.9))
+                Text("Measure your CO\u{2082} tolerance \u{00B7} ~1 min")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.45))
             }
 
             Spacer()
 
-            // Icon with soft glow ring
-            ZStack {
-                // Outer glow
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [iconAccentColor.opacity(0.2), Color.clear],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: 30
-                        )
-                    )
-                    .frame(width: 60, height: 60)
-
-                Circle()
-                    .stroke(iconAccentColor.opacity(0.4), lineWidth: 1)
-                    .frame(width: 44, height: 44)
-
-                Image(systemName: iconName)
-                    .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(iconAccentColor.opacity(0.9))
-            }
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.homeGoldenAccent.opacity(0.5))
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.06))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.homeGoldenAccent.opacity(0.15), Color.white.opacity(0.06)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+        )
     }
 }
 
-// MARK: - Geometric Animations for Cards
-struct RotatingSquaresAnimation: View {
-    @State private var rotation: Double = 0
-
-    var body: some View {
-        ZStack {
-            ForEach(0..<3, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 2)
-                    .stroke(Color.homeWarmAccent.opacity(0.6 - Double(index) * 0.12), lineWidth: 1)
-                    .frame(width: 22 - CGFloat(index * 5), height: 22 - CGFloat(index * 5))
-                    .rotationEffect(.degrees(rotation + Double(index * 20)))
-            }
-        }
-        .frame(width: 28, height: 28)
-        .onAppear {
-            withAnimation(.linear(duration: 14).repeatForever(autoreverses: false)) {
-                rotation = 360
-            }
-        }
-    }
-}
-
-struct OrbitingDotsAnimation: View {
-    @State private var rotation: Double = 0
-
-    var body: some View {
-        ZStack {
-            // Center point
-            Circle()
-                .fill(Color.homeWarmAccent.opacity(0.7))
-                .frame(width: 4, height: 4)
-
-            // Orbiting dots
-            ForEach(0..<3, id: \.self) { index in
-                Circle()
-                    .fill(Color.homeWarmAccent.opacity(0.6 - Double(index) * 0.1))
-                    .frame(width: 4, height: 4)
-                    .offset(x: 9 + CGFloat(index * 2))
-                    .rotationEffect(.degrees(rotation + Double(index * 120)))
-            }
-        }
-        .frame(width: 28, height: 28)
-        .onAppear {
-            withAnimation(.linear(duration: 12).repeatForever(autoreverses: false)) {
-                rotation = 360
-            }
-        }
-    }
-}
-
-struct PulsingBarsAnimation: View {
-    @State private var phase: Int = 0
-
-    var body: some View {
-        HStack(spacing: 3) {
-            ForEach(0..<3, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 1.5)
-                    .fill(Color.homeWarmAccent.opacity(0.6))
-                    .frame(width: 3, height: barHeight(for: index))
-                    .animation(.easeInOut(duration: 1.2), value: phase)
-            }
-        }
-        .frame(width: 28, height: 28)
-        .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 1.2, repeats: true) { _ in
-                phase = (phase + 1) % 3
-            }
-        }
-    }
-
-    private func barHeight(for index: Int) -> CGFloat {
-        let heights: [[CGFloat]] = [
-            [18, 10, 14],
-            [10, 18, 10],
-            [14, 10, 18]
-        ]
-        return heights[phase][index]
-    }
-}
-
-// MARK: - Spa-Tech Exercise Card
+// MARK: - Compact Exercise Card
 struct ExerciseCard: View {
     let exercise: BreathingExercise
     let numCycles: Int
     let isInfinite: Bool
-
-    @State private var pillScale: CGFloat = 1.0
 
     private var etaText: String {
         let totalSeconds = exercise.timeForOneCycle() * numCycles
@@ -340,165 +223,59 @@ struct ExerciseCard: View {
         }
     }
 
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            VStack(alignment: .leading, spacing: 0) {
-                // Title row
-                HStack(alignment: .center) {
-                    Text(exercise.rawValue)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.95))
-
-                    Spacer()
-                }
-                .padding(.top, 18)
-                .padding(.horizontal, 20)
-
-                // Benefits list
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(exercise.benefits, id: \.self) { benefit in
-                        HStack(spacing: 10) {
-                            Circle()
-                                .fill(Color.homeWarmAccent.opacity(0.7))
-                                .frame(width: 4, height: 4)
-                            Text(benefit)
-                                .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                    }
-                }
-                .padding(.top, 14)
-                .padding(.horizontal, 20)
-
-                Spacer()
-
-                // Bottom metadata row
-                HStack(spacing: 10) {
-                    // Cycles pill
-                    HStack(spacing: 5) {
-                        Image(systemName: "repeat")
-                            .font(.system(size: 9, weight: .medium))
-                        Text(isInfinite ? "∞" : "\(numCycles)")
-                            .font(.system(size: 11, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.7))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-                    )
-                    .scaleEffect(pillScale)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: numCycles)
-
-                    // Duration pill
-                    HStack(spacing: 5) {
-                        Image(systemName: "clock")
-                            .font(.system(size: 9, weight: .medium))
-                        Text(isInfinite ? "∞" : etaText)
-                            .font(.system(size: 11, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.7))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-                    )
-                    .scaleEffect(pillScale)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: numCycles)
-
-                    Spacer()
-
-                    // Arrow with glow
-                    ZStack {
-                        Circle()
-                            .fill(Color.homeWarmAccent.opacity(0.15))
-                            .frame(width: 30, height: 30)
-                        Circle()
-                            .stroke(Color.homeWarmAccent.opacity(0.3), lineWidth: 1)
-                            .frame(width: 30, height: 30)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.homeWarmAccent)
-                    }
-                }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 16)
-            }
-
-            // Geometric animation in upper right
-            Group {
-                switch exercise {
-                case .boxBreathing:
-                    RotatingSquaresAnimation()
-                case .fourSevenEight:
-                    OrbitingDotsAnimation()
-                case .custom:
-                    PulsingBarsAnimation()
-                }
-            }
-            .padding(.top, 16)
-            .padding(.trailing, 16)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 150)
-        .background(
-            ZStack {
-                // Base fill with subtle gradient
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-
-                // Subtle left accent edge (golden)
-                HStack {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.homeGoldenAccent.opacity(0.5))
-                        .frame(width: 3)
-                        .padding(.vertical, 20)
-                    Spacer()
-                }
-            }
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1
-                )
-        )
-        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
-        .onChange(of: numCycles) { _ in
-            animatePills()
-        }
-        .onChange(of: isInfinite) { _ in
-            animatePills()
+    private var iconName: String {
+        switch exercise {
+        case .boxBreathing: return "square"
+        case .fourSevenEight: return "moon.zzz"
+        case .custom: return "slider.horizontal.3"
         }
     }
 
-    private func animatePills() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-            pillScale = 1.08
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                pillScale = 1.0
+    var body: some View {
+        HStack(spacing: 14) {
+            // Icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 40, height: 40)
+                Image(systemName: iconName)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.homeWarmAccent)
             }
+
+            // Name + meta
+            VStack(alignment: .leading, spacing: 3) {
+                Text(exercise.rawValue)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.9))
+                HStack(spacing: 8) {
+                    Text(isInfinite ? "∞ cycles" : "\(numCycles) cycles")
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.45))
+                    Text("\u{00B7}")
+                        .foregroundColor(.white.opacity(0.2))
+                    Text(isInfinite ? "∞" : etaText)
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.45))
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.white.opacity(0.25))
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.06))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+        )
     }
 }
 
