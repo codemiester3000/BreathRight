@@ -306,6 +306,46 @@ struct BOLTTestView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
 
+                // Delta to next tier
+                let currentTier = BOLTTier.tier(for: timerValue)
+                if let nextTier = currentTier.nextTier {
+                    let threshold: Double = {
+                        switch nextTier {
+                        case .developing: return 10
+                        case .good: return 20
+                        case .veryGood: return 30
+                        case .elite: return 40
+                        default: return 0
+                        }
+                    }()
+                    let delta = threshold - timerValue
+                    Text(String(format: "%.1fs to %@", delta, nextTier.rawValue))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                        .padding(.top, 4)
+                }
+
+                // Tier connection message
+                Text(tierConnectionMessage)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.homeWarmAccent.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .padding(.top, 8)
+
+                // XP earned from BOLT improvement
+                if dataManager.lastSessionXP > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 13, weight: .light))
+                            .foregroundColor(.homeGoldenAccent)
+                        Text("+\(dataManager.lastSessionXP) XP")
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
+                            .foregroundColor(.homeGoldenAccent)
+                    }
+                    .padding(.top, 6)
+                }
+
                 // New achievements
                 if !dataManager.newlyUnlockedAchievements.isEmpty {
                     VStack(spacing: 8) {
@@ -357,30 +397,17 @@ struct BOLTTestView: View {
 
                 Button(action: { presentationMode.wrappedValue.dismiss() }) {
                     HStack(spacing: 8) {
-                        Text("Done")
-                            .font(.system(size: 15, weight: .medium))
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.homeWarmAccent)
+                        Text("View Your Plan")
+                            .font(.system(size: 15, weight: .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 12, weight: .semibold))
                     }
-                    .foregroundColor(.white.opacity(0.95))
+                    .foregroundColor(.homeWarmBlueDark)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.white.opacity(0.1))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [Color.white.opacity(0.2), Color.white.opacity(0.05)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 0.5
-                            )
-                    )
+                    .background(Color.homeGoldenAccent)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .shadow(color: Color.homeGoldenAccent.opacity(0.3), radius: 8, y: 2)
                 }
             }
             .padding(.horizontal, 32)
@@ -405,6 +432,15 @@ struct BOLTTestView: View {
         if timerValue < 30 { return "Good" }
         if timerValue < 40 { return "Very Good" }
         return "Elite"
+    }
+
+    private var tierConnectionMessage: String {
+        let scores = dataManager.fetchBOLTScores()
+        if scores.count <= 1 {
+            return "Your personalized training plan is ready."
+        } else {
+            return "Your training plan is now calibrated to this tier."
+        }
     }
 
     private var scoreDescription: String {

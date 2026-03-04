@@ -1,11 +1,15 @@
 import SwiftUI
 import AVFoundation
 
-struct CustomBreathingView: View {
-    // Breathing parameters
-    @State private var inhaleSeconds: Int = UserDefaults.standard.integer(forKey: "customInhale") > 0 ? UserDefaults.standard.integer(forKey: "customInhale") : 4
-    @State private var holdSeconds: Int = UserDefaults.standard.integer(forKey: "customHold") > 0 ? UserDefaults.standard.integer(forKey: "customHold") : 4
-    @State private var exhaleSeconds: Int = UserDefaults.standard.integer(forKey: "customExhale") > 0 ? UserDefaults.standard.integer(forKey: "customExhale") : 4
+struct ExhaleHoldView: View {
+    @EnvironmentObject var dataManager: DataManager
+
+    // Breathing parameters — set to tier-appropriate defaults in onAppear
+    @State private var inhaleSeconds: Int = 4
+    @State private var exhaleSeconds: Int = 4
+    @State private var holdSeconds: Int = 5
+    @State private var recoverySeconds: Int = 20
+    @State private var didApplyDefaults = false
 
     // Session state
     @State private var isBreathingActive: Bool = false
@@ -14,7 +18,7 @@ struct CustomBreathingView: View {
     @State private var elapsedTimer: Timer?
 
     // Breathing cycle state
-    @State private var currentPhase: CustomBreathPhase = .inhale
+    @State private var currentPhase: ExhaleHoldPhase = .inhale
     @State private var phaseProgress: CGFloat = 0.0
     @State private var phaseTimer: Timer?
     @State private var completedCycles: Int = 0
@@ -43,15 +47,49 @@ struct CustomBreathingView: View {
             .animation(.easeInOut(duration: 1.0), value: isBreathingActive)
 
             if showSummary {
-                Summary(elapsedTime: elapsedTime, exerciseType: "Custom Breathing", cyclesCompleted: completedCycles)
+                Summary(elapsedTime: elapsedTime, exerciseType: "Exhale Hold", cyclesCompleted: completedCycles)
             } else if isBreathingActive {
                 activeSessionView
             } else {
                 setupView
             }
         }
+        .onAppear {
+            applyTierDefaults()
+        }
         .onDisappear {
             stopSession()
+        }
+    }
+
+    private func applyTierDefaults() {
+        guard !didApplyDefaults else { return }
+        didApplyDefaults = true
+
+        // If launched from training plan, UserDefaults already has prescribed values — use them
+        let ud = UserDefaults.standard
+        let hasRecovery = ud.integer(forKey: "customRecovery") > 0
+        if hasRecovery {
+            inhaleSeconds = ud.integer(forKey: "customInhale") > 0 ? ud.integer(forKey: "customInhale") : 4
+            exhaleSeconds = ud.integer(forKey: "customExhale") > 0 ? ud.integer(forKey: "customExhale") : 4
+            holdSeconds = ud.integer(forKey: "customHold") > 0 ? ud.integer(forKey: "customHold") : 5
+            recoverySeconds = ud.integer(forKey: "customRecovery")
+            return
+        }
+
+        // Otherwise, scale defaults based on BOLT tier
+        guard let tier = dataManager.currentBOLTTier() else { return }
+        switch tier {
+        case .roomToGrow:
+            inhaleSeconds = 4; exhaleSeconds = 4; holdSeconds = 5; recoverySeconds = 30
+        case .developing:
+            inhaleSeconds = 4; exhaleSeconds = 6; holdSeconds = 10; recoverySeconds = 25
+        case .good:
+            inhaleSeconds = 4; exhaleSeconds = 6; holdSeconds = 15; recoverySeconds = 20
+        case .veryGood:
+            inhaleSeconds = 4; exhaleSeconds = 8; holdSeconds = 25; recoverySeconds = 15
+        case .elite:
+            inhaleSeconds = 4; exhaleSeconds = 8; holdSeconds = 35; recoverySeconds = 15
         }
     }
 
@@ -62,7 +100,7 @@ struct CustomBreathingView: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Custom Breathing")
+                        Text("Exhale Hold")
                             .font(.system(size: 26, weight: .light, design: .rounded))
                             .foregroundColor(.white)
 
@@ -70,7 +108,7 @@ struct CustomBreathingView: View {
                             Rectangle()
                                 .fill(Color.homeGoldenAccent.opacity(0.8))
                                 .frame(width: 12, height: 2)
-                            Text("design your rhythm")
+                            Text("CO\u{2082} tolerance training")
                                 .font(.system(size: 11, weight: .medium))
                                 .tracking(0.5)
                                 .foregroundColor(.white.opacity(0.5))
@@ -95,7 +133,7 @@ struct CustomBreathingView: View {
                     Image(systemName: "arrow.3.trianglepath")
                         .font(.system(size: 11, weight: .light))
                         .foregroundColor(.homeGoldenAccent.opacity(0.8))
-                    Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
+                    Text(savedIsInfinite ? "\u{221E} cycles" : "\(savedNumCycles) cycles")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
                 }
@@ -115,27 +153,11 @@ struct CustomBreathingView: View {
             Spacer()
 
             // Duration controls
-            VStack(spacing: 24) {
-                DurationControl(
-                    label: "Inhale",
-                    value: $inhaleSeconds,
-                    color: .white,
-                    icon: "arrow.down"
-                )
-
-                DurationControl(
-                    label: "Hold",
-                    value: $holdSeconds,
-                    color: .homeGoldenAccent,
-                    icon: "pause"
-                )
-
-                DurationControl(
-                    label: "Exhale",
-                    value: $exhaleSeconds,
-                    color: .homeWarmAccent,
-                    icon: "arrow.up"
-                )
+            VStack(spacing: 16) {
+                DurationControl(label: "Breathe In", value: $inhaleSeconds, color: .homeWarmAccent, icon: "arrow.down")
+                DurationControl(label: "Breathe Out", value: $exhaleSeconds, color: .homeGoldenAccent, icon: "arrow.up")
+                DurationControl(label: "Hold", value: $holdSeconds, color: Color(red: 0.95, green: 0.5, blue: 0.3), icon: "pause", maxValue: 60)
+                DurationControl(label: "Recover", value: $recoverySeconds, color: Color(red: 0.5, green: 0.85, blue: 0.6), icon: "heart", maxValue: 60)
             }
             .padding(.horizontal, 24)
 
@@ -144,7 +166,7 @@ struct CustomBreathingView: View {
                 Text("One cycle:")
                     .font(.system(size: 13, weight: .regular))
                     .foregroundColor(.white.opacity(0.5))
-                Text("\(inhaleSeconds + holdSeconds + exhaleSeconds) seconds")
+                Text("\(inhaleSeconds + exhaleSeconds + holdSeconds + recoverySeconds) seconds")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white.opacity(0.8))
             }
@@ -215,7 +237,7 @@ struct CustomBreathingView: View {
                     HStack(spacing: 5) {
                         Image(systemName: "arrow.2.squarepath")
                             .font(.system(size: 10, weight: .medium))
-                        Text("\(completedCycles) / \(savedIsInfinite ? "∞" : "\(savedNumCycles)")")
+                        Text("\(completedCycles) / \(savedIsInfinite ? "\u{221E}" : "\(savedNumCycles)")")
                             .font(.system(size: 11, weight: .medium, design: .rounded))
                     }
                     .foregroundColor(.white.opacity(0.8))
@@ -243,12 +265,13 @@ struct CustomBreathingView: View {
             Spacer()
 
             // Breathing circle
-            CustomBreathingCircle(
+            ExhaleHoldBreathingCircle(
                 currentPhase: currentPhase,
                 progress: phaseProgress,
                 inhaleSeconds: inhaleSeconds,
+                exhaleSeconds: exhaleSeconds,
                 holdSeconds: holdSeconds,
-                exhaleSeconds: exhaleSeconds
+                recoverySeconds: recoverySeconds
             )
 
             Spacer()
@@ -276,8 +299,9 @@ struct CustomBreathingView: View {
     private func startSession() {
         // Save settings
         UserDefaults.standard.set(inhaleSeconds, forKey: "customInhale")
-        UserDefaults.standard.set(holdSeconds, forKey: "customHold")
         UserDefaults.standard.set(exhaleSeconds, forKey: "customExhale")
+        UserDefaults.standard.set(holdSeconds, forKey: "customHold")
+        UserDefaults.standard.set(recoverySeconds, forKey: "customRecovery")
 
         // Reset state
         elapsedTime = 0
@@ -296,7 +320,7 @@ struct CustomBreathingView: View {
         startPhaseTimer(for: .inhale)
     }
 
-    private func startPhaseTimer(for phase: CustomBreathPhase) {
+    private func startPhaseTimer(for phase: ExhaleHoldPhase) {
         phaseTimer?.invalidate()
         phaseProgress = 0
         currentPhase = phase
@@ -318,12 +342,15 @@ struct CustomBreathingView: View {
     private func advancePhase() {
         switch currentPhase {
         case .inhale:
-            playAudio(named: "Hold")
-            startPhaseTimer(for: .hold)
-        case .hold:
             playAudio(named: "Exhale")
             startPhaseTimer(for: .exhale)
         case .exhale:
+            playAudio(named: "Hold")
+            startPhaseTimer(for: .hold)
+        case .hold:
+            playAudio(named: "Inhale")
+            startPhaseTimer(for: .recover)
+        case .recover:
             completedCycles += 1
             flashCyclesText()
 
@@ -350,11 +377,12 @@ struct CustomBreathingView: View {
         isBreathingActive = false
     }
 
-    private func phaseDuration(for phase: CustomBreathPhase) -> Int {
+    private func phaseDuration(for phase: ExhaleHoldPhase) -> Int {
         switch phase {
         case .inhale: return inhaleSeconds
-        case .hold: return holdSeconds
         case .exhale: return exhaleSeconds
+        case .hold: return holdSeconds
+        case .recover: return recoverySeconds
         }
     }
 
@@ -396,98 +424,32 @@ struct CustomBreathingView: View {
     }
 }
 
-// MARK: - Custom Breath Phase
-enum CustomBreathPhase: String {
-    case inhale = "Inhale"
+// MARK: - Exhale Hold Phase
+enum ExhaleHoldPhase: String {
+    case inhale = "Breathe In"
+    case exhale = "Breathe Out"
     case hold = "Hold"
-    case exhale = "Exhale"
-}
-
-// MARK: - Duration Control
-struct DurationControl: View {
-    let label: String
-    @Binding var value: Int
-    let color: Color
-    let icon: String
-    var maxValue: Int = 30
-
-    var body: some View {
-        HStack {
-            // Label
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(color.opacity(0.8))
-                Text(label)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
-            }
-            .frame(width: 80, alignment: .leading)
-
-            Spacer()
-
-            // Stepper controls
-            HStack(spacing: 16) {
-                Button(action: { if value > 1 { value -= 1 } }) {
-                    Image(systemName: "minus")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
-                        .frame(width: 36, height: 36)
-                        .background(Color.white.opacity(0.08))
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white.opacity(0.1), lineWidth: 0.5))
-                }
-
-                Text("\(value)")
-                    .font(.system(size: 20, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
-                    .frame(width: 40)
-
-                Button(action: { if value < maxValue { value += 1 } }) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
-                        .frame(width: 36, height: 36)
-                        .background(Color.white.opacity(0.08))
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white.opacity(0.1), lineWidth: 0.5))
-                }
-            }
-
-            Text("sec")
-                .font(.system(size: 12, weight: .regular))
-                .foregroundColor(.white.opacity(0.4))
-                .frame(width: 30, alignment: .leading)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.05))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-        )
-    }
+    case recover = "Recover"
 }
 
 // MARK: - Breathing Circle
-struct CustomBreathingCircle: View {
-    let currentPhase: CustomBreathPhase
+struct ExhaleHoldBreathingCircle: View {
+    let currentPhase: ExhaleHoldPhase
     let progress: CGFloat
     let inhaleSeconds: Int
-    let holdSeconds: Int
     let exhaleSeconds: Int
+    let holdSeconds: Int
+    let recoverySeconds: Int
 
     @State private var textScale: CGFloat = 1.0
     @State private var glowOpacity: Double = 0.4
 
     private var phaseColor: Color {
         switch currentPhase {
-        case .inhale: return .white
-        case .hold: return .homeGoldenAccent
-        case .exhale: return .homeWarmAccent
+        case .inhale: return .homeWarmAccent
+        case .exhale: return .homeGoldenAccent
+        case .hold: return Color(red: 0.95, green: 0.5, blue: 0.3)
+        case .recover: return Color(red: 0.5, green: 0.85, blue: 0.6)
         }
     }
 
@@ -553,21 +515,23 @@ struct CustomBreathingCircle: View {
         }
     }
 
-    private func applyScale(for phase: CustomBreathPhase) {
+    private func applyScale(for phase: ExhaleHoldPhase) {
         withAnimation(.easeInOut(duration: Double(phaseDuration(for: phase)))) {
             switch phase {
             case .inhale: textScale = 1.12
-            case .hold: textScale = 1.0
             case .exhale: textScale = 0.88
+            case .hold: textScale = 0.85
+            case .recover: textScale = 1.0
             }
         }
     }
 
-    private func phaseDuration(for phase: CustomBreathPhase) -> Int {
+    private func phaseDuration(for phase: ExhaleHoldPhase) -> Int {
         switch phase {
         case .inhale: return inhaleSeconds
-        case .hold: return holdSeconds
         case .exhale: return exhaleSeconds
+        case .hold: return holdSeconds
+        case .recover: return recoverySeconds
         }
     }
 }

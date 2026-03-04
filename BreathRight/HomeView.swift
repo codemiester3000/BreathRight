@@ -14,6 +14,7 @@ extension Color {
 enum BreathingExercise: String, CaseIterable {
     case boxBreathing = "Box Breathing"
     case fourSevenEight = "4-7-8 Breathing"
+    case exhaleHold = "Exhale Hold"
     case custom = "Custom Breathing"
 
     var benefits: [String] {
@@ -22,6 +23,8 @@ enum BreathingExercise: String, CaseIterable {
             return ["Reduces stress", "Improves concentration", "Enhances relaxation"]
         case .fourSevenEight:
             return ["Improves sleep", "Manages cravings", "Reduces stress"]
+        case .exhaleHold:
+            return ["Builds CO\u{2082} tolerance", "Trains what BOLT measures", "Buteyko core exercise"]
         case .custom:
             return ["Personalized rhythm", "Flexible durations", "Your own pace"]
         }
@@ -33,8 +36,13 @@ enum BreathingExercise: String, CaseIterable {
             return 4 + 4 + 4 + 4
         case .fourSevenEight:
             return 4 + 7 + 8
+        case .exhaleHold:
+            let inhale = UserDefaults.standard.integer(forKey: "customInhale")
+            let exhale = UserDefaults.standard.integer(forKey: "customExhale")
+            let hold = UserDefaults.standard.integer(forKey: "customHold")
+            let recovery = UserDefaults.standard.integer(forKey: "customRecovery")
+            return (inhale > 0 ? inhale : 4) + (exhale > 0 ? exhale : 4) + (hold > 0 ? hold : 5) + (recovery > 0 ? recovery : 20)
         case .custom:
-            // Custom will calculate dynamically based on user settings
             let inhale = UserDefaults.standard.integer(forKey: "customInhale")
             let hold = UserDefaults.standard.integer(forKey: "customHold")
             let exhale = UserDefaults.standard.integer(forKey: "customExhale")
@@ -152,6 +160,8 @@ struct HomeView: View {
             BoxBreathingView()
         case .fourSevenEight:
             FourSevenEightBreathingView()
+        case .exhaleHold:
+            ExhaleHoldView()
         case .custom:
             CustomBreathingView()
         }
@@ -227,6 +237,7 @@ struct ExerciseCard: View {
         switch exercise {
         case .boxBreathing: return "square"
         case .fourSevenEight: return "moon.zzz"
+        case .exhaleHold: return "wind"
         case .custom: return "slider.horizontal.3"
         }
     }

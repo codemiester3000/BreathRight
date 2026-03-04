@@ -20,6 +20,21 @@ struct Summary: View {
     @State private var showLevelUp = false
     @State private var hasSaved = false
 
+    private var exerciseInsight: String {
+        switch exerciseType {
+        case "Box Breathing":
+            return "Even-ratio breathing trains your autonomic nervous system to find balance. Consistency here lowers your resting breath rate."
+        case "4-7-8 Breathing":
+            return "The extended exhale activates your vagus nerve. The 7-second hold is where your CO\u{2082} tolerance grows."
+        case "Exhale Hold":
+            return "Exhale holds are the core Buteyko exercise — they directly train what your BOLT score measures. Each session raises your CO\u{2082} threshold."
+        case "Custom Breathing":
+            return "Custom patterns let you target exactly where your breathing needs work. The hold phase is where CO\u{2082} tolerance builds."
+        default:
+            return "Every session strengthens your breathing practice."
+        }
+    }
+
     var formattedTime: String {
         let minutes = elapsedTime / 60
         let seconds = elapsedTime % 60
@@ -83,12 +98,12 @@ struct Summary: View {
                         .opacity(contentOpacity)
                         .offset(y: contentOffset)
 
-                    // Subtitle
+                    // Subtitle — exercise type name
                     HStack(spacing: 8) {
                         Rectangle()
                             .fill(Color.homeWarmAccent.opacity(0.7))
                             .frame(width: 12, height: 2)
-                        Text("great work on your practice")
+                        Text(exerciseType)
                             .font(.system(size: 12, weight: .medium))
                             .tracking(0.5)
                             .foregroundColor(.white.opacity(0.5))
@@ -169,6 +184,44 @@ struct Summary: View {
                     .padding(.horizontal, 32)
                     .opacity(contentOpacity)
                     .offset(y: contentOffset)
+
+                    // Exercise-specific physiological message
+                    Text(exerciseInsight)
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.white.opacity(0.55))
+                        .lineSpacing(3)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 36)
+                        .padding(.top, 16)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
+
+                    // Tomorrow's exercise preview
+                    if let tier = dataManager.currentBOLTTier() {
+                        let tomorrow = TrainingPlanProvider.tomorrowsExercise(for: tier)
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.right.circle")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.homeWarmAccent.opacity(0.6))
+                            Text("Tomorrow: \(tomorrow.displayName) \u{00B7} \(tomorrow.timingLabel) \u{00B7} ~\(tomorrow.estimatedDurationLabel)")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.white.opacity(0.4))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.white.opacity(0.04))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white.opacity(0.06), lineWidth: 0.5)
+                        )
+                        .padding(.horizontal, 32)
+                        .padding(.top, 12)
+                        .opacity(contentOpacity)
+                        .offset(y: contentOffset)
+                    }
 
                     // Streak + Level row
                     HStack(spacing: 12) {

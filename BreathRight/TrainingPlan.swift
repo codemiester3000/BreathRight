@@ -64,6 +64,17 @@ struct PrescribedExercise {
     let exhale: Int
     let cycles: Int
     let coachingNote: String
+    let recovery: Int
+
+    init(exerciseType: BreathingExercise, inhale: Int, hold: Int, exhale: Int, cycles: Int, coachingNote: String, recovery: Int = 0) {
+        self.exerciseType = exerciseType
+        self.inhale = inhale
+        self.hold = hold
+        self.exhale = exhale
+        self.cycles = cycles
+        self.coachingNote = coachingNote
+        self.recovery = recovery
+    }
 
     var timingLabel: String {
         switch exerciseType {
@@ -71,6 +82,8 @@ struct PrescribedExercise {
             return "\(inhale)-\(hold)-\(exhale)-\(hold)"
         case .fourSevenEight:
             return "4-7-8"
+        case .exhaleHold:
+            return "\(inhale)-\(exhale)-\(hold)-\(recovery)"
         case .custom:
             return "\(inhale)-\(hold)-\(exhale)"
         }
@@ -82,6 +95,8 @@ struct PrescribedExercise {
             return (inhale + hold + exhale + hold) * cycles
         case .fourSevenEight:
             return (4 + 7 + 8) * cycles
+        case .exhaleHold:
+            return (inhale + exhale + hold + recovery) * cycles
         case .custom:
             return (inhale + hold + exhale) * cycles
         }
@@ -94,6 +109,10 @@ struct PrescribedExercise {
             return "Box Breathing"
         case .fourSevenEight:
             return "4-7-8 Breathing"
+        case .exhaleHold:
+            if hold >= 20 { return "Advanced Exhale Hold" }
+            else if hold >= 10 { return "Exhale Hold" }
+            else { return "Beginner Exhale Hold" }
         case .custom:
             if hold == 0 {
                 return "Extended Exhale"
@@ -127,10 +146,11 @@ struct PrescribedExercise {
         UserDefaults.standard.set(cycles, forKey: "numCycles")
         UserDefaults.standard.set(false, forKey: "unlimtedCycles")
 
-        if exerciseType == .custom {
+        if exerciseType == .custom || exerciseType == .exhaleHold {
             UserDefaults.standard.set(inhale, forKey: "customInhale")
             UserDefaults.standard.set(hold, forKey: "customHold")
             UserDefaults.standard.set(exhale, forKey: "customExhale")
+            UserDefaults.standard.set(recovery, forKey: "customRecovery")
         }
     }
 }
@@ -158,6 +178,32 @@ struct TrainingPlanProvider {
         }
     }
 
+    /// Returns tomorrow's prescribed exercise for the given BOLT tier.
+    static func tomorrowsExercise(for tier: BOLTTier) -> PrescribedExercise {
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        let dayIndex = (weekday + 5) % 7
+        let tomorrowIndex = (dayIndex + 1) % 7
+        return exercises(for: tier)[tomorrowIndex]
+    }
+
+    /// Returns a training theme label for today's day of the week.
+    static func todaysDayLabel(for tier: BOLTTier) -> String {
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        let dayIndex = (weekday + 5) % 7  // Mon=0 ... Sun=6
+        let exercise = exercises(for: tier)[dayIndex]
+        switch dayIndex {
+        case 0: return "Foundation"     // Monday
+        case 1: return "Build"          // Tuesday
+        case 2: return "Challenge"      // Wednesday (exhale hold day)
+        case 3: return "Build"          // Thursday
+        case 4: return "Endurance"      // Friday
+        case 5:                         // Saturday
+            return exercise.exerciseType == .exhaleHold ? "Challenge" : "Build"
+        case 6: return "Recovery"       // Sunday
+        default: return "Practice"
+        }
+    }
+
     /// Current day-of-week label (e.g. "Monday").
     static var todayLabel: String {
         let formatter = DateFormatter()
@@ -175,8 +221,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .custom, inhale: 3, hold: 0, exhale: 6, cycles: 8,
                            coachingNote: "A longer exhale activates your rest-and-digest system."),
         // Wednesday
-        PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 8,
-                           coachingNote: "Building consistency. Your body is learning to slow down."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 5, exhale: 4, cycles: 4,
+                           coachingNote: "Your first exhale hold. Short hold, easy recovery. Just notice the urge to breathe.", recovery: 30),
         // Thursday
         PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 2, exhale: 6, cycles: 6,
                            coachingNote: "Gentle hold today. Training CO\u{2082} comfort."),
@@ -201,8 +247,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 4, exhale: 8, cycles: 8,
                            coachingNote: "Extended exhale with a hold. CO\u{2082} tolerance in action."),
         // Wednesday
-        PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 6,
-                           coachingNote: "The 7-second hold is your training zone."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 10, exhale: 6, cycles: 5,
+                           coachingNote: "10-second exhale hold. Sit with the urge to breathe — it passes.", recovery: 25),
         // Thursday
         PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 6, exhale: 8, cycles: 6,
                            coachingNote: "Pushing the hold to 6s. Breathe through the urge."),
@@ -227,8 +273,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 8, exhale: 8, cycles: 8,
                            coachingNote: "8-second holds. Your CO\u{2082} tolerance is real."),
         // Wednesday
-        PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 8,
-                           coachingNote: "Double the usual. Deep calm, deep control."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 15, exhale: 6, cycles: 6,
+                           coachingNote: "15-second exhale hold. This is real Buteyko training. Stay relaxed.", recovery: 20),
         // Thursday
         PrescribedExercise(exerciseType: .custom, inhale: 5, hold: 10, exhale: 10, cycles: 6,
                            coachingNote: "10-second hold. Where breakthroughs happen."),
@@ -236,8 +282,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 18,
                            coachingNote: "Approaching 5 minutes. Capacity is growing."),
         // Saturday
-        PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 7, exhale: 8, cycles: 10,
-                           coachingNote: "Moderate holds, more reps. Endurance day."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 15, exhale: 6, cycles: 6,
+                           coachingNote: "Second exhale hold this week. Building serious CO\u{2082} tolerance.", recovery: 20),
         // Sunday
         PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 6,
                            coachingNote: "Easy close. Let the nervous system integrate."),
@@ -253,8 +299,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 22,
                            coachingNote: "Six-minute box. You have the endurance."),
         // Wednesday
-        PrescribedExercise(exerciseType: .custom, inhale: 5, hold: 15, exhale: 10, cycles: 6,
-                           coachingNote: "15-second holds. Elite territory. Stay relaxed."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 25, exhale: 8, cycles: 6,
+                           coachingNote: "25-second exhale hold. Deep CO\u{2082} tolerance work. Stay completely relaxed.", recovery: 15),
         // Thursday
         PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 10,
                            coachingNote: "10 rounds. A deep parasympathetic reset."),
@@ -262,8 +308,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 10, exhale: 12, cycles: 8,
                            coachingNote: "Extended exhale day. 12 seconds out, fully relaxed."),
         // Saturday
-        PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 25,
-                           coachingNote: "Near 7-minute session. Exceptional discipline."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 25, exhale: 8, cycles: 6,
+                           coachingNote: "Second exhale hold. You're training what BOLT directly measures.", recovery: 15),
         // Sunday
         PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 6,
                            coachingNote: "Recovery session. Gentle close."),
@@ -279,8 +325,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 30,
                            coachingNote: "8-minute box. Meditative endurance."),
         // Wednesday
-        PrescribedExercise(exerciseType: .custom, inhale: 4, hold: 15, exhale: 15, cycles: 8,
-                           coachingNote: "Equal hold and exhale. Supreme control."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 35, exhale: 8, cycles: 8,
+                           coachingNote: "35-second exhale hold. Peak Buteyko. Total relaxation through the urge.", recovery: 15),
         // Thursday
         PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 12,
                            coachingNote: "12 rounds. Deep parasympathetic mastery."),
@@ -288,8 +334,8 @@ struct TrainingPlanProvider {
         PrescribedExercise(exerciseType: .custom, inhale: 5, hold: 20, exhale: 15, cycles: 6,
                            coachingNote: "Peak challenge. 20s hold, 15s exhale."),
         // Saturday
-        PrescribedExercise(exerciseType: .boxBreathing, inhale: 4, hold: 4, exhale: 4, cycles: 35,
-                           coachingNote: "Near 10-minute session. This is your meditation."),
+        PrescribedExercise(exerciseType: .exhaleHold, inhale: 4, hold: 35, exhale: 8, cycles: 8,
+                           coachingNote: "Second exhale hold. You're in elite territory. Own the discomfort.", recovery: 15),
         // Sunday
         PrescribedExercise(exerciseType: .fourSevenEight, inhale: 4, hold: 7, exhale: 8, cycles: 8,
                            coachingNote: "Restorative close. Even elites need recovery."),

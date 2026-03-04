@@ -140,6 +140,32 @@ struct JourneyCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 20)
 
+                // Delta to next tier
+                HStack {
+                    if let nextTier = tier.nextTier {
+                        let threshold: Double = {
+                            switch nextTier {
+                            case .developing: return 10
+                            case .good: return 20
+                            case .veryGood: return 30
+                            case .elite: return 40
+                            default: return 0
+                            }
+                        }()
+                        let delta = threshold - latestScore
+                        Text(String(format: "%.1fs to %@", delta, nextTier.rawValue))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                    } else {
+                        Text("Top tier reached")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                    }
+                    Spacer()
+                }
+                .padding(.top, 8)
+                .padding(.horizontal, 20)
+
                 // Bottom: retest nudge + arrow
                 HStack {
                     retestNudge
@@ -334,47 +360,38 @@ struct TodaysExerciseCard: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 14)
 
-                // Tier badge + day context + exercise details
-                HStack(spacing: 8) {
-                    if let tier = tier {
-                        Text(tier.rawValue)
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.homeWarmBlueDark)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.homeGoldenAccent)
-                            .clipShape(Capsule())
-                    }
-
-                    Text(TrainingPlanProvider.todayLabel)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.white.opacity(0.4))
-
-                    Spacer()
-
-                    HStack(spacing: 5) {
-                        Image(systemName: "clock")
-                            .font(.system(size: 9, weight: .medium))
-                        Text("~\(exercise.estimatedDurationLabel)")
-                            .font(.system(size: 11, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.5))
+                // Day label (e.g. "Wednesday · Challenge")
+                if let tier = tier {
+                    Text("\(TrainingPlanProvider.todayLabel) \u{00B7} \(TrainingPlanProvider.todaysDayLabel(for: tier))")
+                        .font(.system(size: 10, weight: .medium))
+                        .tracking(1.2)
+                        .foregroundColor(.white.opacity(0.35))
+                        .textCase(.uppercase)
+                        .padding(.top, 10)
+                        .padding(.horizontal, 20)
                 }
-                .padding(.top, 12)
-                .padding(.horizontal, 20)
 
-                // Exercise name + timing + cycles
+                // Exercise name + details
                 HStack(spacing: 6) {
                     Text(exercise.displayName)
                         .font(.system(size: 17, weight: .semibold, design: .rounded))
                         .foregroundColor(.white.opacity(0.95))
                     Spacer()
-                    Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles")
-                        .font(.system(size: 12, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.5))
+                    Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles \u{00B7} ~\(exercise.estimatedDurationLabel)")
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.45))
                 }
-                .padding(.top, 8)
+                .padding(.top, 6)
                 .padding(.horizontal, 20)
+
+                // Coaching note
+                Text(exercise.coachingNote)
+                    .font(.system(size: 12, weight: .regular))
+                    .italic()
+                    .foregroundColor(.white.opacity(0.4))
+                    .lineSpacing(2)
+                    .padding(.top, 6)
+                    .padding(.horizontal, 20)
 
                 // Start button — full width
                 Button {
@@ -486,6 +503,8 @@ struct TodaysExerciseCard: View {
             BoxBreathingView()
         case .fourSevenEight:
             FourSevenEightBreathingView()
+        case .exhaleHold:
+            ExhaleHoldView()
         case .custom:
             CustomBreathingView()
         }

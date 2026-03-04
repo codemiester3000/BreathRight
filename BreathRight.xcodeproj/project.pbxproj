@@ -49,6 +49,7 @@
 		9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */; };
 		A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6970812345678 /* GeminiService.swift */; };
 		C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6078901234567 /* TierDetailView.swift */; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodaysPlanCard.swift; sourceTree = "<group>"; };
 		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6078901234567 /* TierDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TierDetailView.swift; sourceTree = "<group>"; };
+		E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExhaleHoldView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +203,7 @@
 				B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */,
 				F1E2D3C4B5A6970812345678 /* GeminiService.swift */,
 				A1B2C3D4E5F6078901234567 /* TierDetailView.swift */,
+				E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -395,6 +398,7 @@
 				9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */,
 				A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */,
 				C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */,
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
