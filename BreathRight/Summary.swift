@@ -20,19 +20,27 @@ struct Summary: View {
     @State private var showLevelUp = false
     @State private var hasSaved = false
 
-    private var exerciseInsight: String {
+    static func scienceLineFor(exerciseType: String) -> (message: String, source: String) {
         switch exerciseType {
         case "Box Breathing":
-            return "Even-ratio breathing trains your autonomic nervous system to find balance. Consistency here lowers your resting breath rate."
+            return ("Equal-ratio breathing increases heart rate variability and shifts your autonomic nervous system toward parasympathetic dominance.",
+                    "Russo et al., 2017 \u{00B7} Breathe")
         case "4-7-8 Breathing":
-            return "The extended exhale activates your vagus nerve. The 7-second hold is where your CO\u{2082} tolerance grows."
+            return ("The extended exhale activates your vagus nerve. A 2:1 exhale-to-inhale ratio significantly increases parasympathetic cardiac tone.",
+                    "Bae et al., 2021 \u{00B7} Psychophysiology")
         case "Exhale Hold":
-            return "Exhale holds are the core Buteyko exercise — they directly train what your BOLT score measures. Each session raises your CO\u{2082} threshold."
+            return ("Exhale holds train CO\u{2082} chemoreceptor tolerance — repeated exposure to elevated CO\u{2082} adapts the brainstem's breathing set-point.",
+                    "Delapille et al., 2001 \u{00B7} European J Applied Physiology")
         case "Custom Breathing":
-            return "Custom patterns let you target exactly where your breathing needs work. The hold phase is where CO\u{2082} tolerance builds."
+            return ("Controlled slow breathing at under 10 breaths per minute consistently increases HRV and alpha brainwave activity.",
+                    "Zaccaro et al., 2018 \u{00B7} Frontiers in Human Neuroscience")
         default:
-            return "Every session strengthens your breathing practice."
+            return ("Every breathing session trains your autonomic nervous system toward greater balance and CO\u{2082} tolerance.", "")
         }
+    }
+
+    private var exerciseInsight: String {
+        Self.scienceLineFor(exerciseType: exerciseType).message
     }
 
     var formattedTime: String {
@@ -186,15 +194,24 @@ struct Summary: View {
                     .offset(y: contentOffset)
 
                     // Exercise-specific physiological message
-                    Text(exerciseInsight)
-                        .font(.system(size: 13, weight: .regular))
-                        .foregroundColor(.white.opacity(0.55))
-                        .lineSpacing(3)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 36)
-                        .padding(.top, 16)
-                        .opacity(contentOpacity)
-                        .offset(y: contentOffset)
+                    VStack(spacing: 6) {
+                        Text(exerciseInsight)
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundColor(.white.opacity(0.55))
+                            .lineSpacing(3)
+                            .multilineTextAlignment(.center)
+
+                        let source = Self.scienceLineFor(exerciseType: exerciseType).source
+                        if !source.isEmpty {
+                            Text(source)
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.white.opacity(0.3))
+                        }
+                    }
+                    .padding(.horizontal, 36)
+                    .padding(.top, 16)
+                    .opacity(contentOpacity)
+                    .offset(y: contentOffset)
 
                     // Tomorrow's exercise preview
                     if let tier = dataManager.currentBOLTTier() {
@@ -396,6 +413,9 @@ struct Summary: View {
                     durationSeconds: elapsedTime,
                     cyclesCompleted: cyclesCompleted
                 )
+                if let tier = dataManager.currentBOLTTier() {
+                    dataManager.refreshTodayProtocolStatus(for: tier)
+                }
                 startCompletionAnimation()
             }
         }

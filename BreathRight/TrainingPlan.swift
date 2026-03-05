@@ -128,6 +128,28 @@ struct PrescribedExercise {
         }
     }
 
+    var scienceLine: String {
+        switch exerciseType {
+        case .boxBreathing:
+            return "Equal-ratio breathing increases heart rate variability and shifts autonomic balance toward parasympathetic dominance (Russo et al., 2017)."
+        case .fourSevenEight:
+            return "Extended exhale activates the vagus nerve — a 2:1 exhale-to-inhale ratio significantly increases parasympathetic cardiac tone (Bae et al., 2021)."
+        case .exhaleHold:
+            return "Breath holds after exhale train CO\u{2082} chemoreceptor tolerance — the mechanism your BOLT score directly measures (Delapille et al., 2001)."
+        case .custom:
+            return "Controlled breathing at less than 10 breaths per minute consistently increases HRV and respiratory sinus arrhythmia (Zaccaro et al., 2018)."
+        }
+    }
+
+    var benefitTag: String {
+        switch exerciseType {
+        case .boxBreathing: return "Autonomic Balance"
+        case .fourSevenEight: return "Vagal Activation"
+        case .exhaleHold: return "CO\u{2082} Tolerance"
+        case .custom: return "Breath Control"
+        }
+    }
+
     var estimatedDurationLabel: String {
         let seconds = estimatedDurationSeconds
         if seconds < 60 {

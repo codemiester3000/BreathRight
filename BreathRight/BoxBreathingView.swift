@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct BoxBreathingView: View {
+    @EnvironmentObject var geminiService: GeminiService
     @State private var timer: Timer?
     @State private var currentCountDown: Int = 4
     @State private var isRectangleVisible: Bool = false
@@ -33,9 +34,9 @@ struct BoxBreathingView: View {
     let topPadding: CGFloat = 100
     let animationTopPadding: CGFloat = 20
     
-    /// User Defaults values
-    let savedNumCycles = UserDefaults.standard.integer(forKey: "numCycles")
-    let savedIsInfinite = UserDefaults.standard.bool(forKey: "unlimtedCycles")
+    /// User Defaults values (computed so they reflect the latest value)
+    var savedNumCycles: Int { UserDefaults.standard.integer(forKey: "numCycles") }
+    var savedIsInfinite: Bool { UserDefaults.standard.bool(forKey: "unlimtedCycles") }
     
     var durationInSeconds: Int {
         Int(minDuration + (maxDuration - minDuration) * sliderValue)
@@ -126,7 +127,7 @@ struct BoxBreathingView: View {
                                     .padding(.top, 20)
 
                                     // Breath instruction
-                                    BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds))
+                                    BreathView(showText: $showBreathInstruction, instruction: $breathInstruction, duration: Double(durationInSeconds), countdown: $currentCountDown)
                                         .padding(.top, 32)
 
                                 }
@@ -201,6 +202,47 @@ struct BoxBreathingView: View {
                                             .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                                     )
                                     .padding(.top, 20)
+
+                                    // AI Coach tip
+                                    if geminiService.showExerciseTip && (!geminiService.exerciseTipText.isEmpty || geminiService.isLoadingTip) {
+                                        HStack(alignment: .top, spacing: 10) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.homeGoldenAccent.opacity(0.12))
+                                                    .frame(width: 24, height: 24)
+                                                Image(systemName: "sparkle")
+                                                    .font(.system(size: 10, weight: .medium))
+                                                    .foregroundColor(.homeGoldenAccent)
+                                            }
+
+                                            if geminiService.isLoadingTip {
+                                                VStack(alignment: .leading, spacing: 6) {
+                                                    ForEach(0..<2, id: \.self) { i in
+                                                        RoundedRectangle(cornerRadius: 3)
+                                                            .fill(Color.white.opacity(0.06))
+                                                            .frame(height: 10)
+                                                            .frame(maxWidth: i == 1 ? 160 : .infinity)
+                                                    }
+                                                }
+                                            } else {
+                                                Text(geminiService.exerciseTipText)
+                                                    .font(.system(size: 12, weight: .regular))
+                                                    .foregroundColor(.white.opacity(0.55))
+                                                    .lineSpacing(3)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                            }
+                                        }
+                                        .padding(14)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(Color.white.opacity(0.04))
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(Color.homeGoldenAccent.opacity(0.1), lineWidth: 0.5)
+                                        )
+                                        .padding(.top, 16)
+                                    }
                                 }
 
 
@@ -611,6 +653,7 @@ struct BreathView: View {
     @Binding var showText: Bool
     @Binding var instruction: String
     let duration: Double
+    @Binding var countdown: Int
     @State private var scale: CGFloat = 1.0
     @State private var opacity: Double = 0.0
 
@@ -628,6 +671,12 @@ struct BreathView: View {
                 Rectangle()
                     .fill(Color.homeWarmAccent.opacity(0.5))
                     .frame(width: 40, height: 2)
+                    .opacity(opacity)
+
+                // Countdown
+                Text("\(countdown)")
+                    .font(.system(size: 40, weight: .thin, design: .rounded))
+                    .foregroundColor(.white.opacity(0.3))
                     .opacity(opacity)
             }
             .onAppear {

@@ -119,6 +119,13 @@ struct JourneyCard: View {
                 .padding(.top, 12)
                 .padding(.horizontal, 20)
 
+                // Calibration note
+                Text("Your daily exercises are calibrated to this tier")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.4))
+                    .padding(.top, 6)
+                    .padding(.horizontal, 20)
+
                 // Progress bar within tier
                 let progress = tierProgress(score: latestScore, tier: tier)
                 ZStack(alignment: .leading) {
@@ -332,6 +339,10 @@ struct TodaysExerciseCard: View {
         return TrainingPlanProvider.todaysExercise(for: tier)
     }
 
+    private var isCompleted: Bool {
+        dataManager.todayProtocolCompleted
+    }
+
     var body: some View {
         if let exercise = exercise {
             VStack(alignment: .leading, spacing: 0) {
@@ -340,7 +351,7 @@ struct TodaysExerciseCard: View {
                     Rectangle()
                         .fill(Color.homeGoldenAccent.opacity(0.85))
                         .frame(width: 12, height: 2)
-                    Text("your coach")
+                    Text("today's protocol")
                         .font(.system(size: 11, weight: .medium))
                         .tracking(1.5)
                         .foregroundColor(.white.opacity(0.5))
@@ -348,72 +359,121 @@ struct TodaysExerciseCard: View {
                 .padding(.top, 18)
                 .padding(.horizontal, 20)
 
-                // AI Coach message — the warm, personal lead
-                aiCoachSection
-                    .padding(.top, 12)
+                // Completed badge
+                if isCompleted {
+                    HStack(spacing: 5) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12, weight: .medium))
+                        Text("Completed")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+                    .foregroundColor(.green)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        Capsule()
+                            .fill(Color.green.opacity(0.15))
+                    )
+                    .padding(.top, 10)
                     .padding(.horizontal, 20)
+                }
 
-                // Divider
-                Rectangle()
-                    .fill(Color.white.opacity(0.06))
-                    .frame(height: 1)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 14)
-
-                // Day label (e.g. "Wednesday · Challenge")
+                // Day label (e.g. "WEDNESDAY · CHALLENGE")
                 if let tier = tier {
                     Text("\(TrainingPlanProvider.todayLabel) \u{00B7} \(TrainingPlanProvider.todaysDayLabel(for: tier))")
                         .font(.system(size: 10, weight: .medium))
                         .tracking(1.2)
                         .foregroundColor(.white.opacity(0.35))
                         .textCase(.uppercase)
-                        .padding(.top, 10)
+                        .padding(.top, 12)
                         .padding(.horizontal, 20)
                 }
 
-                // Exercise name + details
-                HStack(spacing: 6) {
-                    Text(exercise.displayName)
-                        .font(.system(size: 17, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white.opacity(0.95))
-                    Spacer()
-                    Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles \u{00B7} ~\(exercise.estimatedDurationLabel)")
-                        .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.45))
-                }
-                .padding(.top, 6)
-                .padding(.horizontal, 20)
-
-                // Coaching note
-                Text(exercise.coachingNote)
-                    .font(.system(size: 12, weight: .regular))
-                    .italic()
-                    .foregroundColor(.white.opacity(0.4))
-                    .lineSpacing(2)
+                // Exercise name (large)
+                Text(exercise.displayName)
+                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.95))
                     .padding(.top, 6)
                     .padding(.horizontal, 20)
 
-                // Start button — full width
-                Button {
-                    exercise.applyToUserDefaults()
-                    navigateToExercise = true
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 10, weight: .bold))
-                        Text("Begin Session")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
-                    .foregroundColor(.homeWarmBlueDark)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
-                    .background(Color.homeGoldenAccent)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .shadow(color: Color.homeGoldenAccent.opacity(0.25), radius: 10, y: 4)
+                // Benefit tag + duration
+                HStack(spacing: 6) {
+                    Text(exercise.benefitTag)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.homeGoldenAccent.opacity(0.9))
+                    Text("\u{00B7}")
+                        .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.3))
+                    Text("~\(exercise.estimatedDurationLabel)")
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.white.opacity(0.5))
                 }
-                .padding(.top, 14)
+                .padding(.top, 4)
                 .padding(.horizontal, 20)
-                .padding(.bottom, 18)
+
+                // Science line
+                Text(exercise.scienceLine)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.white.opacity(0.5))
+                    .lineSpacing(3)
+                    .padding(.top, 12)
+                    .padding(.horizontal, 20)
+
+                // Action button
+                if isCompleted {
+                    // Extra Workout — ghost/outline style
+                    Button {
+                        exercise.applyToUserDefaults()
+                        geminiService.showExerciseTip = true
+                        navigateToExercise = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 10, weight: .bold))
+                            Text("Extra Workout")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.homeGoldenAccent)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.homeGoldenAccent.opacity(0.5), lineWidth: 1)
+                        )
+                    }
+                    .padding(.top, 14)
+                    .padding(.horizontal, 20)
+                } else {
+                    // Begin Session — full golden CTA
+                    Button {
+                        exercise.applyToUserDefaults()
+                        geminiService.showExerciseTip = true
+                        navigateToExercise = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 10, weight: .bold))
+                            Text("Begin Session")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.homeWarmBlueDark)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                        .background(Color.homeGoldenAccent)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .shadow(color: Color.homeGoldenAccent.opacity(0.25), radius: 10, y: 4)
+                    }
+                    .padding(.top, 14)
+                    .padding(.horizontal, 20)
+                }
+
+                // Technical details (dim, small)
+                Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles")
+                    .font(.system(size: 11, weight: .regular, design: .rounded))
+                    .foregroundColor(.white.opacity(0.3))
+                    .padding(.top, 8)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 18)
 
                 // Hidden NavigationLink for programmatic navigation
                 NavigationLink(
@@ -437,7 +497,7 @@ struct TodaysExerciseCard: View {
                         )
                     HStack {
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.homeGoldenAccent.opacity(0.5))
+                            .fill(Color.homeGoldenAccent.opacity(isCompleted ? 0.25 : 0.5))
                             .frame(width: 3)
                             .padding(.vertical, 20)
                         Spacer()
@@ -460,53 +520,17 @@ struct TodaysExerciseCard: View {
         }
     }
 
-    // MARK: - AI Coach Section
-
-    @ViewBuilder
-    private var aiCoachSection: some View {
-        HStack(alignment: .top, spacing: 10) {
-            // Sparkle icon
-            ZStack {
-                Circle()
-                    .fill(Color.homeGoldenAccent.opacity(0.12))
-                    .frame(width: 28, height: 28)
-                Image(systemName: "sparkle")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.homeGoldenAccent)
-            }
-
-            if geminiService.isLoadingTip {
-                VStack(alignment: .leading, spacing: 6) {
-                    // Shimmer placeholder lines
-                    ForEach(0..<2, id: \.self) { i in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.white.opacity(0.06))
-                            .frame(height: 12)
-                            .frame(maxWidth: i == 1 ? 180 : .infinity)
-                    }
-                }
-                .padding(.top, 4)
-            } else if !geminiService.exerciseTipText.isEmpty {
-                Text(geminiService.exerciseTipText)
-                    .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.white.opacity(0.7))
-                    .lineSpacing(4)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-
     @ViewBuilder
     private func exerciseDestination(for exercise: BreathingExercise) -> some View {
         switch exercise {
         case .boxBreathing:
-            BoxBreathingView()
+            BoxBreathingView().environmentObject(geminiService)
         case .fourSevenEight:
-            FourSevenEightBreathingView()
+            FourSevenEightBreathingView().environmentObject(geminiService)
         case .exhaleHold:
-            ExhaleHoldView()
+            ExhaleHoldView().environmentObject(geminiService)
         case .custom:
-            CustomBreathingView()
+            CustomBreathingView().environmentObject(geminiService)
         }
     }
 }

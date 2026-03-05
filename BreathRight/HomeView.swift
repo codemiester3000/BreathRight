@@ -77,12 +77,18 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Wave animation at top
                     ZStack {
-                        ForEach(0..<3, id: \.self) { index in
-                            CosineAnimation()
-                                .frame(width: UIScreen.main.bounds.width * 0.9)
-                                .frame(height: 40)
-                                .offset(y: CGFloat(index * 10))
-                        }
+                        CosineAnimation(amplitudeScale: 0.9, speed: 7, strokeOpacity: 0.35)
+                            .frame(width: UIScreen.main.bounds.width * 0.9)
+                            .frame(height: 40)
+                            .offset(y: 0)
+                        CosineAnimation(amplitudeScale: 1.0, speed: 8, strokeOpacity: 0.45)
+                            .frame(width: UIScreen.main.bounds.width * 0.9)
+                            .frame(height: 40)
+                            .offset(y: 10)
+                        CosineAnimation(amplitudeScale: 0.8, speed: 9.5, strokeOpacity: 0.25)
+                            .frame(width: UIScreen.main.bounds.width * 0.9)
+                            .frame(height: 40)
+                            .offset(y: 20)
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 60)
@@ -113,16 +119,19 @@ struct HomeView: View {
                             .font(.system(size: 11, weight: .medium))
                             .tracking(1.5)
                             .foregroundColor(.white.opacity(0.5))
+                        Text("\u{00B7}")
+                            .font(.system(size: 11))
+                            .foregroundColor(.white.opacity(0.2))
+                        Text("or choose your own")
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundColor(.white.opacity(0.35))
                     }
                     .padding(.top, 24)
                     .padding(.bottom, 12)
 
-                    BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimtedCycles)
-                        .padding(.bottom, 12)
-
-                    VStack(spacing: 8) {
+                    VStack(spacing: 6) {
                         ForEach(BreathingExercise.allCases, id: \.self) { exercise in
-                            NavigationLink(destination: destinationView(for: exercise)) {
+                            NavigationLink(destination: destinationView(for: exercise).onAppear { geminiService.showExerciseTip = false }) {
                                 ExerciseCard(
                                     exercise: exercise,
                                     numCycles: numCycles,
@@ -134,21 +143,34 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity)
 
                     // BOLT test
+                    HStack(spacing: 8) {
+                        Rectangle()
+                            .fill(Color.homeGoldenAccent.opacity(0.7))
+                            .frame(width: 12, height: 2)
+                        Text("measure")
+                            .font(.system(size: 11, weight: .medium))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.5))
+                    }
+                    .padding(.top, 20)
+                    .padding(.bottom, 8)
+
                     NavigationLink(destination: BOLTTestView()) {
                         BOLTTestCard()
                     }
-                    .padding(.top, 8)
                     .padding(.bottom, 40)
                 }
                 .padding(.horizontal, 24)
             }
         }
+        .environmentObject(geminiService)
         .navigationBarHidden(true)
         .onAppear {
             dataManager.refreshStreak()
             if let tier = dataManager.currentBOLTTier() {
                 let exercise = TrainingPlanProvider.todaysExercise(for: tier)
                 geminiService.fetchExerciseTip(exercise: exercise, tier: tier, dataManager: dataManager)
+                dataManager.refreshTodayProtocolStatus(for: tier)
             }
         }
     }
@@ -157,13 +179,13 @@ struct HomeView: View {
     private func destinationView(for exercise: BreathingExercise) -> some View {
         switch exercise {
         case .boxBreathing:
-            BoxBreathingView()
+            BoxBreathingView().environmentObject(geminiService)
         case .fourSevenEight:
-            FourSevenEightBreathingView()
+            FourSevenEightBreathingView().environmentObject(geminiService)
         case .exhaleHold:
-            ExhaleHoldView()
+            ExhaleHoldView().environmentObject(geminiService)
         case .custom:
-            CustomBreathingView()
+            CustomBreathingView().environmentObject(geminiService)
         }
     }
 }
@@ -243,49 +265,49 @@ struct ExerciseCard: View {
     }
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
             // Icon
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: 8)
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 40, height: 40)
+                    .frame(width: 32, height: 32)
                 Image(systemName: iconName)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.homeWarmAccent)
             }
 
             // Name + meta
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(exercise.rawValue)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white.opacity(0.9))
-                HStack(spacing: 8) {
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white.opacity(0.85))
+                HStack(spacing: 6) {
                     Text(isInfinite ? "∞ cycles" : "\(numCycles) cycles")
-                        .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.45))
+                        .font(.system(size: 10, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.4))
                     Text("\u{00B7}")
                         .foregroundColor(.white.opacity(0.2))
                     Text(isInfinite ? "∞" : etaText)
-                        .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.45))
+                        .font(.system(size: 10, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.4))
                 }
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.white.opacity(0.25))
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.white.opacity(0.2))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.06))
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.white.opacity(0.05))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.white.opacity(0.06), lineWidth: 0.5)
         )
     }
 }

@@ -306,6 +306,14 @@ struct BOLTTestView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
 
+                // Science context
+                Text("Your BOLT score reflects how sensitive your brainstem's chemoreceptors are to CO\u{2082}. Training raises this threshold.")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.white.opacity(0.45))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 44)
+                    .padding(.top, 8)
+
                 // Delta to next tier
                 let currentTier = BOLTTier.tier(for: timerValue)
                 if let nextTier = currentTier.nextTier {

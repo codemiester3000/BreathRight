@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct CustomBreathingView: View {
+    @EnvironmentObject var geminiService: GeminiService
     // Breathing parameters
     @State private var inhaleSeconds: Int = UserDefaults.standard.integer(forKey: "customInhale") > 0 ? UserDefaults.standard.integer(forKey: "customInhale") : 4
     @State private var holdSeconds: Int = UserDefaults.standard.integer(forKey: "customHold") > 0 ? UserDefaults.standard.integer(forKey: "customHold") : 4
@@ -19,13 +20,14 @@ struct CustomBreathingView: View {
     @State private var phaseTimer: Timer?
     @State private var completedCycles: Int = 0
     @State private var flashOpacity: Double = 0
+    @State private var phaseTimeRemaining: Int = 0
 
     // Audio
     @State private var audioPlayer: AVAudioPlayer?
 
-    // User settings
-    let savedNumCycles = UserDefaults.standard.integer(forKey: "numCycles")
-    let savedIsInfinite = UserDefaults.standard.bool(forKey: "unlimtedCycles")
+    // User settings (computed so they reflect the latest value)
+    var savedNumCycles: Int { UserDefaults.standard.integer(forKey: "numCycles") }
+    var savedIsInfinite: Bool { UserDefaults.standard.bool(forKey: "unlimtedCycles") }
 
     var body: some View {
         ZStack {
@@ -108,6 +110,47 @@ struct CustomBreathingView: View {
                         .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
                 )
                 .padding(.top, 20)
+
+                // AI Coach tip
+                if geminiService.showExerciseTip && (!geminiService.exerciseTipText.isEmpty || geminiService.isLoadingTip) {
+                    HStack(alignment: .top, spacing: 10) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.homeGoldenAccent.opacity(0.12))
+                                .frame(width: 24, height: 24)
+                            Image(systemName: "sparkle")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.homeGoldenAccent)
+                        }
+
+                        if geminiService.isLoadingTip {
+                            VStack(alignment: .leading, spacing: 6) {
+                                ForEach(0..<2, id: \.self) { i in
+                                    RoundedRectangle(cornerRadius: 3)
+                                        .fill(Color.white.opacity(0.06))
+                                        .frame(height: 10)
+                                        .frame(maxWidth: i == 1 ? 160 : .infinity)
+                                }
+                            }
+                        } else {
+                            Text(geminiService.exerciseTipText)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(.white.opacity(0.55))
+                                .lineSpacing(3)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding(14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white.opacity(0.04))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.homeGoldenAccent.opacity(0.1), lineWidth: 0.5)
+                    )
+                    .padding(.top, 16)
+                }
             }
             .padding(.horizontal, 24)
             .padding(.top, 50)
@@ -248,7 +291,8 @@ struct CustomBreathingView: View {
                 progress: phaseProgress,
                 inhaleSeconds: inhaleSeconds,
                 holdSeconds: holdSeconds,
-                exhaleSeconds: exhaleSeconds
+                exhaleSeconds: exhaleSeconds,
+                phaseTimeRemaining: phaseTimeRemaining
             )
 
             Spacer()
@@ -304,9 +348,12 @@ struct CustomBreathingView: View {
         let duration = phaseDuration(for: phase)
         var elapsed: Double = 0
 
+        phaseTimeRemaining = duration
+
         phaseTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
             elapsed += 0.01
             phaseProgress = CGFloat(elapsed / Double(duration))
+            phaseTimeRemaining = duration - Int(elapsed)
 
             if elapsed >= Double(duration) {
                 timer.invalidate()
@@ -479,6 +526,7 @@ struct CustomBreathingCircle: View {
     let inhaleSeconds: Int
     let holdSeconds: Int
     let exhaleSeconds: Int
+    let phaseTimeRemaining: Int
 
     @State private var textScale: CGFloat = 1.0
     @State private var glowOpacity: Double = 0.4
@@ -536,6 +584,11 @@ struct CustomBreathingCircle: View {
                 Rectangle()
                     .fill(phaseColor.opacity(0.5))
                     .frame(width: 40, height: 2)
+
+                // Countdown
+                Text("\(phaseTimeRemaining)")
+                    .font(.system(size: 40, weight: .thin, design: .rounded))
+                    .foregroundColor(.white.opacity(0.3))
             }
         }
         .onAppear {

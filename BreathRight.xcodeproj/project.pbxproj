@@ -10,8 +10,11 @@
 		172F4B3ADBB5937A069CAF42 /* LevelUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83745F4FE14E18C7E47AED17 /* LevelUpView.swift */; };
 		3884DCADE3D36039D3A8BC3E /* AchievementCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34538B9FB2C5F611CD42E478 /* AchievementCatalog.swift */; };
 		4798E44749707AB4D2E5E207 /* GamificationConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7518EEF46A8E92DF31853F /* GamificationConstants.swift */; };
+		5D8B2F41A9E3C76018F4D3B2 /* TrainingPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */; };
 		7FE5A0AAE1B723E005359675 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CF1500097A8CF38A7A450F /* StatsView.swift */; };
 		8178813AB566FE31CDEB4852 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C410A28DA9C4D27F0D199A0 /* DataManager.swift */; };
+		9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */; };
+		A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6970812345678 /* GeminiService.swift */; };
 		A9D7804B1CECE097ABEB3984 /* BOLTTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCDC41481D4288745435F3 /* BOLTTestView.swift */; };
 		BAF8C7D6822A8A5302F55D45 /* BOLTChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1C25A949226BAD04AE9D5B /* BOLTChartView.swift */; };
 		C549C24E2B61BEF7006F040A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C549C24D2B61BEF7006F040A /* HomeView.swift */; };
@@ -43,13 +46,10 @@
 		C5E6794E2ADCA4DE00754F75 /* CosineAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E6794D2ADCA4DE00754F75 /* CosineAnimation.swift */; };
 		C5F123452D200000005C7E45 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123442D200000005C7E45 /* SplashScreen.swift */; };
 		C5F123472D200002005C7E45 /* CustomBreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F123462D200001005C7E45 /* CustomBreathingView.swift */; };
-		D8D612E19A7CAF1504D0EFAB /* StreakBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41A8BC832E818FC635E8279 /* StreakBannerView.swift */; };
-		FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */; };
-		5D8B2F41A9E3C76018F4D3B2 /* TrainingPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */; };
-		9A1F7E3B5C4D28060EF1A3D8 /* TodaysPlanCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */; };
-		A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A6970812345678 /* GeminiService.swift */; };
 		C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6078901234567 /* TierDetailView.swift */; };
 		D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */; };
+		D8D612E19A7CAF1504D0EFAB /* StreakBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41A8BC832E818FC635E8279 /* StreakBannerView.swift */; };
+		FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +77,8 @@
 		76CF1500097A8CF38A7A450F /* StatsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		83745F4FE14E18C7E47AED17 /* LevelUpView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LevelUpView.swift; sourceTree = "<group>"; };
 		8CBCDC41481D4288745435F3 /* BOLTTestView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BOLTTestView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6078901234567 /* TierDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TierDetailView.swift; sourceTree = "<group>"; };
+		B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodaysPlanCard.swift; sourceTree = "<group>"; };
 		C41A8BC832E818FC635E8279 /* StreakBannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakBannerView.swift; sourceTree = "<group>"; };
 		C549C24D2B61BEF7006F040A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C549EABC2B2F85D700F583C7 /* BoxBreathInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBreathInfo.swift; sourceTree = "<group>"; };
@@ -110,11 +112,9 @@
 		C5F123462D200001005C7E45 /* CustomBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBreathingView.swift; sourceTree = "<group>"; };
 		D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
 		DDA3318B5F37C66A70F55FC3 /* FourSevenEightBreathInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FourSevenEightBreathInfo.swift; path = BreathRight/FourSevenEightBreathInfo.swift; sourceTree = "<group>"; };
-		E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingPlan.swift; sourceTree = "<group>"; };
-		B4C8E62D1F5A93074BE8D1C6 /* TodaysPlanCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodaysPlanCard.swift; sourceTree = "<group>"; };
-		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6078901234567 /* TierDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TierDetailView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExhaleHoldView.swift; sourceTree = "<group>"; };
+		E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingPlan.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -575,7 +575,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3.1;
+				MARKETING_VERSION = 4.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -617,7 +617,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3.1;
+				MARKETING_VERSION = 4.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";

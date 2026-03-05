@@ -21,6 +21,7 @@ class DataManager: ObservableObject {
     @Published var didLevelUp: Bool = false
     @Published var newLevelName: String = ""
     @Published var isPersonalBest: Bool = false
+    @Published var todayProtocolCompleted: Bool = false
 
     init(container: NSPersistentContainer) {
         self.container = container
@@ -78,6 +79,30 @@ class DataManager: ObservableObject {
         stats.lastSessionDate = nil
         saveContext()
         return stats
+    }
+
+    // MARK: - Today's protocol completion
+
+    func refreshTodayProtocolStatus(for tier: BOLTTier) {
+        let exercise = TrainingPlanProvider.todaysExercise(for: tier)
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: Date())
+        let end = calendar.date(byAdding: .day, value: 1, to: start)!
+
+        let request: NSFetchRequest<BreathingSession> = BreathingSession.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "date >= %@ AND date < %@ AND exerciseType == %@",
+            start as NSDate, end as NSDate, exercise.exerciseType.rawValue
+        )
+        request.fetchLimit = 1
+
+        do {
+            let count = try viewContext.count(for: request)
+            todayProtocolCompleted = count > 0
+        } catch {
+            print("Error checking today's protocol: \(error)")
+            todayProtocolCompleted = false
+        }
     }
 
     // MARK: - Save a breathing session
@@ -147,6 +172,11 @@ class DataManager: ObservableObject {
 
         // Check achievements
         checkAchievements(exerciseType: exerciseType, stats: stats)
+
+        // Refresh today's protocol completion status
+        if let tier = currentBOLTTier() {
+            refreshTodayProtocolStatus(for: tier)
+        }
     }
 
     // MARK: - Streak logic

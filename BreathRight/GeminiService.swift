@@ -8,6 +8,7 @@ class GeminiService: ObservableObject {
 
     @Published var isLoadingTip = false
     @Published var exerciseTipText: String = ""
+    @Published var showExerciseTip = false
 
     private let cacheKey = "gemini_insight_text"
     private let cacheDateKey = "gemini_insight_date"
