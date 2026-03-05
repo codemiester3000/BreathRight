@@ -19,6 +19,7 @@ struct BOLTTestView: View {
     @State private var resultOpacity: Double = 0
     @State private var resultScale: CGFloat = 0.8
     @State private var pulseScale: CGFloat = 1.0
+    @State private var showTierUp = false
 
     var body: some View {
         ZStack {
@@ -41,6 +42,16 @@ struct BOLTTestView: View {
                 resultView
             }
         }
+        .overlay(
+            Group {
+                if showTierUp {
+                    TierUpView(tierName: dataManager.newTierName) {
+                        dataManager.didTierUp = false
+                        showTierUp = false
+                    }
+                }
+            }
+        )
         .navigationBarHidden(true)
         .onDisappear {
             timer?.invalidate()
@@ -512,6 +523,13 @@ struct BOLTTestView: View {
         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
             resultScale = 1.0
             resultOpacity = 1.0
+        }
+
+        // Tier-up celebration with delay
+        if dataManager.didTierUp {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                showTierUp = true
+            }
         }
     }
 

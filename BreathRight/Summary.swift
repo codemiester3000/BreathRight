@@ -6,6 +6,7 @@ struct Summary: View {
     var cyclesCompleted: Int = 0
 
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var geminiService: GeminiService
     @Environment(\.presentationMode) var presentationMode
 
     // Animation states
@@ -193,19 +194,31 @@ struct Summary: View {
                     .opacity(contentOpacity)
                     .offset(y: contentOffset)
 
-                    // Exercise-specific physiological message
+                    // Exercise-specific physiological message (AI or fallback)
                     VStack(spacing: 6) {
-                        Text(exerciseInsight)
-                            .font(.system(size: 13, weight: .regular))
-                            .foregroundColor(.white.opacity(0.55))
-                            .lineSpacing(3)
-                            .multilineTextAlignment(.center)
+                        if geminiService.isLoadingReflection {
+                            ProgressView()
+                                .tint(.white.opacity(0.4))
+                                .padding(.vertical, 8)
+                        } else if !geminiService.sessionReflectionText.isEmpty {
+                            Text(geminiService.sessionReflectionText)
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundColor(.white.opacity(0.55))
+                                .lineSpacing(3)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text(exerciseInsight)
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundColor(.white.opacity(0.55))
+                                .lineSpacing(3)
+                                .multilineTextAlignment(.center)
 
-                        let source = Self.scienceLineFor(exerciseType: exerciseType).source
-                        if !source.isEmpty {
-                            Text(source)
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.white.opacity(0.3))
+                            let source = Self.scienceLineFor(exerciseType: exerciseType).source
+                            if !source.isEmpty {
+                                Text(source)
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.3))
+                            }
                         }
                     }
                     .padding(.horizontal, 36)
@@ -416,6 +429,14 @@ struct Summary: View {
                 if let tier = dataManager.currentBOLTTier() {
                     dataManager.refreshTodayProtocolStatus(for: tier)
                 }
+                // Fetch AI reflection
+                geminiService.fetchSessionReflection(
+                    exerciseType: exerciseType,
+                    durationSeconds: elapsedTime,
+                    cyclesCompleted: cyclesCompleted,
+                    tier: dataManager.currentBOLTTier(),
+                    streak: dataManager.currentStreak
+                )
                 startCompletionAnimation()
             }
         }

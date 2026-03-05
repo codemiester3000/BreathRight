@@ -9,12 +9,43 @@ struct StatusRow: View {
         Calendar.current.component(.hour, from: Date())
     }
 
-    private var greeting: String {
+    private var timeGreeting: String {
         switch hour {
         case 6..<12: return "Good Morning"
         case 12..<17: return "Good Afternoon"
         default: return "Good Evening"
         }
+    }
+
+    private var greeting: String {
+        // First ever open
+        if dataManager.totalSessions == 0 {
+            return timeGreeting
+        }
+
+        // Already practiced today
+        if dataManager.todayProtocolCompleted {
+            return "Nice Work Today"
+        }
+
+        // Streak milestone approaching
+        let streak = dataManager.currentStreak
+        let approachingMilestones = [6, 13, 29, 59, 99]
+        if approachingMilestones.contains(streak) {
+            return "Day \(streak) · Almost There"
+        }
+
+        // Returning after 2+ days (streak broken — streak is 0 but has past sessions)
+        if streak == 0 {
+            return "Welcome Back"
+        }
+
+        // Active streak
+        if streak > 0 {
+            return "Day \(streak)"
+        }
+
+        return timeGreeting
     }
 
     private var iconName: String {

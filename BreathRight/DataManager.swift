@@ -22,6 +22,9 @@ class DataManager: ObservableObject {
     @Published var newLevelName: String = ""
     @Published var isPersonalBest: Bool = false
     @Published var todayProtocolCompleted: Bool = false
+    @Published var pendingStreakMilestone: Int? = nil
+    @Published var didTierUp: Bool = false
+    @Published var newTierName: String = ""
 
     init(container: NSPersistentContainer) {
         self.container = container
@@ -206,6 +209,16 @@ class DataManager: ObservableObject {
         if stats.currentStreak > stats.longestStreak {
             stats.longestStreak = stats.currentStreak
         }
+
+        // Check streak milestone
+        let streakMilestones = [7, 14, 30, 60, 100]
+        let newStreak = Int(stats.currentStreak)
+        if streakMilestones.contains(newStreak) {
+            let lastCelebrated = UserDefaults.standard.integer(forKey: "lastCelebratedStreakMilestone")
+            if lastCelebrated < newStreak {
+                pendingStreakMilestone = newStreak
+            }
+        }
     }
 
     func refreshStreak() {
@@ -247,6 +260,10 @@ class DataManager: ObservableObject {
 
     func saveBOLTScore(seconds: Double) {
         newlyUnlockedAchievements = []
+        didTierUp = false
+
+        // Capture previous tier before saving
+        let previousTier = currentBOLTTier()
 
         let score = BOLTScore(context: viewContext)
         score.id = UUID()
@@ -274,6 +291,15 @@ class DataManager: ObservableObject {
         }
 
         saveContext()
+
+        // Check tier advancement
+        let newTier = BOLTTier.tier(for: seconds)
+        if let prev = previousTier, newTier != prev, newTier.ordinal > prev.ordinal {
+            didTierUp = true
+            newTierName = newTier.rawValue
+        } else if previousTier == nil {
+            // First BOLT test — no tier-up celebration
+        }
 
         // Check BOLT achievements
         checkBOLTAchievements(seconds: seconds)

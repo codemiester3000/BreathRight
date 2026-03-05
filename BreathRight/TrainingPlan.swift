@@ -29,6 +29,16 @@ enum BOLTTier: String, CaseIterable {
         }
     }
 
+    var ordinal: Int {
+        switch self {
+        case .roomToGrow: return 0
+        case .developing: return 1
+        case .good: return 2
+        case .veryGood: return 3
+        case .elite: return 4
+        }
+    }
+
     var nextTier: BOLTTier? {
         switch self {
         case .roomToGrow: return .developing

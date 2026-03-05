@@ -10,10 +10,14 @@ class GeminiService: ObservableObject {
     @Published var exerciseTipText: String = ""
     @Published var showExerciseTip = false
 
+    @Published var isLoadingReflection = false
+    @Published var sessionReflectionText: String = ""
+
     private let cacheKey = "gemini_insight_text"
     private let cacheDateKey = "gemini_insight_date"
     private let tipCacheKey = "gemini_exercise_tip_text"
     private let tipCacheDateKey = "gemini_exercise_tip_date"
+    private let reflectionCacheKeyPrefix = "gemini_session_reflection"
     private let apiKey = "AIzaSyBNyCpS0KFhMf4iBd1sPPBfR-VYPO97jcA"
 
     private static let fallbackMessages = [
@@ -110,6 +114,52 @@ class GeminiService: ObservableObject {
             } catch {
                 exerciseTipText = Self.exerciseFallback(exercise: exercise, tier: tier, streak: streak)
                 isLoadingTip = false
+            }
+        }
+    }
+
+    func fetchSessionReflection(exerciseType: String, durationSeconds: Int, cyclesCompleted: Int, tier: BOLTTier?, streak: Int) {
+        let today = dateString(for: Date())
+        let cacheKey = "\(reflectionCacheKeyPrefix)_\(today)_\(exerciseType)"
+        if let cached = UserDefaults.standard.string(forKey: cacheKey), !cached.isEmpty {
+            sessionReflectionText = cached
+            return
+        }
+
+        isLoadingReflection = true
+        sessionReflectionText = ""
+
+        let tierName = tier?.rawValue ?? "Unknown"
+        let minutes = durationSeconds / 60
+        let seconds = durationSeconds % 60
+        let durationStr = minutes > 0 ? "\(minutes) min \(seconds) sec" : "\(seconds) sec"
+
+        let prompt = """
+        You are a direct breathing coach. No cheerleading — be specific about physiology. \
+        The user just completed a session:
+        - Exercise: \(exerciseType)
+        - Duration: \(durationStr)
+        - Cycles completed: \(cyclesCompleted)
+        - BOLT tier: \(tierName)
+        - Current streak: \(streak) day\(streak == 1 ? "" : "s")
+
+        Write exactly 2 sentences. First: what this specific session did for their physiology — \
+        reference the actual exercise pattern and duration. Be specific about mechanisms \
+        (vagal tone, CO\u{2082} chemoreceptor adaptation, parasympathetic activation, HRV changes — \
+        only what's relevant to this exercise type). Second: how this session fits into their \
+        cumulative training at their current tier. \
+        No markdown, no bullet points, no emojis. Direct and honest.
+        """
+
+        Task {
+            do {
+                let text = try await callGemini(prompt: prompt)
+                sessionReflectionText = text
+                UserDefaults.standard.set(text, forKey: cacheKey)
+                isLoadingReflection = false
+            } catch {
+                sessionReflectionText = ""
+                isLoadingReflection = false
             }
         }
     }

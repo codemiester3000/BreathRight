@@ -62,6 +62,33 @@ struct HomeView: View {
 
     @State private var unlimtedCycles: Bool = UserDefaults.standard.bool(forKey: "unlimtedCycles")
 
+    @State private var sublineOpacity: Double = 0
+    @State private var waveBreathScale: CGFloat = 1.0
+    @State private var showStreakMilestone = false
+
+    private static let motivationalLines = [
+        "Your nervous system adapts with every session.",
+        "Breathe less. Breathe slower. Breathe through your nose.",
+        "CO\u{2082} tolerance is trainable. You're training it.",
+        "The urge to breathe passes. That's where growth happens.",
+        "Lower breath rate, higher HRV. That's the trade.",
+        "Your chemoreceptors adapt to what you practice daily.",
+        "Nasal breathing filters, warms, and humidifies every breath.",
+        "Slow breathing shifts your autonomic balance toward rest.",
+        "Each hold recalibrates your brainstem's CO\u{2082} set-point.",
+        "Breath control is nervous system control.",
+        "Consistency beats intensity. Show up daily.",
+        "Your BOLT score reflects real physiological change.",
+        "Extended exhales activate the vagus nerve directly.",
+        "The diaphragm is a muscle. Train it like one.",
+        "Functional breathing is the foundation of performance."
+    ]
+
+    private var dailyMotivation: String {
+        let day = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+        return Self.motivationalLines[day % Self.motivationalLines.count]
+    }
+
     var body: some View {
         ZStack {
             // Warm gradient background
@@ -79,22 +106,23 @@ struct HomeView: View {
                     ZStack {
                         CosineAnimation(amplitudeScale: 0.9, speed: 7, strokeOpacity: 0.35)
                             .frame(width: UIScreen.main.bounds.width * 0.9)
-                            .frame(height: 40)
+                            .frame(height: 55)
                             .offset(y: 0)
-                        CosineAnimation(amplitudeScale: 1.0, speed: 8, strokeOpacity: 0.45)
+                        CosineAnimation(amplitudeScale: 1.0, speed: 8, strokeOpacity: 0.45, strokeColor: .homeWarmAccent)
                             .frame(width: UIScreen.main.bounds.width * 0.9)
-                            .frame(height: 40)
-                            .offset(y: 10)
+                            .frame(height: 55)
+                            .offset(y: 15)
                         CosineAnimation(amplitudeScale: 0.8, speed: 9.5, strokeOpacity: 0.25)
                             .frame(width: UIScreen.main.bounds.width * 0.9)
-                            .frame(height: 40)
-                            .offset(y: 20)
+                            .frame(height: 55)
+                            .offset(y: 30)
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 60)
+                    .frame(height: 90)
                     .padding(.top, -10)
                     .padding(.bottom, 20)
-                    .opacity(0.5)
+                    .opacity(0.7)
+                    .scaleEffect(y: waveBreathScale)
 
                     // Status Row (greeting + streak + level)
                     NavigationLink(destination: StatsView()) {
@@ -102,9 +130,16 @@ struct HomeView: View {
                     }
                     .buttonStyle(PlainButtonStyle())
 
+                    // Motivational subline
+                    Text(dailyMotivation)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.white.opacity(0.4))
+                        .padding(.top, 6)
+                        .opacity(sublineOpacity)
+
                     // Journey Card (BOLT progress or onboarding)
                     JourneyCard()
-                        .padding(.top, 20)
+                        .padding(.top, 16)
 
                     // Today's Exercise with integrated AI coach
                     TodaysExerciseCard(geminiService: geminiService)
@@ -165,12 +200,35 @@ struct HomeView: View {
         }
         .environmentObject(geminiService)
         .navigationBarHidden(true)
+        .overlay(
+            Group {
+                if showStreakMilestone, let milestone = dataManager.pendingStreakMilestone {
+                    StreakMilestoneView(streakDays: milestone) {
+                        UserDefaults.standard.set(milestone, forKey: "lastCelebratedStreakMilestone")
+                        dataManager.pendingStreakMilestone = nil
+                        showStreakMilestone = false
+                    }
+                }
+            }
+        )
         .onAppear {
             dataManager.refreshStreak()
             if let tier = dataManager.currentBOLTTier() {
                 let exercise = TrainingPlanProvider.todaysExercise(for: tier)
                 geminiService.fetchExerciseTip(exercise: exercise, tier: tier, dataManager: dataManager)
                 dataManager.refreshTodayProtocolStatus(for: tier)
+            }
+            // Check for pending streak milestone
+            if dataManager.pendingStreakMilestone != nil {
+                showStreakMilestone = true
+            }
+            // Fade in motivational subline
+            withAnimation(.easeIn(duration: 0.5).delay(0.5)) {
+                sublineOpacity = 1.0
+            }
+            // Breathing pulse on waves
+            withAnimation(.easeInOut(duration: 4.0).repeatForever(autoreverses: true)) {
+                waveBreathScale = 1.08
             }
         }
     }

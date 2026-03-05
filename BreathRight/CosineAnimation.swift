@@ -4,6 +4,7 @@ struct CosineAnimation: View {
     var amplitudeScale: CGFloat = 1.0
     var speed: Double = 8
     var strokeOpacity: Double = 0.5
+    var strokeColor: Color = .white
 
     @State private var phaseShift: CGFloat = 0.0
 
@@ -11,7 +12,7 @@ struct CosineAnimation: View {
         ZStack {
             // The actual animated wave
             SineWave(phaseShift: phaseShift, amplitudeScale: amplitudeScale)
-                .stroke(Color.white.opacity(strokeOpacity), lineWidth: 1.5)
+                .stroke(strokeColor.opacity(strokeOpacity), lineWidth: 1.5)
                 .mask(
                     // Refined gradient mask for smoother fading
                     LinearGradient(

@@ -49,6 +49,8 @@
 		C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6078901234567 /* TierDetailView.swift */; };
 		D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */; };
 		D8D612E19A7CAF1504D0EFAB /* StreakBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41A8BC832E818FC635E8279 /* StreakBannerView.swift */; };
+		E1A2B3C4D5E6F708A1234567 /* StreakMilestoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C4D5E6F708A1234568 /* StreakMilestoneView.swift */; };
+		E1A2B3C4D5E6F708A1234569 /* TierUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C4D5E6F708A123456A /* TierUpView.swift */; };
 		FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */; };
 /* End PBXBuildFile section */
 
@@ -112,6 +114,8 @@
 		C5F123462D200001005C7E45 /* CustomBreathingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBreathingView.swift; sourceTree = "<group>"; };
 		D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
 		DDA3318B5F37C66A70F55FC3 /* FourSevenEightBreathInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FourSevenEightBreathInfo.swift; path = BreathRight/FourSevenEightBreathInfo.swift; sourceTree = "<group>"; };
+		E1A2B3C4D5E6F708A1234568 /* StreakMilestoneView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakMilestoneView.swift; sourceTree = "<group>"; };
+		E1A2B3C4D5E6F708A123456A /* TierUpView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TierUpView.swift; sourceTree = "<group>"; };
 		E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExhaleHoldView.swift; sourceTree = "<group>"; };
 		E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingPlan.swift; sourceTree = "<group>"; };
 		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
@@ -204,6 +208,8 @@
 				F1E2D3C4B5A6970812345678 /* GeminiService.swift */,
 				A1B2C3D4E5F6078901234567 /* TierDetailView.swift */,
 				E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */,
+				E1A2B3C4D5E6F708A1234568 /* StreakMilestoneView.swift */,
+				E1A2B3C4D5E6F708A123456A /* TierUpView.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -399,6 +405,8 @@
 				A2B3C4D5E6F7081923456789 /* GeminiService.swift in Sources */,
 				C7D8E9F0A1B2C3D4E5F60123 /* TierDetailView.swift in Sources */,
 				D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */,
+				E1A2B3C4D5E6F708A1234567 /* StreakMilestoneView.swift in Sources */,
+				E1A2B3C4D5E6F708A1234569 /* TierUpView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,7 +583,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3.2;
+				MARKETING_VERSION = 4.3.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -617,7 +625,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 4.3.2;
+				MARKETING_VERSION = 4.3.3;
 				PRODUCT_BUNDLE_IDENTIFIER = owenkhoury.BreathRight;
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = okra.breathRight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
