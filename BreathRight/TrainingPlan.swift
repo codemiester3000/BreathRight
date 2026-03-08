@@ -236,6 +236,19 @@ struct TrainingPlanProvider {
         }
     }
 
+    /// Returns an exercise from the tier's plan that is different from today's.
+    static func bonusExercise(for tier: BOLTTier) -> PrescribedExercise {
+        let todaysExercise = todaysExercise(for: tier)
+        let allExercises = exercises(for: tier)
+        // Pick from exercises that use a different type
+        let alternatives = allExercises.filter { $0.exerciseType != todaysExercise.exerciseType }
+        if let pick = alternatives.randomElement() {
+            return pick
+        }
+        // Fallback: just pick tomorrow's
+        return tomorrowsExercise(for: tier)
+    }
+
     /// Current day-of-week label (e.g. "Monday").
     static var todayLabel: String {
         let formatter = DateFormatter()

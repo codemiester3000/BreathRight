@@ -24,10 +24,14 @@ struct CustomBreathingView: View {
 
     // Audio
     @State private var audioPlayer: AVAudioPlayer?
+    @State private var isPaused = false
 
-    // User settings (computed so they reflect the latest value)
-    var savedNumCycles: Int { UserDefaults.standard.integer(forKey: "numCycles") }
-    var savedIsInfinite: Bool { UserDefaults.standard.bool(forKey: "unlimtedCycles") }
+    // Per-exercise cycle settings
+    @State private var numCycles: Int = BreathingExercise.custom.savedCycles()
+    @State private var unlimitedCycles: Bool = BreathingExercise.custom.savedIsUnlimited()
+    @State private var showTooltip: Bool = false
+    var savedNumCycles: Int { numCycles }
+    var savedIsInfinite: Bool { unlimitedCycles }
 
     var body: some View {
         ZStack {
@@ -78,7 +82,25 @@ struct CustomBreathingView: View {
                                 .foregroundColor(.white.opacity(0.5))
                         }
                     }
+
                     Spacer()
+
+                    Button(action: { showTooltip.toggle() }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.white.opacity(0.08))
+                                .frame(width: 36, height: 36)
+                            Circle()
+                                .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                                .frame(width: 36, height: 36)
+                            Image(systemName: "questionmark")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                    }
+                    .sheet(isPresented: $showTooltip) {
+                        CustomBreathInfo()
+                    }
                 }
 
                 // Separator
@@ -92,24 +114,9 @@ struct CustomBreathingView: View {
                 }
                 .padding(.top, 20)
 
-                // Cycles pill
-                HStack(spacing: 5) {
-                    Image(systemName: "arrow.3.trianglepath")
-                        .font(.system(size: 11, weight: .light))
-                        .foregroundColor(.homeGoldenAccent.opacity(0.8))
-                    Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background(Color.white.opacity(0.06))
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-                )
-                .padding(.top, 20)
+                // Cycle selector
+                BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimitedCycles, exercise: .custom)
+                    .padding(.top, 20)
 
                 // AI Coach tip
                 if geminiService.showExerciseTip && (!geminiService.exerciseTipText.isEmpty || geminiService.isLoadingTip) {
@@ -297,20 +304,37 @@ struct CustomBreathingView: View {
 
             Spacer()
 
-            // End session button
-            Button(action: endSession) {
-                HStack(spacing: 8) {
-                    Image(systemName: "stop.fill")
-                        .font(.system(size: 10, weight: .medium))
-                    Text("End Session")
-                        .font(.system(size: 14, weight: .medium))
+            // Session control buttons
+            HStack(spacing: 16) {
+                Button(action: togglePause) {
+                    HStack(spacing: 8) {
+                        Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                            .font(.system(size: 10, weight: .medium))
+                        Text(isPaused ? "Resume" : "Pause")
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.85))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
                 }
-                .foregroundColor(.white.opacity(0.85))
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(Color.white.opacity(0.08))
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
+
+                Button(action: endSession) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 10, weight: .medium))
+                        Text("End Session")
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.85))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
+                }
             }
             .padding(.bottom, 40)
         }
@@ -328,6 +352,7 @@ struct CustomBreathingView: View {
         completedCycles = 0
         currentPhase = .inhale
         phaseProgress = 0
+        isPaused = false
 
         // Start timers
         isBreathingActive = true
@@ -386,6 +411,40 @@ struct CustomBreathingView: View {
     private func endSession() {
         stopSession()
         showSummary = true
+    }
+
+    private func togglePause() {
+        isPaused.toggle()
+        if isPaused {
+            phaseTimer?.invalidate()
+            phaseTimer = nil
+            elapsedTimer?.invalidate()
+            elapsedTimer = nil
+        } else {
+            // Resume elapsed timer
+            elapsedTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                elapsedTime += 1
+            }
+            // Resume phase timer from where it left off
+            resumePhaseTimer()
+        }
+    }
+
+    private func resumePhaseTimer() {
+        let duration = phaseDuration(for: currentPhase)
+        let alreadyElapsed = Double(duration) * Double(phaseProgress)
+        var elapsed = alreadyElapsed
+
+        phaseTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
+            elapsed += 0.01
+            phaseProgress = CGFloat(elapsed / Double(duration))
+            phaseTimeRemaining = duration - Int(elapsed)
+
+            if elapsed >= Double(duration) {
+                timer.invalidate()
+                advancePhase()
+            }
+        }
     }
 
     private func stopSession() {

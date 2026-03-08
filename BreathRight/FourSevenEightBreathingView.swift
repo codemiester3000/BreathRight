@@ -17,10 +17,14 @@ struct FourSevenEightBreathingView: View {
     @State private var isFirstLoad = true
     @State private var completedCycles = 0
     @State private var flashOpacity: Double = 0
-    
-    /// User Defaults values (computed so they reflect the latest value)
-    var savedNumCycles: Int { UserDefaults.standard.integer(forKey: "numCycles") }
-    var savedIsInfinite: Bool { UserDefaults.standard.bool(forKey: "unlimtedCycles") }
+    @State private var isPaused = false
+    @State private var pausedPhaseElapsed: Double = 0
+
+    /// Per-exercise cycle settings
+    @State private var numCycles: Int = BreathingExercise.fourSevenEight.savedCycles()
+    @State private var unlimitedCycles: Bool = BreathingExercise.fourSevenEight.savedIsUnlimited()
+    var savedNumCycles: Int { numCycles }
+    var savedIsInfinite: Bool { unlimitedCycles }
     
     var body: some View {
         ZStack {
@@ -52,8 +56,9 @@ struct FourSevenEightBreathingView: View {
                     
                     Spacer()
                     
-                    HStack {
+                    HStack(spacing: 16) {
                         Spacer()
+                        pauseButton
                         stopButton
                         Spacer()
                     }
@@ -188,9 +193,8 @@ struct FourSevenEightBreathingView: View {
                             .foregroundColor(.white.opacity(0.6))
                     }
                 }
-                .popover(isPresented: $showTooltip, arrowEdge: .top) {
+                .sheet(isPresented: $showTooltip) {
                     FourSevenEightBreathInfo()
-                    Spacer()
                 }
             }
             .padding(.horizontal, 24)
@@ -208,25 +212,10 @@ struct FourSevenEightBreathingView: View {
             .padding(.horizontal, 24)
             .padding(.top, 20)
 
-            // Cycles indicator pill
-            HStack(spacing: 5) {
-                Image(systemName: "arrow.3.trianglepath")
-                    .font(.system(size: 11, weight: .light))
-                    .foregroundColor(.homeWarmAccent.opacity(0.8))
-                Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
-            .background(Color.white.opacity(0.06))
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-            )
-            .padding(.horizontal, 24)
-            .padding(.top, 20)
+            // Cycle selector
+            BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimitedCycles, exercise: .fourSevenEight)
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
 
             // AI Coach tip
             if geminiService.showExerciseTip && (!geminiService.exerciseTipText.isEmpty || geminiService.isLoadingTip) {
@@ -310,6 +299,28 @@ struct FourSevenEightBreathingView: View {
         .padding(.bottom, 40)
     }
 
+    private var pauseButton: some View {
+        Button(action: {
+            togglePause()
+        }) {
+            HStack(spacing: 8) {
+                Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                    .font(.system(size: 10, weight: .medium))
+                Text(isPaused ? "Resume" : "Pause")
+                    .font(.system(size: 14, weight: .medium))
+            }
+            .foregroundColor(.white.opacity(0.85))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .background(Color.white.opacity(0.08))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+            )
+        }
+    }
+
     private var stopButton: some View {
         Button(action: {
             stopBreathingExercise()
@@ -359,6 +370,7 @@ struct FourSevenEightBreathingView: View {
         currentPhase = .inhale
         progress = 0.0
         isPhaseTransition = false
+        isPaused = false
         startTimerForPhase(.inhale)
     }
     
@@ -390,6 +402,57 @@ struct FourSevenEightBreathingView: View {
     }
     
     
+    private func togglePause() {
+        isPaused.toggle()
+        if isPaused {
+            exerciseTimer?.invalidate()
+            exerciseTimer = nil
+        } else {
+            resumeTimerForPhase(currentPhase)
+        }
+    }
+
+    private func resumeTimerForPhase(_ phase: BreathingPhase) {
+        exerciseTimer?.invalidate()
+        let totalSeconds = phase.duration
+        var secondsElapsed = totalSeconds - Double(currentPhaseTimeRemaining)
+
+        exerciseTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+            exerciseTimeElapsed += 0.01
+            secondsElapsed += 0.01
+            progress = CGFloat(secondsElapsed) / CGFloat(totalSeconds)
+
+            currentPhaseTimeRemaining = Int(phase.duration - secondsElapsed) + 1
+
+            if secondsElapsed >= totalSeconds {
+                exerciseTimer?.invalidate()
+                isPhaseTransition = true
+                switch phase {
+                case .inhale:
+                    currentPhase = .hold
+                    startTimerForPhase(.hold)
+                    playAudio(named: "Hold")
+                case .hold:
+                    currentPhase = .exhale
+                    startTimerForPhase(.exhale)
+                    playAudio(named: "Exhale")
+                case .exhale:
+                    currentPhase = .inhale
+                    self.completedCycles += 1
+                    self.flashCyclesText()
+
+                    if self.completedCycles >= self.savedNumCycles && !self.savedIsInfinite {
+                        self.navigateToSummary = true
+                        self.stopBreathingExercise()
+                    } else {
+                        self.startTimerForPhase(.inhale)
+                        self.playAudio(named: "Inhale")
+                    }
+                }
+            }
+        }
+    }
+
     // Function to handle timer and update progress
     private func startTimerForPhase(_ phase: BreathingPhase) {
         exerciseTimer?.invalidate()

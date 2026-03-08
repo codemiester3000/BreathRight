@@ -52,6 +52,8 @@
 		E1A2B3C4D5E6F708A1234567 /* StreakMilestoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C4D5E6F708A1234568 /* StreakMilestoneView.swift */; };
 		E1A2B3C4D5E6F708A1234569 /* TierUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C4D5E6F708A123456A /* TierUpView.swift */; };
 		FC158A0FEFEA2CC564F86652 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DC8A264F49A1648F45B88D /* AchievementBadgeView.swift */; };
+		AA1122334455667788990011 /* ExhaleHoldBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1122334455667788990012 /* ExhaleHoldBreathInfo.swift */; };
+		AA1122334455667788990013 /* CustomBreathInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1122334455667788990014 /* CustomBreathInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +121,8 @@
 		E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExhaleHoldView.swift; sourceTree = "<group>"; };
 		E7A3F19B4C2D80E156F3A728 /* TrainingPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingPlan.swift; sourceTree = "<group>"; };
 		F1E2D3C4B5A6970812345678 /* GeminiService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
+		AA1122334455667788990012 /* ExhaleHoldBreathInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExhaleHoldBreathInfo.swift; sourceTree = "<group>"; };
+		AA1122334455667788990014 /* CustomBreathInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomBreathInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +214,8 @@
 				E5F6A7B8C9D0E1F2A3B4C5D6 /* ExhaleHoldView.swift */,
 				E1A2B3C4D5E6F708A1234568 /* StreakMilestoneView.swift */,
 				E1A2B3C4D5E6F708A123456A /* TierUpView.swift */,
+				AA1122334455667788990012 /* ExhaleHoldBreathInfo.swift */,
+				AA1122334455667788990014 /* CustomBreathInfo.swift */,
 			);
 			path = BreathRight;
 			sourceTree = "<group>";
@@ -407,6 +413,8 @@
 				D4E5F6A7B8C9D0E1F2A3B4C5 /* ExhaleHoldView.swift in Sources */,
 				E1A2B3C4D5E6F708A1234567 /* StreakMilestoneView.swift in Sources */,
 				E1A2B3C4D5E6F708A1234569 /* TierUpView.swift in Sources */,
+				AA1122334455667788990011 /* ExhaleHoldBreathInfo.swift in Sources */,
+				AA1122334455667788990013 /* CustomBreathInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

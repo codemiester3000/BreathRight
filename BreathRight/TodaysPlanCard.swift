@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Status Row (Greeting + Streak + Level)
+// MARK: - Hero Greeting Section
 
 struct StatusRow: View {
     @EnvironmentObject var dataManager: DataManager
@@ -18,33 +18,23 @@ struct StatusRow: View {
     }
 
     private var greeting: String {
-        // First ever open
         if dataManager.totalSessions == 0 {
             return timeGreeting
         }
-
-        // Already practiced today
         if dataManager.todayProtocolCompleted {
             return "Nice Work Today"
         }
-
-        // Streak milestone approaching
         let streak = dataManager.currentStreak
         let approachingMilestones = [6, 13, 29, 59, 99]
         if approachingMilestones.contains(streak) {
             return "Day \(streak) · Almost There"
         }
-
-        // Returning after 2+ days (streak broken — streak is 0 but has past sessions)
         if streak == 0 {
             return "Welcome Back"
         }
-
-        // Active streak
         if streak > 0 {
             return "Day \(streak)"
         }
-
         return timeGreeting
     }
 
@@ -57,43 +47,77 @@ struct StatusRow: View {
     }
 
     var body: some View {
-        HStack {
-            HStack(spacing: 6) {
-                Image(systemName: iconName)
-                    .font(.system(size: 13))
-                    .foregroundColor(.homeWarmAccent.opacity(0.8))
-                Text(greeting)
-                    .font(.system(size: 15, weight: .light, design: .rounded))
-                    .foregroundColor(.white.opacity(0.8))
+        VStack(spacing: 16) {
+            // Large greeting headline
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    Image(systemName: iconName)
+                        .font(.system(size: 18))
+                        .foregroundColor(.homeGoldenAccent.opacity(0.9))
+                    Text(greeting)
+                        .font(.system(size: 28, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                }
             }
 
-            Spacer()
-
-            HStack(spacing: 8) {
-                HStack(spacing: 4) {
+            // Streak + Level badges
+            HStack(spacing: 12) {
+                // Streak badge
+                HStack(spacing: 6) {
                     Image(systemName: dataManager.currentStreak > 0 ? "flame.fill" : "flame")
-                        .font(.system(size: 12))
+                        .font(.system(size: 14))
                         .foregroundColor(dataManager.currentStreak > 0 ? .orange : .white.opacity(0.4))
                     Text("\(dataManager.currentStreak)")
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(.white.opacity(0.9))
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                    Text("streak")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.white.opacity(0.5))
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(Color.white.opacity(0.1))
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(
+                            dataManager.currentStreak > 0
+                                ? Color.orange.opacity(0.3)
+                                : Color.white.opacity(0.1),
+                            lineWidth: 1
+                        )
+                )
+                .shadow(color: dataManager.currentStreak > 0 ? .orange.opacity(0.15) : .clear, radius: 8, y: 2)
 
-                Text("\u{00B7}")
-                    .font(.system(size: 13))
-                    .foregroundColor(.white.opacity(0.3))
-
-                HStack(spacing: 4) {
+                // Level badge
+                HStack(spacing: 6) {
                     let level = GamificationConstants.levelFor(xp: dataManager.currentXP)
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 12))
+                        .foregroundColor(.homeGoldenAccent)
                     Text("Lv.\(level.number)")
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .foregroundColor(.homeWarmAccent)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
                     Text(level.name)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.white.opacity(0.5))
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(Color.white.opacity(0.1))
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Color.homeGoldenAccent.opacity(0.25), lineWidth: 1)
+                )
+                .shadow(color: .homeGoldenAccent.opacity(0.1), radius: 8, y: 2)
             }
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -101,6 +125,7 @@ struct StatusRow: View {
 
 struct JourneyCard: View {
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var tabBarState: TabBarState
 
     private var tier: BOLTTier? {
         dataManager.currentBOLTTier()
@@ -121,48 +146,30 @@ struct JourneyCard: View {
     // MARK: - Has BOLT Score
 
     private func hasBOLTCard(tier: BOLTTier) -> some View {
-        NavigationLink(destination: StatsView()) {
-            VStack(alignment: .leading, spacing: 0) {
-                sectionLabel("your journey")
-                    .padding(.top, 18)
-                    .padding(.horizontal, 20)
+        let progress = tierProgress(score: latestScore, tier: tier)
 
-                // BOLT score + tier
-                HStack(alignment: .firstTextBaseline) {
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text("BOLT")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white.opacity(0.5))
-                        Text(String(format: "%.1fs", latestScore))
-                            .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(tier.rawValue)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.homeGoldenAccent)
-                        Text(tier.boltRange)
-                            .font(.system(size: 11, weight: .regular))
-                            .foregroundColor(.white.opacity(0.4))
-                    }
+        return HStack(spacing: 14) {
+            // BOLT score
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .firstTextBaseline, spacing: 3) {
+                    Text("BOLT")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.45))
+                    Text(String(format: "%.1fs", latestScore))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
                 }
-                .padding(.top, 12)
-                .padding(.horizontal, 20)
+                Text(tier.rawValue)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.homeGoldenAccent)
+            }
 
-                // Calibration note
-                Text("Your daily exercises are calibrated to this tier")
-                    .font(.system(size: 11, weight: .regular))
-                    .foregroundColor(.white.opacity(0.4))
-                    .padding(.top, 6)
-                    .padding(.horizontal, 20)
-
-                // Progress bar within tier
-                let progress = tierProgress(score: latestScore, tier: tier)
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(Color.white.opacity(0.1))
-                    GeometryReader { geo in
+            // Progress bar
+            VStack(alignment: .trailing, spacing: 4) {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(Color.white.opacity(0.1))
                         RoundedRectangle(cornerRadius: 3)
                             .fill(
                                 LinearGradient(
@@ -174,12 +181,11 @@ struct JourneyCard: View {
                             .frame(width: geo.size.width * CGFloat(progress))
                     }
                 }
-                .frame(height: 6)
-                .padding(.top, 12)
-                .padding(.horizontal, 20)
+                .frame(height: 5)
 
-                // Delta to next tier
                 HStack {
+                    retestNudge
+                    Spacer()
                     if let nextTier = tier.nextTier {
                         let threshold: Double = {
                             switch nextTier {
@@ -192,41 +198,22 @@ struct JourneyCard: View {
                         }()
                         let delta = threshold - latestScore
                         Text(String(format: "%.1fs to %@", delta, nextTier.rawValue))
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.4))
                     } else {
-                        Text("Top tier reached")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(.homeGoldenAccent.opacity(0.8))
-                    }
-                    Spacer()
-                }
-                .padding(.top, 8)
-                .padding(.horizontal, 20)
-
-                // Bottom: retest nudge + arrow
-                HStack {
-                    retestNudge
-                    Spacer()
-                    ZStack {
-                        Circle()
-                            .fill(Color.homeWarmAccent.opacity(0.15))
-                            .frame(width: 28, height: 28)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.homeWarmAccent)
+                        Text("Top tier")
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundColor(.homeGoldenAccent.opacity(0.7))
                     }
                 }
-                .padding(.top, 14)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 18)
             }
-            .background(cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(cardStroke)
-            .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(cardStroke)
+        .shadow(color: .black.opacity(0.1), radius: 12, y: 6)
     }
 
     // MARK: - No BOLT Score
@@ -252,7 +239,10 @@ struct JourneyCard: View {
 
             HStack {
                 Spacer()
-                NavigationLink(destination: BOLTTestView()) {
+                NavigationLink(destination: BOLTTestView()
+                    .onAppear { tabBarState.isVisible = false }
+                    .onDisappear { tabBarState.isVisible = true }
+                ) {
                     HStack(spacing: 6) {
                         Text("Take BOLT Test")
                             .font(.system(size: 13, weight: .semibold))
@@ -331,13 +321,6 @@ struct JourneyCard: View {
                         endPoint: .bottom
                     )
                 )
-            HStack {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.homeGoldenAccent.opacity(0.5))
-                    .frame(width: 3)
-                    .padding(.vertical, 20)
-                Spacer()
-            }
         }
     }
 
@@ -358,8 +341,10 @@ struct JourneyCard: View {
 
 struct TodaysExerciseCard: View {
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var tabBarState: TabBarState
     @ObservedObject var geminiService: GeminiService
     @State private var navigateToExercise = false
+    @State private var bonusExercise: PrescribedExercise? = nil
 
     private var tier: BOLTTier? {
         dataManager.currentBOLTTier()
@@ -376,192 +361,301 @@ struct TodaysExerciseCard: View {
 
     var body: some View {
         if let exercise = exercise {
-            VStack(alignment: .leading, spacing: 0) {
-                // Section label
-                HStack(spacing: 8) {
-                    Rectangle()
-                        .fill(Color.homeGoldenAccent.opacity(0.85))
-                        .frame(width: 12, height: 2)
-                    Text("today's protocol")
-                        .font(.system(size: 11, weight: .medium))
-                        .tracking(1.5)
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                .padding(.top, 18)
-                .padding(.horizontal, 20)
+            if isCompleted {
+                completedCard(exercise: exercise)
+            } else {
+                activeCard(exercise: exercise)
+            }
+        }
+    }
 
-                // Completed badge
-                if isCompleted {
-                    HStack(spacing: 5) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 12, weight: .medium))
-                        Text("Completed")
-                            .font(.system(size: 12, weight: .semibold))
-                    }
-                    .foregroundColor(.green)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(
-                        Capsule()
-                            .fill(Color.green.opacity(0.15))
-                    )
-                    .padding(.top, 10)
-                    .padding(.horizontal, 20)
-                }
+    // MARK: - Active (not yet completed) card
 
-                // Day label (e.g. "WEDNESDAY · CHALLENGE")
-                if let tier = tier {
-                    Text("\(TrainingPlanProvider.todayLabel) \u{00B7} \(TrainingPlanProvider.todaysDayLabel(for: tier))")
-                        .font(.system(size: 10, weight: .medium))
-                        .tracking(1.2)
-                        .foregroundColor(.white.opacity(0.35))
-                        .textCase(.uppercase)
-                        .padding(.top, 12)
-                        .padding(.horizontal, 20)
-                }
-
-                // Exercise name (large)
-                Text(exercise.displayName)
-                    .font(.system(size: 22, weight: .semibold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.95))
-                    .padding(.top, 6)
-                    .padding(.horizontal, 20)
-
-                // Benefit tag + duration
-                HStack(spacing: 6) {
-                    Text(exercise.benefitTag)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.homeGoldenAccent.opacity(0.9))
-                    Text("\u{00B7}")
-                        .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.3))
-                    Text("~\(exercise.estimatedDurationLabel)")
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                .padding(.top, 4)
-                .padding(.horizontal, 20)
-
-                // Science line
-                Text(exercise.scienceLine)
-                    .font(.system(size: 12, weight: .regular))
+    private func activeCard(exercise: PrescribedExercise) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section label
+            HStack(spacing: 8) {
+                Rectangle()
+                    .fill(Color.homeGoldenAccent.opacity(0.85))
+                    .frame(width: 16, height: 2)
+                Text("today's protocol")
+                    .font(.system(size: 11, weight: .medium))
+                    .tracking(1.5)
                     .foregroundColor(.white.opacity(0.5))
-                    .lineSpacing(3)
+            }
+            .padding(.top, 20)
+            .padding(.horizontal, 20)
+
+            // Day label
+            if let tier = tier {
+                Text("\(TrainingPlanProvider.todayLabel) \u{00B7} \(TrainingPlanProvider.todaysDayLabel(for: tier))")
+                    .font(.system(size: 10, weight: .medium))
+                    .tracking(1.2)
+                    .foregroundColor(.white.opacity(0.35))
+                    .textCase(.uppercase)
                     .padding(.top, 12)
                     .padding(.horizontal, 20)
-
-                // Action button
-                if isCompleted {
-                    // Extra Workout — ghost/outline style
-                    Button {
-                        exercise.applyToUserDefaults()
-                        geminiService.showExerciseTip = true
-                        navigateToExercise = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 10, weight: .bold))
-                            Text("Extra Workout")
-                                .font(.system(size: 14, weight: .semibold))
-                        }
-                        .foregroundColor(.homeGoldenAccent)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.homeGoldenAccent.opacity(0.5), lineWidth: 1)
-                        )
-                    }
-                    .padding(.top, 14)
-                    .padding(.horizontal, 20)
-                } else {
-                    // Begin Session — full golden CTA
-                    Button {
-                        exercise.applyToUserDefaults()
-                        geminiService.showExerciseTip = true
-                        navigateToExercise = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "play.fill")
-                                .font(.system(size: 10, weight: .bold))
-                            Text("Begin Session")
-                                .font(.system(size: 14, weight: .semibold))
-                        }
-                        .foregroundColor(.homeWarmBlueDark)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 11)
-                        .background(Color.homeGoldenAccent)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .shadow(color: Color.homeGoldenAccent.opacity(0.25), radius: 10, y: 4)
-                    }
-                    .padding(.top, 14)
-                    .padding(.horizontal, 20)
-                }
-
-                // Technical details (dim, small)
-                Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles")
-                    .font(.system(size: 11, weight: .regular, design: .rounded))
-                    .foregroundColor(.white.opacity(0.3))
-                    .padding(.top, 8)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 18)
-
-                // Hidden NavigationLink for programmatic navigation
-                NavigationLink(
-                    destination: exerciseDestination(for: exercise.exerciseType),
-                    isActive: $navigateToExercise
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-                .frame(width: 0, height: 0)
             }
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                    HStack {
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.homeGoldenAccent.opacity(isCompleted ? 0.25 : 0.5))
-                            .frame(width: 3)
-                            .padding(.vertical, 20)
-                        Spacer()
-                    }
+
+            // Exercise name
+            Text(exercise.displayName)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+                .padding(.top, 6)
+                .padding(.horizontal, 20)
+
+            // Benefit tag + duration
+            HStack(spacing: 6) {
+                Text(exercise.benefitTag)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.homeGoldenAccent.opacity(0.9))
+                Text("\u{00B7}")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.3))
+                Text("~\(exercise.estimatedDurationLabel)")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.white.opacity(0.5))
+            }
+            .padding(.top, 4)
+            .padding(.horizontal, 20)
+
+            // Science line
+            Text(exercise.scienceLine)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(.white.opacity(0.5))
+                .lineSpacing(3)
+                .padding(.top, 12)
+                .padding(.horizontal, 20)
+
+            // Begin Session CTA
+            Button {
+                exercise.applyToUserDefaults()
+                geminiService.showExerciseTip = true
+                navigateToExercise = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 12, weight: .bold))
+                    Text("Begin Session")
+                        .font(.system(size: 16, weight: .bold))
                 }
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
+                .foregroundColor(.homeWarmBlueDark)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(
+                        colors: [Color.homeGoldenAccent, Color.homeGoldenAccent.opacity(0.85)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: Color.homeGoldenAccent.opacity(0.35), radius: 12, y: 4)
+            }
+            .padding(.top, 16)
+            .padding(.horizontal, 20)
+
+            // Technical details
+            Text("\(exercise.timingLabel) \u{00B7} \(exercise.cycles) cycles")
+                .font(.system(size: 11, weight: .regular, design: .rounded))
+                .foregroundColor(.white.opacity(0.3))
+                .padding(.top, 8)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+
+            // Hidden NavigationLink
+            NavigationLink(
+                destination: exerciseDestination(for: bonusExercise?.exerciseType ?? exercise.exerciseType),
+                isActive: $navigateToExercise
+            ) { EmptyView() }
+            .hidden()
+            .frame(width: 0, height: 0)
+        }
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(
                         LinearGradient(
-                            colors: [Color.homeGoldenAccent.opacity(0.3), Color.white.opacity(0.08)],
+                            colors: [Color.white.opacity(0.12), Color.white.opacity(0.04)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
+                        )
                     )
-            )
-            .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
+                RadialGradient(
+                    colors: [Color.homeGoldenAccent.opacity(0.08), Color.clear],
+                    center: .topTrailing,
+                    startRadius: 0,
+                    endRadius: 150
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.homeGoldenAccent.opacity(0.35), Color.white.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+    }
+
+    // MARK: - Completed card — celebration + bonus exercise offer
+
+    private func completedCard(exercise: PrescribedExercise) -> some View {
+        VStack(spacing: 0) {
+            // Completed header
+            VStack(spacing: 10) {
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.15))
+                        .frame(width: 52, height: 52)
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundColor(.green)
+                }
+
+                Text("Today's Protocol Done")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
+
+                Text("\(exercise.displayName) \u{00B7} \(exercise.timingLabel)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white.opacity(0.45))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 24)
+            .padding(.bottom, 16)
+
+            // Divider
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 1)
+                .padding(.horizontal, 20)
+
+            // Bonus exercise section
+            if let tier = tier {
+                let bonus = bonusExercise ?? TrainingPlanProvider.bonusExercise(for: tier)
+
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 8) {
+                        Rectangle()
+                            .fill(Color.homeWarmAccent.opacity(0.7))
+                            .frame(width: 12, height: 2)
+                        Text("bonus round")
+                            .font(.system(size: 10, weight: .medium))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.4))
+                    }
+                    .padding(.top, 16)
+
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(bonus.displayName)
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .foregroundColor(.white.opacity(0.9))
+                            HStack(spacing: 6) {
+                                Text(bonus.benefitTag)
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundColor(.homeWarmAccent.opacity(0.8))
+                                Text("\u{00B7}")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.white.opacity(0.2))
+                                Text("~\(bonus.estimatedDurationLabel)")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.white.opacity(0.4))
+                            }
+                        }
+                        Spacer()
+                        Button {
+                            bonus.applyToUserDefaults()
+                            bonusExercise = bonus
+                            geminiService.showExerciseTip = true
+                            navigateToExercise = true
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 9, weight: .bold))
+                                Text("Go")
+                                    .font(.system(size: 13, weight: .semibold))
+                            }
+                            .foregroundColor(.homeWarmBlueDark)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 9)
+                            .background(Color.homeWarmAccent)
+                            .clipShape(Capsule())
+                            .shadow(color: Color.homeWarmAccent.opacity(0.25), radius: 6, y: 2)
+                        }
+                    }
+                    .padding(.top, 10)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            }
+
+            // Hidden NavigationLink
+            NavigationLink(
+                destination: exerciseDestination(for: bonusExercise?.exerciseType ?? exercise.exerciseType),
+                isActive: $navigateToExercise
+            ) { EmptyView() }
+            .hidden()
+            .frame(width: 0, height: 0)
         }
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.08), Color.white.opacity(0.03)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                // Green success glow
+                RadialGradient(
+                    colors: [Color.green.opacity(0.06), Color.clear],
+                    center: .top,
+                    startRadius: 0,
+                    endRadius: 120
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.green.opacity(0.25), Color.white.opacity(0.06)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
     }
 
     @ViewBuilder
     private func exerciseDestination(for exercise: BreathingExercise) -> some View {
-        switch exercise {
-        case .boxBreathing:
-            BoxBreathingView().environmentObject(geminiService)
-        case .fourSevenEight:
-            FourSevenEightBreathingView().environmentObject(geminiService)
-        case .exhaleHold:
-            ExhaleHoldView().environmentObject(geminiService)
-        case .custom:
-            CustomBreathingView().environmentObject(geminiService)
+        Group {
+            switch exercise {
+            case .boxBreathing:
+                BoxBreathingView().environmentObject(geminiService)
+            case .fourSevenEight:
+                FourSevenEightBreathingView().environmentObject(geminiService)
+            case .exhaleHold:
+                ExhaleHoldView().environmentObject(geminiService)
+            case .custom:
+                CustomBreathingView().environmentObject(geminiService)
+            }
         }
+        .onAppear { tabBarState.isVisible = false }
+        .onDisappear { tabBarState.isVisible = true }
     }
 }

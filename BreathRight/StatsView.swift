@@ -4,6 +4,9 @@ struct StatsView: View {
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var geminiService = GeminiService()
+    var isTab: Bool = false
+
+    @State private var appeared = false
 
     var body: some View {
         ZStack {
@@ -16,48 +19,53 @@ struct StatsView: View {
             .edgesIgnoringSafeArea(.all)
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    // 1. Header
-                    HStack {
-                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
-                                .frame(width: 36, height: 36)
-                                .background(Color.white.opacity(0.08))
-                                .clipShape(Circle())
-                        }
-
-                        Spacer()
-
-                        Text("Your Progress")
-                            .font(.system(size: 20, weight: .light, design: .rounded))
-                            .foregroundColor(.white)
-
-                        Spacer()
-
-                        // Spacer for symmetry
-                        Color.clear.frame(width: 36, height: 36)
+                VStack(spacing: 0) {
+                    // Header
+                    if isTab {
+                        heroHeader
+                            .padding(.top, 12)
+                    } else {
+                        navHeader
+                            .padding(.top, 16)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
-                    .padding(.bottom, 24)
 
-                    // 2. AI Coaching Insight
-                    aiCoachingCard
-                        .padding(.horizontal, 24)
+                    // Stats row
+                    statsRow
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
+                        .modifier(FadeSlide(appeared: appeared, delay: 0.05))
 
-                    // 3. Tier Progression (only if BOLT exists)
-                    if let tier = dataManager.currentBOLTTier() {
-                        NavigationLink(destination: TierDetailView(currentTier: tier)) {
-                            tierProgressionCard(tier: tier)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .padding(.horizontal, 24)
+                    // Weekly pulse
+                    weeklyPulse
+                        .padding(.horizontal, 20)
                         .padding(.top, 16)
+                        .modifier(FadeSlide(appeared: appeared, delay: 0.1))
+
+                    // AI Coach
+                    if dataManager.totalSessions >= 3 {
+                        aiCard
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+                            .modifier(FadeSlide(appeared: appeared, delay: 0.15))
                     }
 
-                    // 4. Next Milestones
+                    // BOLT section
+                    if dataManager.currentBOLTTier() != nil {
+                        boltSection
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+                            .modifier(FadeSlide(appeared: appeared, delay: 0.2))
+                    }
+
+                    // Personal records
+                    if dataManager.totalSessions > 0 {
+                        recordsSection
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+                            .modifier(FadeSlide(appeared: appeared, delay: 0.25))
+                    }
+
+                    // Milestones
                     let milestones = AchievementCatalog.nextMilestones(
                         unlockedIDs: dataManager.unlockedAchievementIDs,
                         totalSessions: dataManager.totalSessions,
@@ -67,656 +75,602 @@ struct StatsView: View {
                         uniqueTypes: dataManager.uniqueExerciseTypes().count
                     )
                     if !milestones.isEmpty {
-                        nextMilestonesCard(milestones: milestones)
-                            .padding(.horizontal, 24)
+                        milestonesSection(milestones: milestones)
+                            .padding(.horizontal, 20)
                             .padding(.top, 16)
+                            .modifier(FadeSlide(appeared: appeared, delay: 0.3))
                     }
 
-                    // 5. Level card
-                    levelCard
-                        .padding(.horizontal, 24)
+                    // Achievements
+                    achievementsGrid
+                        .padding(.horizontal, 20)
                         .padding(.top, 16)
+                        .modifier(FadeSlide(appeared: appeared, delay: 0.35))
 
-                    // 6. Stats row
-                    HStack(spacing: 12) {
-                        statCard(
-                            icon: "flame.fill",
-                            iconColor: .orange,
-                            value: "\(dataManager.currentStreak)",
-                            label: "Day Streak"
-                        )
-                        statCard(
-                            icon: "figure.mind.and.body",
-                            iconColor: .homeWarmAccent,
-                            value: "\(dataManager.totalSessions)",
-                            label: "Total Sessions"
-                        )
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
-
-                    // 7. Weekly activity
-                    weeklyActivityView
-                        .padding(.horizontal, 24)
-                        .padding(.top, 20)
-
-                    // 8. BOLT Score trend
-                    boltTrendSection
-                        .padding(.horizontal, 24)
-                        .padding(.top, 20)
-
-                    // 9. Personal bests
-                    personalBestsCard
-                        .padding(.horizontal, 24)
-                        .padding(.top, 20)
-
-                    // 10. Achievements
-                    achievementsSection
-                        .padding(.horizontal, 24)
-                        .padding(.top, 20)
-                        .padding(.bottom, 40)
+                    Spacer().frame(height: isTab ? 100 : 40)
                 }
             }
         }
         .navigationBarHidden(true)
         .onAppear {
             geminiService.fetchInsight(dataManager: dataManager)
+            withAnimation(.easeOut(duration: 0.5)) { appeared = true }
         }
     }
 
-    // MARK: - AI Coaching Card
+    // MARK: - Hero Header
 
-    private var aiCoachingCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private var heroHeader: some View {
+        let level = GamificationConstants.levelFor(xp: dataManager.currentXP)
+        let progress = GamificationConstants.xpProgressInLevel(xp: dataManager.currentXP)
+
+        return VStack(spacing: 0) {
+            // Level ring
+            ZStack {
+                // Track
+                Circle()
+                    .stroke(Color.white.opacity(0.06), lineWidth: 6)
+                    .frame(width: 100, height: 100)
+
+                // Progress arc
+                Circle()
+                    .trim(from: 0, to: CGFloat(progress.fraction))
+                    .stroke(
+                        LinearGradient(
+                            colors: [.homeWarmAccent, .homeGoldenAccent],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                    )
+                    .frame(width: 100, height: 100)
+                    .rotationEffect(.degrees(-90))
+
+                // Level number inside
+                VStack(spacing: 1) {
+                    Text("\(level.number)")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                    Text("LVL")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(2)
+                        .foregroundColor(.white.opacity(0.35))
+                }
+            }
+            .modifier(FadeSlide(appeared: appeared, delay: 0))
+
+            Text(level.name)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+                .padding(.top, 14)
+
+            // XP + tier
             HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("ai coach")
+                Text("\(dataManager.currentXP) XP")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.45))
+
+                if let tier = dataManager.currentBOLTTier() {
+                    Text("\u{00B7}")
+                        .foregroundColor(.white.opacity(0.2))
+                    Text(tier.rawValue)
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(0.5)
+                        .foregroundColor(.homeWarmBlueDark)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background(Color.homeGoldenAccent)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(.top, 6)
+
+            // XP to next
+            if let next = GamificationConstants.nextLevel(after: level.number) {
+                Text("\(progress.current)/\(progress.needed) to \(next.name)")
                     .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-                Spacer()
+                    .foregroundColor(.white.opacity(0.3))
+                    .padding(.top, 4)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Nav Header (non-tab)
+
+    private var navHeader: some View {
+        HStack {
+            Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .frame(width: 36, height: 36)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(Circle())
+            }
+            Spacer()
+            Text("Your Journey")
+                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                .foregroundColor(.white)
+            Spacer()
+            Color.clear.frame(width: 36, height: 36)
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 8)
+    }
+
+    // MARK: - Stats Row
+
+    private var statsRow: some View {
+        HStack(spacing: 0) {
+            statPill(
+                value: "\(dataManager.currentStreak)",
+                label: "day streak",
+                icon: "flame.fill",
+                color: dataManager.currentStreak > 0 ? .orange : .white.opacity(0.3)
+            )
+            divider
+            statPill(
+                value: "\(dataManager.totalSessions)",
+                label: "sessions",
+                icon: "figure.mind.and.body",
+                color: .homeWarmAccent
+            )
+            divider
+            statPill(
+                value: formatMinutes(dataManager.totalMinutes),
+                label: "total time",
+                icon: "clock",
+                color: .homeWarmAccent
+            )
+            divider
+            statPill(
+                value: dataManager.fetchBestBOLTScore() > 0
+                    ? String(format: "%.0fs", dataManager.fetchBestBOLTScore())
+                    : "\u{2014}",
+                label: "best BOLT",
+                icon: "lungs",
+                color: .homeGoldenAccent
+            )
+        }
+        .padding(.vertical, 16)
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(Color.white.opacity(0.06))
+            .frame(width: 1, height: 36)
+    }
+
+    private func statPill(value: String, label: String, icon: String, color: Color) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 11))
+                .foregroundColor(color)
+            Text(value)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
+            Text(label)
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(.white.opacity(0.35))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Weekly Pulse
+
+    private var weeklyPulse: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("this week")
+
+            HStack(spacing: 6) {
+                ForEach(0..<7, id: \.self) { dayOffset in
+                    let date = Calendar.current.date(byAdding: .day, value: -(6 - dayOffset), to: Date())!
+                    let hasSession = dataManager.sessionsOnDate(date)
+                    let isToday = Calendar.current.isDateInToday(date)
+
+                    VStack(spacing: 6) {
+                        // Bar
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                hasSession
+                                    ? LinearGradient(colors: [.homeWarmAccent, .homeGoldenAccent], startPoint: .bottom, endPoint: .top)
+                                    : LinearGradient(colors: [Color.white.opacity(0.06), Color.white.opacity(0.06)], startPoint: .bottom, endPoint: .top)
+                            )
+                            .frame(height: hasSession ? 32 : 12)
+                            .frame(maxWidth: .infinity)
+
+                        // Day label
+                        Text(shortDay(date))
+                            .font(.system(size: 9, weight: isToday ? .bold : .medium))
+                            .foregroundColor(isToday ? .white.opacity(0.8) : .white.opacity(0.3))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .frame(height: 50, alignment: .bottom)
+        }
+        .padding(16)
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: - AI Card
+
+    private var aiCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
                 Image(systemName: "sparkle")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.homeGoldenAccent.opacity(0.6))
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.homeGoldenAccent)
+                Text("AI INSIGHT")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(1.5)
+                    .foregroundColor(.white.opacity(0.4))
             }
 
             if geminiService.isLoading {
-                HStack(spacing: 10) {
+                HStack(spacing: 8) {
                     ProgressView()
-                        .tint(.white.opacity(0.5))
-                        .scaleEffect(0.8)
-                    Text("Analyzing your journey...")
-                        .font(.system(size: 13, weight: .regular))
-                        .foregroundColor(.white.opacity(0.5))
+                        .tint(.white.opacity(0.4))
+                        .scaleEffect(0.7)
+                    Text("Thinking...")
+                        .font(.system(size: 13))
+                        .foregroundColor(.white.opacity(0.4))
                 }
-                .padding(.vertical, 8)
             } else {
                 Text(geminiService.insightText)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.white.opacity(0.75))
+                    .foregroundColor(.white.opacity(0.7))
                     .lineSpacing(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.homeGoldenAccent.opacity(0.2), Color.white.opacity(0.06)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.5
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.homeGoldenAccent.opacity(0.2), Color.clear],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
                 )
         )
     }
 
-    // MARK: - Tier Progression Card (Full Roadmap)
+    // MARK: - BOLT Section
 
-    private func tierProgressionCard(tier: BOLTTier) -> some View {
+    private var boltSection: some View {
+        let scores = dataManager.fetchBOLTScores()
+        let tier = dataManager.currentBOLTTier()!
         let allTiers = BOLTTier.allCases
         let currentIndex = allTiers.firstIndex(of: tier) ?? 0
 
-        return VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("tier roadmap")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-                Spacer()
-                HStack(spacing: 4) {
-                    Text("Details")
-                        .font(.system(size: 10, weight: .medium))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 8, weight: .bold))
-                }
-                .foregroundColor(.white.opacity(0.3))
-            }
+        return VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("bolt progress")
 
-            // Full tier ladder
-            VStack(spacing: 0) {
+            // Tier ladder — horizontal compact
+            HStack(spacing: 0) {
                 ForEach(Array(allTiers.enumerated()), id: \.offset) { index, t in
                     let isCurrent = t == tier
                     let isPast = index < currentIndex
-                    let isFuture = index > currentIndex
-
-                    HStack(spacing: 14) {
-                        // Vertical track + node
-                        VStack(spacing: 0) {
-                            // Connector above (hidden for first)
-                            if index > 0 {
-                                Rectangle()
-                                    .fill(isPast || isCurrent
-                                        ? Color.homeGoldenAccent.opacity(0.5)
-                                        : Color.white.opacity(0.1))
-                                    .frame(width: 2, height: 14)
-                            } else {
-                                Color.clear.frame(width: 2, height: 14)
-                            }
-
-                            // Node
-                            ZStack {
-                                if isCurrent {
-                                    Circle()
-                                        .fill(Color.homeGoldenAccent.opacity(0.2))
-                                        .frame(width: 24, height: 24)
-                                    Circle()
-                                        .fill(Color.homeGoldenAccent)
-                                        .frame(width: 14, height: 14)
-                                    Circle()
-                                        .stroke(Color.homeGoldenAccent.opacity(0.5), lineWidth: 1)
-                                        .frame(width: 24, height: 24)
-                                } else if isPast {
-                                    Circle()
-                                        .fill(Color.homeWarmAccent.opacity(0.6))
-                                        .frame(width: 10, height: 10)
-                                } else {
-                                    Circle()
-                                        .fill(Color.white.opacity(0.12))
-                                        .frame(width: 10, height: 10)
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
-                                        .frame(width: 10, height: 10)
-                                }
-                            }
-
-                            // Connector below (hidden for last)
-                            if index < allTiers.count - 1 {
-                                Rectangle()
-                                    .fill(isPast
-                                        ? Color.homeGoldenAccent.opacity(0.5)
-                                        : Color.white.opacity(0.1))
-                                    .frame(width: 2, height: 14)
-                            } else {
-                                Color.clear.frame(width: 2, height: 14)
-                            }
-                        }
-                        .frame(width: 24)
-
-                        // Tier info
-                        VStack(alignment: .leading, spacing: 3) {
-                            HStack(spacing: 8) {
-                                Text(t.rawValue)
-                                    .font(.system(size: isCurrent ? 15 : 13, weight: isCurrent ? .semibold : .medium, design: .rounded))
-                                    .foregroundColor(isCurrent ? .homeGoldenAccent : isPast ? .white.opacity(0.7) : .white.opacity(0.35))
-
-                                Text(t.boltRange)
-                                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundColor(isCurrent ? .homeGoldenAccent.opacity(0.6) : .white.opacity(0.25))
-
-                                if isCurrent {
-                                    Spacer()
-                                    Text("YOU")
-                                        .font(.system(size: 9, weight: .bold))
-                                        .tracking(1)
-                                        .foregroundColor(.homeWarmBlueDark)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 3)
-                                        .background(Color.homeGoldenAccent)
-                                        .clipShape(Capsule())
-                                }
-                            }
-
-                            if isCurrent {
-                                Text(t.benefitsDescription)
-                                    .font(.system(size: 11, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.5))
-                                    .lineSpacing(2)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .padding(.top, 2)
-                            }
-
-                            if isCurrent, let next = t.nextTier {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "arrow.up.right")
-                                        .font(.system(size: 9, weight: .bold))
-                                    Text("Next: \(next.benefitsDescription)")
-                                        .font(.system(size: 10, weight: .medium))
-                                }
-                                .foregroundColor(.homeWarmAccent.opacity(0.7))
-                                .padding(.top, 4)
-                            }
-                        }
-
-                        Spacer()
-                    }
-                }
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.homeGoldenAccent.opacity(0.15), Color.white.opacity(0.06)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.5
-                )
-        )
-    }
-
-    // MARK: - Next Milestones Card
-
-    private func nextMilestonesCard(milestones: [MilestoneProgress]) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("next milestones")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-            }
-
-            ForEach(milestones) { milestone in
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 12) {
-                        // Icon
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.08))
-                                .frame(width: 36, height: 36)
-                            Image(systemName: milestone.icon)
-                                .font(.system(size: 14))
-                                .foregroundColor(.homeGoldenAccent.opacity(0.7))
-                        }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(milestone.name)
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.85))
-                                Spacer()
-                                Text(milestone.progressLabel)
-                                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.5))
-                            }
-
-                            // Description — always visible
-                            Text(milestone.description)
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.white.opacity(0.4))
-
-                            // Progress bar
-                            GeometryReader { geo in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 3)
-                                        .fill(Color.white.opacity(0.1))
-                                        .frame(height: 5)
-                                    RoundedRectangle(cornerRadius: 3)
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [.homeWarmAccent, .homeGoldenAccent],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                        .frame(width: geo.size.width * CGFloat(min(milestone.fraction, 1.0)), height: 5)
-                                }
-                            }
-                            .frame(height: 5)
-                            .padding(.top, 2)
-                        }
-                    }
-                }
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
-    }
-
-    // MARK: - Level Card
-
-    private var levelCard: some View {
-        VStack(spacing: 12) {
-            let level = GamificationConstants.levelFor(xp: dataManager.currentXP)
-            let progress = GamificationConstants.xpProgressInLevel(xp: dataManager.currentXP)
-
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(level.name)
-                        .font(.system(size: 22, weight: .semibold, design: .rounded))
-                        .foregroundColor(.white)
-                    Text("Level \(level.number)")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.homeWarmAccent)
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(dataManager.currentXP) XP")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(.homeGoldenAccent)
-                    if let next = GamificationConstants.nextLevel(after: level.number) {
-                        Text("\(progress.current)/\(progress.needed) to \(next.name)")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(.white.opacity(0.4))
-                    }
-                }
-            }
-
-            // Progress bar
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.white.opacity(0.1))
-                        .frame(height: 8)
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(
-                            LinearGradient(
-                                colors: [.homeWarmAccent, .homeGoldenAccent],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: geo.size.width * CGFloat(progress.fraction), height: 8)
-                }
-            }
-            .frame(height: 8)
-        }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(
-                    LinearGradient(
-                        colors: [Color.homeWarmAccent.opacity(0.3), Color.white.opacity(0.05)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.5
-                )
-        )
-    }
-
-    // MARK: - Stat Card
-
-    private func statCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 18))
-                .foregroundColor(iconColor)
-            Text(value)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
-            Text(label)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.white.opacity(0.5))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
-    }
-
-    // MARK: - Weekly Activity
-
-    private var weeklyActivityView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeWarmAccent)
-                    .frame(width: 12, height: 2)
-                Text("last 7 days")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-            }
-
-            HStack(spacing: 0) {
-                ForEach(0..<7, id: \.self) { dayOffset in
-                    let date = Calendar.current.date(byAdding: .day, value: -(6 - dayOffset), to: Date())!
-                    let hasSession = dataManager.sessionsOnDate(date)
-                    let dayName = shortDayName(for: date)
 
                     VStack(spacing: 6) {
-                        Circle()
-                            .fill(hasSession ? Color.homeWarmAccent : Color.white.opacity(0.1))
-                            .frame(width: 28, height: 28)
-                            .overlay(
-                                hasSession ?
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundColor(.homeWarmBlueDark) as? AnyView
-                                    : nil
-                            )
-                        Text(dayName)
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.white.opacity(0.4))
+                        // Node
+                        ZStack {
+                            if isCurrent {
+                                Circle()
+                                    .fill(Color.homeGoldenAccent)
+                                    .frame(width: 12, height: 12)
+                                Circle()
+                                    .stroke(Color.homeGoldenAccent.opacity(0.4), lineWidth: 2)
+                                    .frame(width: 20, height: 20)
+                            } else {
+                                Circle()
+                                    .fill(isPast ? Color.homeWarmAccent.opacity(0.7) : Color.white.opacity(0.1))
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+                        .frame(height: 20)
+
+                        Text(t == .roomToGrow ? "Start" : t == .veryGood ? "V.Good" : t.rawValue)
+                            .font(.system(size: isCurrent ? 9 : 8, weight: isCurrent ? .bold : .medium))
+                            .foregroundColor(isCurrent ? .homeGoldenAccent : isPast ? .white.opacity(0.5) : .white.opacity(0.2))
+                            .lineLimit(1)
                     }
                     .frame(maxWidth: .infinity)
-                }
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
-    }
 
-    private func shortDayName(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE"
-        return formatter.string(from: date).prefix(2).uppercased()
-    }
-
-    // MARK: - BOLT Score Trend
-
-    private var boltTrendSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("bolt score trend")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-            }
-
-            let scores = dataManager.fetchBOLTScores()
-
-            if scores.isEmpty {
-                HStack {
-                    Spacer()
-                    VStack(spacing: 8) {
-                        Image(systemName: "lungs")
-                            .font(.system(size: 24))
-                            .foregroundColor(.white.opacity(0.2))
-                        Text("No BOLT tests yet")
-                            .font(.system(size: 13, weight: .regular))
-                            .foregroundColor(.white.opacity(0.3))
-                        Text("Take your first test from the home screen")
-                            .font(.system(size: 11))
-                            .foregroundColor(.white.opacity(0.2))
+                    if index < allTiers.count - 1 {
+                        Rectangle()
+                            .fill(isPast ? Color.homeGoldenAccent.opacity(0.5) : Color.white.opacity(0.08))
+                            .frame(height: 2)
+                            .frame(maxWidth: .infinity)
+                            .offset(y: -10)
                     }
-                    .padding(.vertical, 20)
-                    Spacer()
                 }
-            } else {
-                BOLTChartView(scores: scores)
-                    .frame(height: 150)
+            }
+
+            // Score + trend
+            HStack(alignment: .bottom, spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Latest")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.35))
+                    Text(String(format: "%.1fs", dataManager.fetchLatestBOLTScore()))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                }
+
+                if !scores.isEmpty {
+                    BOLTChartView(scores: scores)
+                        .frame(height: 80)
+                }
+            }
+
+            if let days = dataManager.daysSinceLastBOLTTest() {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 9))
+                    Text("Tested \(days)d ago")
+                        .font(.system(size: 10, weight: .medium))
+                }
+                .foregroundColor(days >= 7 ? .homeGoldenAccent : .white.opacity(0.35))
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
-    // MARK: - Personal Bests
+    // MARK: - Personal Records
 
-    private var personalBestsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("personal bests")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-            }
+    private var recordsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("personal records")
 
-            HStack(spacing: 12) {
-                bestCard(
-                    icon: "clock",
-                    label: "Longest Session",
-                    value: formatDuration(dataManager.fetchLongestSession())
-                )
-                bestCard(
-                    icon: "lungs",
-                    label: "Best BOLT",
-                    value: dataManager.fetchBestBOLTScore() > 0
-                        ? String(format: "%.1fs", dataManager.fetchBestBOLTScore())
-                        : "\u{2014}"
-                )
-                bestCard(
+            HStack(spacing: 10) {
+                recordCard(
                     icon: "flame.fill",
-                    label: "Best Streak",
-                    value: "\(dataManager.longestStreak)d"
+                    iconColor: .orange,
+                    value: "\(dataManager.longestStreak)",
+                    unit: "days",
+                    label: "Best Streak"
+                )
+                recordCard(
+                    icon: "clock.fill",
+                    iconColor: .homeWarmAccent,
+                    value: formatDuration(dataManager.fetchLongestSession()),
+                    unit: "",
+                    label: "Longest Session"
+                )
+                recordCard(
+                    icon: "lungs.fill",
+                    iconColor: .homeGoldenAccent,
+                    value: dataManager.fetchBestBOLTScore() > 0
+                        ? String(format: "%.0f", dataManager.fetchBestBOLTScore())
+                        : "\u{2014}",
+                    unit: dataManager.fetchBestBOLTScore() > 0 ? "sec" : "",
+                    label: "Best BOLT"
                 )
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
-    private func bestCard(icon: String, label: String, value: String) -> some View {
+    private func recordCard(icon: String, iconColor: Color, value: String, unit: String, label: String) -> some View {
         VStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundColor(.homeGoldenAccent.opacity(0.7))
-            Text(value)
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.1))
+                    .frame(width: 36, height: 36)
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                    .foregroundColor(iconColor)
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                if !unit.isEmpty {
+                    Text(unit)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.3))
+                }
+            }
             Text(label)
                 .font(.system(size: 9, weight: .medium))
-                .foregroundColor(.white.opacity(0.4))
+                .foregroundColor(.white.opacity(0.35))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
     }
 
-    private func formatDuration(_ seconds: Int) -> String {
-        if seconds == 0 { return "\u{2014}" }
-        let mins = seconds / 60
-        let secs = seconds % 60
-        if mins > 0 {
-            return "\(mins)m \(secs)s"
-        }
-        return "\(secs)s"
-    }
+    // MARK: - Milestones
 
-    // MARK: - Achievements
+    private func milestonesSection(milestones: [MilestoneProgress]) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("next up")
 
-    private var achievementsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(Color.homeGoldenAccent)
-                    .frame(width: 12, height: 2)
-                Text("achievements")
-                    .font(.system(size: 11, weight: .medium))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.5))
-                Spacer()
-                Text("\(dataManager.unlockedAchievementIDs.count)/\(AchievementCatalog.all.count)")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.white.opacity(0.4))
-            }
+            VStack(spacing: 10) {
+                ForEach(milestones) { m in
+                    HStack(spacing: 12) {
+                        // Progress ring
+                        ZStack {
+                            Circle()
+                                .stroke(Color.white.opacity(0.06), lineWidth: 3)
+                                .frame(width: 38, height: 38)
+                            Circle()
+                                .trim(from: 0, to: CGFloat(min(m.fraction, 1.0)))
+                                .stroke(
+                                    LinearGradient(colors: [.homeWarmAccent, .homeGoldenAccent], startPoint: .topLeading, endPoint: .bottomTrailing),
+                                    style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                                )
+                                .frame(width: 38, height: 38)
+                                .rotationEffect(.degrees(-90))
+                            Image(systemName: m.icon)
+                                .font(.system(size: 13))
+                                .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                        }
 
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                ForEach(AchievementCatalog.all) { achievement in
-                    AchievementBadgeView(
-                        achievement: achievement,
-                        isUnlocked: dataManager.unlockedAchievementIDs.contains(achievement.id)
-                    )
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack {
+                                Text(m.name)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.85))
+                                Spacer()
+                                Text(m.progressLabel)
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                                    .foregroundColor(.homeGoldenAccent.opacity(0.8))
+                            }
+                            Text(m.description)
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.35))
+                                .lineLimit(1)
+                        }
+                    }
                 }
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.06))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-        )
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: - Achievements Grid
+
+    private var achievementsGrid: some View {
+        let unlocked = dataManager.unlockedAchievementIDs
+        let total = AchievementCatalog.all.count
+        let unlockedCount = unlocked.count
+
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                sectionHeader("achievements")
+                Spacer()
+                Text("\(unlockedCount)/\(total)")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundColor(.homeGoldenAccent.opacity(0.7))
+            }
+
+            // Grouped by category
+            ForEach(AchievementDefinition.Category.allCases, id: \.rawValue) { category in
+                let categoryAchievements = AchievementCatalog.all.filter { $0.category == category }
+                let categoryUnlocked = categoryAchievements.filter { unlocked.contains($0.id) }.count
+
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text(category.rawValue)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.5))
+                        Spacer()
+                        Text("\(categoryUnlocked)/\(categoryAchievements.count)")
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.3))
+                    }
+
+                    LazyVGrid(columns: [
+                        GridItem(.flexible(), spacing: 12),
+                        GridItem(.flexible(), spacing: 12),
+                        GridItem(.flexible(), spacing: 12),
+                        GridItem(.flexible(), spacing: 12)
+                    ], spacing: 14) {
+                        ForEach(categoryAchievements) { a in
+                            let isUnlocked = unlocked.contains(a.id)
+                            VStack(spacing: 5) {
+                                ZStack {
+                                    Circle()
+                                        .fill(isUnlocked ? Color.homeGoldenAccent.opacity(0.12) : Color.white.opacity(0.03))
+                                        .frame(width: 44, height: 44)
+                                    if isUnlocked {
+                                        Circle()
+                                            .stroke(Color.homeGoldenAccent.opacity(0.4), lineWidth: 1.5)
+                                            .frame(width: 44, height: 44)
+                                    }
+                                    Image(systemName: a.icon)
+                                        .font(.system(size: 16))
+                                        .foregroundColor(isUnlocked ? .homeGoldenAccent : .white.opacity(0.1))
+                                }
+                                Text(a.name)
+                                    .font(.system(size: 8, weight: .medium))
+                                    .foregroundColor(isUnlocked ? .white.opacity(0.7) : .white.opacity(0.15))
+                                    .multilineTextAlignment(.center)
+                                    .lineLimit(2)
+                            }
+                        }
+                    }
+                }
+                .padding(.top, category == AchievementDefinition.Category.allCases.first ? 0 : 6)
+            }
+        }
+        .padding(16)
+        .background(glassCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: - Shared Components
+
+    private func sectionHeader(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.system(size: 10, weight: .bold))
+            .tracking(1.5)
+            .foregroundColor(.white.opacity(0.3))
+    }
+
+    private var glassCard: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color.white.opacity(0.05))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white.opacity(0.07), lineWidth: 0.5)
+            )
+    }
+
+    // MARK: - Helpers
+
+    private func shortDay(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "EEE"
+        return String(f.string(from: date).prefix(2)).uppercased()
+    }
+
+    private func formatMinutes(_ mins: Double) -> String {
+        if mins >= 60 {
+            return String(format: "%.0fh", mins / 60)
+        }
+        return "\(Int(mins))m"
+    }
+
+    private func formatDuration(_ seconds: Int) -> String {
+        if seconds == 0 { return "\u{2014}" }
+        let m = seconds / 60
+        let s = seconds % 60
+        if m > 0 { return "\(m):\(String(format: "%02d", s))" }
+        return "\(s)s"
+    }
+}
+
+// MARK: - Fade + Slide Animation Modifier
+
+private struct FadeSlide: ViewModifier {
+    let appeared: Bool
+    let delay: Double
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 16)
+            .animation(.easeOut(duration: 0.45).delay(delay), value: appeared)
     }
 }

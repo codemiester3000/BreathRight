@@ -26,7 +26,8 @@ struct BoxBreathingView: View {
     @State private var showBreathingSelectionPage = false
     @State private var completedCycles = 0
     @State private var flashOpacity: Double = 0
-    
+    @State private var isPaused = false
+
     let minDuration: CGFloat = 2
     let maxDuration: CGFloat = 16
     let minSquareSize: CGFloat = 200
@@ -34,9 +35,11 @@ struct BoxBreathingView: View {
     let topPadding: CGFloat = 100
     let animationTopPadding: CGFloat = 20
     
-    /// User Defaults values (computed so they reflect the latest value)
-    var savedNumCycles: Int { UserDefaults.standard.integer(forKey: "numCycles") }
-    var savedIsInfinite: Bool { UserDefaults.standard.bool(forKey: "unlimtedCycles") }
+    /// Per-exercise cycle settings
+    @State private var numCycles: Int = BreathingExercise.boxBreathing.savedCycles()
+    @State private var unlimitedCycles: Bool = BreathingExercise.boxBreathing.savedIsUnlimited()
+    var savedNumCycles: Int { numCycles }
+    var savedIsInfinite: Bool { unlimitedCycles }
     
     var durationInSeconds: Int {
         Int(minDuration + (maxDuration - minDuration) * sliderValue)
@@ -167,9 +170,8 @@ struct BoxBreathingView: View {
                                                     .foregroundColor(.white.opacity(0.6))
                                             }
                                         }
-                                        .popover(isPresented: $showTooltip, arrowEdge: .top) {
+                                        .sheet(isPresented: $showTooltip) {
                                             BoxBreathInfo()
-                                            Spacer()
                                         }
                                     }
 
@@ -184,24 +186,9 @@ struct BoxBreathingView: View {
                                     }
                                     .padding(.top, 20)
 
-                                    // Cycles indicator pill
-                                    HStack(spacing: 5) {
-                                        Image(systemName: "arrow.3.trianglepath")
-                                            .font(.system(size: 11, weight: .light))
-                                            .foregroundColor(.homeWarmAccent.opacity(0.8))
-                                        Text(savedIsInfinite ? "∞ cycles" : "\(savedNumCycles) cycles")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.7))
-                                    }
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 7)
-                                    .background(Color.white.opacity(0.06))
-                                    .clipShape(Capsule())
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
-                                    )
-                                    .padding(.top, 20)
+                                    // Cycle selector
+                                    BreathCycleSelector(cycles: $numCycles, isUnlimited: $unlimitedCycles, exercise: .boxBreathing)
+                                        .padding(.top, 20)
 
                                     // AI Coach tip
                                     if geminiService.showExerciseTip && (!geminiService.exerciseTipText.isEmpty || geminiService.isLoadingTip) {
@@ -370,8 +357,28 @@ struct BoxBreathingView: View {
                         
                         VStack(alignment: .leading) {
                             if isAnimating {
-                                HStack {
+                                HStack(spacing: 16) {
                                     Spacer()
+
+                                    Button(action: {
+                                        togglePause()
+                                    }) {
+                                        HStack(spacing: 8) {
+                                            Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                                                .font(.system(size: 10, weight: .medium))
+                                            Text(isPaused ? "Resume" : "Pause")
+                                                .font(.system(size: 14, weight: .medium))
+                                        }
+                                        .foregroundColor(.white.opacity(0.85))
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 12)
+                                        .background(Color.white.opacity(0.08))
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                                        )
+                                    }
 
                                     Button(action: {
                                         stopAnimationAndReset()
@@ -415,6 +422,7 @@ struct BoxBreathingView: View {
                                         GeometryReader { geometry in
                                             Button(action: {
                                                 self.elapsedTime = 0
+                                                self.isPaused = false
 
                                                 // Start the elapsed time timer
                                                 self.elapsedTimeTimer?.invalidate()
@@ -514,6 +522,26 @@ struct BoxBreathingView: View {
         isSheetPresented.toggle()
     }
     
+    func togglePause() {
+        isPaused.toggle()
+        if isPaused {
+            // Pause: invalidate timers but preserve state
+            timer?.invalidate()
+            timer = nil
+            elapsedTimeTimer?.invalidate()
+            elapsedTimeTimer = nil
+            squareAnimationWorkItem?.cancel()
+            squareAnimationWorkItem = nil
+        } else {
+            // Resume: restart timers from current state
+            elapsedTimeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                self.elapsedTime += 1
+            }
+            // Restart the square animation from current progress
+            animateSquareDrawing(sideDuration: durationInSeconds)
+        }
+    }
+
     func flashCyclesText() {
         withAnimation(Animation.easeInOut(duration: 0.5)) {
             flashOpacity = 0.4
